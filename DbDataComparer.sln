@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbDataComparer.Domain", "DbDataComparer.Domain\DbDataComparer.Domain.csproj", "{8DB81AE1-F399-42BB-A926-B29CF42CB533}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbDataComparer.MSSql", "DbDataComparer.MSSql\DbDataComparer.MSSql.csproj", "{6260F3F6-C8E9-4D59-B881-FC3F0B126612}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{7260C8F0-0E55-4D1C-AF35-C61BBDFB2367}"
+	ProjectSection(SolutionItems) = preProject
+		Settings\appsettings.json = Settings\appsettings.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbDataComparer.Comparer", "DbDataComparer.Comparer\DbDataComparer.Comparer.csproj", "{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbDataComparer.Explorer", "DbDataComparer.Explorer\DbDataComparer.Explorer.csproj", "{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Definition Example Files", "Test Definition Example Files", "{FE7F312C-C42F-40B2-8036-765EA589C0E3}"
+	ProjectSection(SolutionItems) = preProject
+		Test Definition Example Files\spFCM_GetLinkedCarriers.td = Test Definition Example Files\spFCM_GetLinkedCarriers.td
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8DB81AE1-F399-42BB-A926-B29CF42CB533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB81AE1-F399-42BB-A926-B29CF42CB533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB81AE1-F399-42BB-A926-B29CF42CB533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB81AE1-F399-42BB-A926-B29CF42CB533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6260F3F6-C8E9-4D59-B881-FC3F0B126612}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6260F3F6-C8E9-4D59-B881-FC3F0B126612}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6260F3F6-C8E9-4D59-B881-FC3F0B126612}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6260F3F6-C8E9-4D59-B881-FC3F0B126612}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5E2426F0-4357-4A13-AB85-A20E8D2CE48B}
+	EndGlobalSection
+EndGlobal

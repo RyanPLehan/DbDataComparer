@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DbDataComparer.Explorer": {
+      "commandName": "Project",
+      "commandLineArgs": "spFCM_GetLinkedCarriers dbo.spFCM_GetLinkedCarriers fin.spFCM_GetLinkedCarriers"
+    }
+  }
+}
