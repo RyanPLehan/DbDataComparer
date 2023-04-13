@@ -9,7 +9,7 @@ namespace DbDataComparer.Domain.Models
 {
     public class TestComparisonResult
     {
-        public ComparisonResultTypeEnum Result { get; set; } = ComparisonResultTypeEnum.NotTested;
+        public ComparisonResultTypeEnum Result { get; set; } = ComparisonResultTypeEnum.NotCompared;
         public string ResultDescription { get; set; }
     }
 }

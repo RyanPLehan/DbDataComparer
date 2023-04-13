@@ -164,7 +164,7 @@ namespace DbDataComparer.Comparer
 
             foreach (TestExecutionResult testResult in testResults)
             {
-                ComparisonResult comparisonResult = new ComparisonResult() { TestResult = testResult };
+                ComparisonResult comparisonResult = new ComparisonResult(testResult);
                 sw.Restart();
 
                 // Check each compare option and perform test
@@ -312,13 +312,15 @@ namespace DbDataComparer.Comparer
 
             ret = ret || (comparisonResult.ParameterReturnResult.Result == result);
             ret = ret || (comparisonResult.ParameterOutputResult.Result == result);
-            foreach (int key in comparisonResult.ResultsetMetaDataResults.Keys)
-            {
-                TestComparisonResult tcrMD = comparisonResult.ResultsetMetaDataResults[key];
-                TestComparisonResult tcrData = comparisonResult.ResultsetDataResults[key];
 
-                ret = ret || (tcrMD.Result == result);
-                ret = ret || (tcrData.Result == result);
+            foreach (KeyValuePair<int, TestComparisonResult> kvp in comparisonResult.ResultsetMetaDataResults)
+            {
+                ret = ret || (kvp.Value.Result == result);
+            }
+
+            foreach (KeyValuePair<int, TestComparisonResult> kvp in comparisonResult.ResultsetDataResults)
+            {
+                ret = ret || (kvp.Value.Result == result);
             }
 
             return ret;
