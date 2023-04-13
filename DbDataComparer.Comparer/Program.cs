@@ -80,7 +80,7 @@ namespace DbDataComparer.Comparer
 
         private static async Task Execute(string fileName = null)
         {
-            string now = DateTime.Now.ToString("yyy-MM-dd hh-mm-ss");
+            string now = DateTime.Now.ToString("yyy-MM-dd HH-mm-ss");
             string resultsFileName = String.Format("Results [{0}].txt", now);
             string resultsPathName = Path.Combine(Settings.Location.ComparisonResultsPath, resultsFileName);
 
@@ -215,14 +215,14 @@ namespace DbDataComparer.Comparer
                         await sw.WriteAsync(String.Format("\t\tParameter Return: {0}", cr.ParameterReturnResult.Result.ToString()));
                         await sw.WriteLineAsync(String.Format("\tParameter Output: {0}:", cr.ParameterOutputResult.Result.ToString()));
 
-                        foreach(var key in cr.ResultsetMetaDataResults.Keys)
+                        foreach(KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetMetaDataResults)
                         {
-                            TestComparisonResult tcrMD = cr.ResultsetMetaDataResults[key];
-                            TestComparisonResult tcrData = cr.ResultsetDataResults[key];
+                            await sw.WriteLineAsync(String.Format("\t\tMetadata Result Set #{0} - {1}", kvp.Key + 1, kvp.Value.Result.ToString()));
+                        }
 
-                            await sw.WriteAsync(String.Format("\t\tResult Set #{0}", key + 1));                            
-                            await sw.WriteAsync(String.Format("\tMetadata: {0}:", tcrMD.Result.ToString()));
-                            await sw.WriteLineAsync(String.Format("\tActual Data: {0}:", tcrData.Result.ToString()));
+                        foreach (KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetDataResults)
+                        {
+                            await sw.WriteLineAsync(String.Format("\t\tActual Data Result Set #{0} - {1}", kvp.Key + 1, kvp.Value.Result.ToString()));
                         }
 
                         await sw.WriteLineAsync();
@@ -259,22 +259,22 @@ namespace DbDataComparer.Comparer
                             await sw.WriteLineAsync();
                         }
 
-                        foreach (var key in cr.ResultsetMetaDataResults.Keys)
+                        foreach (KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetMetaDataResults)
                         {
-                            TestComparisonResult tcrMD = cr.ResultsetMetaDataResults[key];
-                            TestComparisonResult tcrData = cr.ResultsetDataResults[key];
-
-                            if (tcrMD.Result == ComparisonResultTypeEnum.Failed)
+                            if (kvp.Value.Result == ComparisonResultTypeEnum.Failed)
                             {
-                                await sw.WriteLineAsync(String.Format("Result Set #{0}", key + 1));
-                                await sw.WriteLineAsync(tcrMD.ResultDescription);
+                                await sw.WriteLineAsync(String.Format("Metadata from Result Set #{0}", kvp.Key + 1));
+                                await sw.WriteLineAsync(kvp.Value.ResultDescription);
                                 await sw.WriteLineAsync();
                             }
+                        }
 
-                            if (tcrData.Result == ComparisonResultTypeEnum.Failed)
+                        foreach (KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetDataResults)
+                        {
+                            if (kvp.Value.Result == ComparisonResultTypeEnum.Failed)
                             {
-                                await sw.WriteLineAsync(String.Format("Result Set #{0}", key + 1));
-                                await sw.WriteLineAsync(tcrData.ResultDescription);
+                                await sw.WriteLineAsync(String.Format("Actual data from Result Set #{0}", kvp.Key + 1));
+                                await sw.WriteLineAsync(kvp.Value.ResultDescription);
                                 await sw.WriteLineAsync();
                             }
                         }
