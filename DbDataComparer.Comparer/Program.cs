@@ -252,12 +252,14 @@ namespace DbDataComparer.Comparer
 
                         if (cr.ParameterReturnResult.Result == ComparisonResultTypeEnum.Failed)
                         {
+                            await sw.WriteLineAsync("\t\tStored Procedure Return Value");
                             await sw.WriteLineAsync(cr.ParameterReturnResult.ResultDescription);
                             await sw.WriteLineAsync();
                         }
 
                         if (cr.ParameterOutputResult.Result == ComparisonResultTypeEnum.Failed)
                         {
+                            await sw.WriteLineAsync("\t\tStored Procedure Parameter Output Values");
                             await sw.WriteLineAsync(cr.ParameterOutputResult.ResultDescription);
                             await sw.WriteLineAsync();
                         }
@@ -266,7 +268,7 @@ namespace DbDataComparer.Comparer
                         {
                             if (kvp.Value.Result == ComparisonResultTypeEnum.Failed)
                             {
-                                await sw.WriteLineAsync(String.Format("Metadata from Result Set #{0}", kvp.Key + 1));
+                                await sw.WriteLineAsync(String.Format("\tMetadata from Result Set #{0}", kvp.Key + 1));
                                 await sw.WriteLineAsync(kvp.Value.ResultDescription);
                                 await sw.WriteLineAsync();
                             }
@@ -276,7 +278,7 @@ namespace DbDataComparer.Comparer
                         {
                             if (kvp.Value.Result == ComparisonResultTypeEnum.Failed)
                             {
-                                await sw.WriteLineAsync(String.Format("Actual data from Result Set #{0}", kvp.Key + 1));
+                                await sw.WriteLineAsync(String.Format("\tActual data from Result Set #{0}", kvp.Key + 1));
                                 await sw.WriteLineAsync(kvp.Value.ResultDescription);
                                 await sw.WriteLineAsync();
                             }
