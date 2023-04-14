@@ -212,7 +212,7 @@ namespace DbDataComparer.Comparer
 
                         TimeSpan execTimeDiff = cr.TestResult.Target.ExecutionTime - cr.TestResult.Source.ExecutionTime;
                         await sw.WriteLineAsync(String.Format("\t\tTarget - Source: {0}", FormatTimeSpan(execTimeDiff)));
-                        await sw.WriteLineAsync();
+                        //await sw.WriteLineAsync();
 
                         await sw.WriteLineAsync("\tComparison Results:");
                         await sw.WriteAsync(String.Format("\t\tParameter Return: {0}", cr.ParameterReturnResult.Result.ToString()));
