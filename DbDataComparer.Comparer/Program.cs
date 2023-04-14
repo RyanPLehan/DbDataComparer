@@ -216,7 +216,7 @@ namespace DbDataComparer.Comparer
 
                         await sw.WriteLineAsync("\tComparison Results:");
                         await sw.WriteLineAsync(String.Format("\t\tParameter Return: {0}", cr.ParameterReturnResult.Result.ToString()));
-                        await sw.WriteLineAsync(String.Format("\tParameter Output: {0}:", cr.ParameterOutputResult.Result.ToString()));
+                        await sw.WriteLineAsync(String.Format("\t\tParameter Output: {0}:", cr.ParameterOutputResult.Result.ToString()));
 
                         foreach(KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetMetaDataResults)
                         {
