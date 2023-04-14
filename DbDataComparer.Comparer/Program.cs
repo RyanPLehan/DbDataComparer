@@ -150,10 +150,10 @@ namespace DbDataComparer.Comparer
         {
             string searchPattern = SEARCH_PATTERN;
 
-            if (String.IsNullOrWhiteSpace(fileName))
+            if (!String.IsNullOrWhiteSpace(fileName))
                 searchPattern = String.Format("{0}{1}", Path.GetFileNameWithoutExtension(fileName), FILE_EXTENSION);
 
-            return Directory.GetFiles(Settings.Location.TestDefinitionsPath, SEARCH_PATTERN);
+            return Directory.GetFiles(Settings.Location.TestDefinitionsPath, searchPattern);
         }
 
         private static IEnumerable<ComparisonResult> Compare(TestDefinition testDefinition, IEnumerable<TestExecutionResult> testResults)
@@ -209,6 +209,9 @@ namespace DbDataComparer.Comparer
                         //await sw.WriteLineAsync(String.Format("\t\tOverall Comparison Time: {0}", FormatTimeSpan(cr.ComparisonTime)));
                         await sw.WriteLineAsync(String.Format("\t\tSource Execution Time: {0}", FormatTimeSpan(cr.TestResult.Source.ExecutionTime)));
                         await sw.WriteLineAsync(String.Format("\t\tTarget Execution Time: {0}", FormatTimeSpan(cr.TestResult.Target.ExecutionTime)));
+
+                        TimeSpan execTimeDiff = cr.TestResult.Target.ExecutionTime - cr.TestResult.Source.ExecutionTime;
+                        await sw.WriteLineAsync(String.Format("\t\tTarget - Source: {0}", FormatTimeSpan(execTimeDiff)));
                         await sw.WriteLineAsync();
 
                         await sw.WriteLineAsync("\tComparison Results:");
