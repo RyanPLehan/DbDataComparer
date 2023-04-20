@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DbDataComparer.Domain.Enums;
+using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 
 
@@ -51,14 +52,14 @@ namespace DbDataComparer.Domain
                         tcr.Result = ComparisonResultTypeEnum.Failed;
 
                         // Output difference
-                        sb.AppendFormat("\t\tSource output parameter [{0}] has a value of {1}", srcKvp.Key, FormatValue(srcKvp.Value));
+                        sb.AppendFormat("Source output parameter [{0}] has a value of {1}", srcKvp.Key, FormatValue(srcKvp.Value));
                         sb.AppendLine();
 
                         if (tgtKvp.Equals(default(KeyValuePair<string, object>)))
-                            sb.AppendLine("\t\tTarget output parameter does not exist");
+                            sb.AppendLine("Target output parameter does not exist");
                         else
                         {
-                            sb.AppendFormat("\t\tTarget output parameter [{0}] has a value of {1}", tgtKvp.Key, FormatValue(tgtKvp.Value));
+                            sb.AppendFormat("Target output parameter [{0}] has a value of {1}", tgtKvp.Key, FormatValue(tgtKvp.Value));
                             sb.AppendLine();
                         }
 
@@ -68,9 +69,9 @@ namespace DbDataComparer.Domain
             }
             else
             {
-                sb.AppendFormat("\t\tSource command type is: {0}", source.Command.TypeDescription);
+                sb.AppendFormat("Source command type is: {0}", source.Command.TypeDescription);
                 sb.AppendLine();
-                sb.AppendFormat("\t\tTarget command type is: {0}", target.Command.TypeDescription);
+                sb.AppendFormat("Target command type is: {0}", target.Command.TypeDescription);
                 sb.AppendLine();
             }
 
@@ -103,17 +104,17 @@ namespace DbDataComparer.Domain
                     tcr.Result = ComparisonResultTypeEnum.Failed;
 
                     // Output difference
-                    sb.AppendFormat("\t\tSource has a value of {0}", source.ReturnResult);
+                    sb.AppendFormat("Source has a value of {0}", source.ReturnResult);
                     sb.AppendLine();
-                    sb.AppendFormat("\t\tTarget has a value of {0}", target.ReturnResult);
+                    sb.AppendFormat("Target has a value of {0}", target.ReturnResult);
                     sb.AppendLine();
                 }
             }
             else
             {
-                sb.AppendFormat("\t\tSource command type is: {0}", source.Command.TypeDescription);
+                sb.AppendFormat("Source command type is: {0}", source.Command.TypeDescription);
                 sb.AppendLine();
-                sb.AppendFormat("\t\tTarget command type is: {0}", target.Command.TypeDescription);
+                sb.AppendFormat("Target command type is: {0}", target.Command.TypeDescription);
                 sb.AppendLine();
             }
 
@@ -143,7 +144,7 @@ namespace DbDataComparer.Domain
                 else
                 {
                     TestComparisonResult tcr = new TestComparisonResult() { Result = ComparisonResultTypeEnum.Failed };
-                    tcr.ResultDescription = "\t\tTarget does not contain a result set";
+                    tcr.ResultDescription = "Target does not contain a result set";
                     tcrDict.Add(srcKvp.Key, tcr);
                 }
             }
@@ -187,7 +188,7 @@ namespace DbDataComparer.Domain
                         tcr.Result = ComparisonResultTypeEnum.Failed;
 
                         // Output difference
-                        sb.Append("\t\tSource Attributes ::");
+                        sb.Append("Source Attributes ::");
                         sb.AppendFormat(" Column Name: {0}", srcMD.Name);
                         sb.AppendFormat(" Ordinal Position: {0}", srcMD.OrdinalPosition);
                         sb.AppendFormat(" Data Type: {0}", srcMD.DataTypeName);
@@ -200,7 +201,7 @@ namespace DbDataComparer.Domain
                             sb.AppendLine("\tTarget output parameter does not exist");
                         else
                         {
-                            sb.Append("\t\tTarget Attributes ::");
+                            sb.Append("Target Attributes ::");
                             sb.AppendFormat(" Column Name: {0}", tgtMD.Name);
                             sb.AppendFormat(" Ordinal Position: {0}", tgtMD.OrdinalPosition);
                             sb.AppendFormat(" Data Type: {0}", tgtMD.DataTypeName);
@@ -216,9 +217,9 @@ namespace DbDataComparer.Domain
             }
             else
             {
-                sb.AppendFormat("\t\tSource does {0}have a result set", (source == null) ? "NOT " : "");
+                sb.AppendFormat("Source does {0}have a result set", (source == null) ? "NOT " : "");
                 sb.AppendLine();
-                sb.AppendFormat("\t\tTarget does {0}have a result set", (target == null) ? "NOT " : "");
+                sb.AppendFormat("Target does {0}have a result set", (target == null) ? "NOT " : "");
                 sb.AppendLine();
             }
 
@@ -249,7 +250,7 @@ namespace DbDataComparer.Domain
                 else
                 {
                     TestComparisonResult tcr = new TestComparisonResult() { Result = ComparisonResultTypeEnum.Failed };
-                    tcr.ResultDescription = "\t\tTarget does not contain a result set";
+                    tcr.ResultDescription = "Target does not contain a result set";
                     tcrDict.Add(srcKvp.Key, tcr);
                 }
             }
@@ -287,10 +288,12 @@ namespace DbDataComparer.Domain
                     failOperation = true;
 
                     // Output difference
-                    sb.AppendLine("\t\t** Different row counts **");
-                    sb.AppendFormat("\t\t\tSource row count: {0: #,##0}", srcRowCnt);
+                    sb.AppendLine("** Different row counts **");
+                    sb.Append(Text.IndentChars);
+                    sb.AppendFormat("Source row count: {0: #,##0}", srcRowCnt);
                     sb.AppendLine();
-                    sb.AppendFormat("\t\t\tTarget row count: {0: #,##0}", tgtRowCnt);
+                    sb.Append(Text.IndentChars);
+                    sb.AppendFormat("Target row count: {0: #,##0}", tgtRowCnt);
                     sb.AppendLine();
                 }
 
@@ -307,10 +310,12 @@ namespace DbDataComparer.Domain
                         failOperation = true;
 
                         // Output difference
-                        sb.AppendLine("\t\t** Different column counts **");
-                        sb.AppendFormat("\t\t\tSource column count: {0}", srcColCnt);
+                        sb.AppendLine("** Different column counts **");
+                        sb.Append(Text.IndentChars);
+                        sb.AppendFormat("Source column count: {0}", srcColCnt);
                         sb.AppendLine();
-                        sb.AppendFormat("\t\t\tTarget column count: {0}", tgtColCnt);
+                        sb.Append(Text.IndentChars);
+                        sb.AppendFormat("Target column count: {0}", tgtColCnt);
                         sb.AppendLine();
                     }
 
@@ -329,18 +334,20 @@ namespace DbDataComparer.Domain
                             tcr.Result = ComparisonResultTypeEnum.Failed;
 
                             // Output difference
-                            sb2.AppendFormat("\t\tColumn [{0}]", srcMD.Name);
+                            sb2.AppendFormat("Column [{0}]", srcMD.Name);
                             sb2.AppendLine();
-                            sb2.AppendFormat("\t\t\tSource Value: {0}", FormatValue(source.Values[r][c]));
+                            sb2.Append(Text.IndentChars);
+                            sb2.AppendFormat("Source Value: {0}", FormatValue(source.Values[r][c]));
                             sb2.AppendLine();
-                            sb2.AppendFormat("\t\t\tTarget Value: {0}", FormatValue(target.Values[r][c]));
+                            sb2.Append(Text.IndentChars);
+                            sb2.AppendFormat("Target Value: {0}", FormatValue(target.Values[r][c]));
                             sb2.AppendLine();
                         }
                     }
 
                     if (sb2.Length > 0)
                     {
-                        sb.AppendFormat("\t\tDetected data difference at row: {0: #,##0}", r + 1);
+                        sb.AppendFormat("Detected data difference at row: {0: #,##0}", r + 1);
                         sb.AppendLine();
                         sb.AppendLine(sb2.ToString());
                     }
@@ -348,9 +355,9 @@ namespace DbDataComparer.Domain
             }
             else
             {
-                sb.AppendFormat("\t\tSource does {0}have a result set", (source == null) ? "NOT " : "");
+                sb.AppendFormat("Source does {0}have a result set", (source == null) ? "NOT " : "");
                 sb.AppendLine();
-                sb.AppendFormat("\t\tTarget does {0}have a result set", (target == null) ? "NOT " : "");
+                sb.AppendFormat("Target does {0}have a result set", (target == null) ? "NOT " : "");
                 sb.AppendLine();
             }
 

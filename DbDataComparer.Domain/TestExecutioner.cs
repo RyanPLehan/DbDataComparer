@@ -27,14 +27,33 @@ namespace DbDataComparer.Domain
         /// </summary>
         /// <param name="testDefinition"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<TestExecutionResult>> Execute(TestDefinition testDefinition)
+        public async Task<IEnumerable<TestExecutionResult>> Execute(TestDefinition testDefinition,
+                                                                    CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return await Execute(testDefinition, null, cancellationToken);
+        }
+
+
+        /// <summary>
+        /// This will execute all the tests that are defined within the TestDefinition
+        /// </summary>
+        /// <param name="testDefinition"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<TestExecutionResult>> Execute(TestDefinition testDefinition,
+                                                                    IProgress<string> progress,
+                                                                    CancellationToken cancellationToken)
         {
             IList<TestExecutionResult> results = new List<TestExecutionResult>();
             Stopwatch sw = new Stopwatch();
 
             // Iterate through Test
-            foreach(Test test in testDefinition.Tests)
+            foreach (Test test in testDefinition.Tests)
             {
+                if (progress != null)
+                    progress.Report(String.Format("Executing test: {0}", test.Name));
+
+                cancellationToken.ThrowIfCancellationRequested();
+
                 sw.Restart();
                 TestExecutionResult result = await ExecuteTest(testDefinition.Source, testDefinition.Target, test);
                 sw.Stop();
@@ -45,6 +64,7 @@ namespace DbDataComparer.Domain
 
             return results;
         }
+
 
         private async Task<TestExecutionResult> ExecuteTest(Command source, Command target, Test test)
         {

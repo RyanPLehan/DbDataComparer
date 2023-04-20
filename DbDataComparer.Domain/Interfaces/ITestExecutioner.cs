@@ -5,6 +5,12 @@ namespace DbDataComparer.Domain
 {
     public interface ITestExecutioner
     {
-        Task<IEnumerable<TestExecutionResult>> Execute(TestDefinition testDefinition);
+        Task<IEnumerable<TestExecutionResult>> Execute(TestDefinition testDefinition,
+                                                       CancellationToken cancellationToken = default(CancellationToken));
+
+        Task<IEnumerable<TestExecutionResult>> Execute(TestDefinition testDefinition,
+                                                       IProgress<string> progress,
+                                                       CancellationToken cancellationToken);
+
     }
 }

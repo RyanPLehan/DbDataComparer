@@ -196,36 +196,48 @@ namespace DbDataComparer.Comparer
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
                     await sw.WriteLineAsync(String.Format("{0} Results:", testDefinition.Name));
-                    await sw.WriteLineAsync(String.Format("\tSource Command: {0}", testDefinition.Source.Text));
-                    await sw.WriteLineAsync(String.Format("\tTarget Command: {0}", testDefinition.Target.Text));
+                    await sw.WriteAsync(Text.IndentChars);
+                    await sw.WriteLineAsync(String.Format("Source Command: {0}", testDefinition.Source.Text));
+                    await sw.WriteAsync(Text.IndentChars);
+                    await sw.WriteLineAsync(String.Format("Target Command: {0}", testDefinition.Target.Text));
                     await sw.WriteLineAsync();
 
                     foreach (ComparisonResult cr in comparisonResults)
                     {
-                        await sw.WriteLineAsync(String.Format("\tTest: {0} ", cr.TestResult.TestName));
+                        await sw.WriteAsync(Text.IndentChars);
+                        await sw.WriteLineAsync(String.Format("Test: {0} ", cr.TestResult.TestName));
 
-                        await sw.WriteLineAsync("\tStatistics:");
+                        await sw.WriteAsync(Text.IndentChars);
+                        await sw.WriteLineAsync("Statistics:");
                         //await sw.WriteLineAsync(String.Format("\t\tOverall Execution Time: {0}", FormatTimeSpan(cr.TestResult.ExecutionTime)));
                         //await sw.WriteLineAsync(String.Format("\t\tOverall Comparison Time: {0}", FormatTimeSpan(cr.ComparisonTime)));
-                        await sw.WriteLineAsync(String.Format("\t\tSource Execution Time: {0}", FormatTimeSpan(cr.TestResult.Source.ExecutionTime)));
-                        await sw.WriteLineAsync(String.Format("\t\tTarget Execution Time: {0}", FormatTimeSpan(cr.TestResult.Target.ExecutionTime)));
+                        await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                        await sw.WriteLineAsync(String.Format("Source Execution Time: {0}", FormatTimeSpan(cr.TestResult.Source.ExecutionTime)));
+                        await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                        await sw.WriteLineAsync(String.Format("Target Execution Time: {0}", FormatTimeSpan(cr.TestResult.Target.ExecutionTime)));
 
                         TimeSpan execTimeDiff = cr.TestResult.Target.ExecutionTime - cr.TestResult.Source.ExecutionTime;
-                        await sw.WriteLineAsync(String.Format("\t\tExecution Time Difference (Target - Source): {0}", FormatTimeSpan(execTimeDiff)));
+                        await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                        await sw.WriteLineAsync(String.Format("Execution Time Difference (Target - Source): {0}", FormatTimeSpan(execTimeDiff)));
                         //await sw.WriteLineAsync();
 
-                        await sw.WriteLineAsync("\tComparison Results:");
-                        await sw.WriteLineAsync(String.Format("\t\tParameter Return: {0}", cr.ParameterReturnResult.Result.ToString()));
-                        await sw.WriteLineAsync(String.Format("\t\tParameter Output: {0}:", cr.ParameterOutputResult.Result.ToString()));
+                        await sw.WriteAsync(Text.IndentChars);
+                        await sw.WriteLineAsync("Comparison Results:");
+                        await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                        await sw.WriteLineAsync(String.Format("Parameter Return: {0}", cr.ParameterReturnResult.Result.ToString()));
+                        await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                        await sw.WriteLineAsync(String.Format("Parameter Output: {0}:", cr.ParameterOutputResult.Result.ToString()));
 
                         foreach(KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetMetaDataResults)
                         {
-                            await sw.WriteLineAsync(String.Format("\t\tMetadata Result Set #{0} - {1}", kvp.Key + 1, kvp.Value.Result.ToString()));
+                            await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                            await sw.WriteLineAsync(String.Format("Metadata Result Set #{0} - {1}", kvp.Key + 1, kvp.Value.Result.ToString()));
                         }
 
                         foreach (KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetDataResults)
                         {
-                            await sw.WriteLineAsync(String.Format("\t\tActual Data Result Set #{0} - {1}", kvp.Key + 1, kvp.Value.Result.ToString()));
+                            await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                            await sw.WriteLineAsync(String.Format("Actual Data Result Set #{0} - {1}", kvp.Key + 1, kvp.Value.Result.ToString()));
                         }
 
                         await sw.WriteLineAsync();
@@ -248,19 +260,22 @@ namespace DbDataComparer.Comparer
                         if (!IsAny(cr, ComparisonResultTypeEnum.Failed))
                             continue;
 
-                        await sw.WriteLineAsync(String.Format("\tTest: {0} ", cr.TestResult.TestName));
+                        await sw.WriteAsync(Text.IndentChars);
+                        await sw.WriteLineAsync(String.Format("Test: {0} ", cr.TestResult.TestName));
 
                         if (cr.ParameterReturnResult.Result == ComparisonResultTypeEnum.Failed)
                         {
-                            await sw.WriteLineAsync("\t\tStored Procedure Return Value");
-                            await sw.WriteLineAsync(cr.ParameterReturnResult.ResultDescription);
+                            await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                            await sw.WriteLineAsync("Stored Procedure Return Value");
+                            await sw.WriteLineAsync(Text.Indent(cr.ParameterReturnResult.ResultDescription, Text.IndentChars + Text.IndentChars));
                             await sw.WriteLineAsync();
                         }
 
                         if (cr.ParameterOutputResult.Result == ComparisonResultTypeEnum.Failed)
                         {
-                            await sw.WriteLineAsync("\t\tStored Procedure Parameter Output Values");
-                            await sw.WriteLineAsync(cr.ParameterOutputResult.ResultDescription);
+                            await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                            await sw.WriteLineAsync("Stored Procedure Parameter Output Values");
+                            await sw.WriteLineAsync(Text.Indent(cr.ParameterOutputResult.ResultDescription, Text.IndentChars + Text.IndentChars));
                             await sw.WriteLineAsync();
                         }
 
@@ -268,8 +283,9 @@ namespace DbDataComparer.Comparer
                         {
                             if (kvp.Value.Result == ComparisonResultTypeEnum.Failed)
                             {
-                                await sw.WriteLineAsync(String.Format("\tMetadata from Result Set #{0}", kvp.Key + 1));
-                                await sw.WriteLineAsync(kvp.Value.ResultDescription);
+                                await sw.WriteAsync(Text.IndentChars);
+                                await sw.WriteLineAsync(String.Format("Metadata from Result Set #{0}", kvp.Key + 1));
+                                await sw.WriteLineAsync(Text.Indent(kvp.Value.ResultDescription, Text.IndentChars + Text.IndentChars));
                                 await sw.WriteLineAsync();
                             }
                         }
@@ -278,8 +294,9 @@ namespace DbDataComparer.Comparer
                         {
                             if (kvp.Value.Result == ComparisonResultTypeEnum.Failed)
                             {
-                                await sw.WriteLineAsync(String.Format("\tActual data from Result Set #{0}", kvp.Key + 1));
-                                await sw.WriteLineAsync(kvp.Value.ResultDescription);
+                                await sw.WriteAsync(Text.IndentChars);
+                                await sw.WriteLineAsync(String.Format("Actual data from Result Set #{0}", kvp.Key + 1));
+                                await sw.WriteLineAsync(Text.Indent(kvp.Value.ResultDescription, Text.IndentChars + Text.IndentChars));
                                 await sw.WriteLineAsync();
                             }
                         }

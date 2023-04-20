@@ -53,6 +53,48 @@ namespace DbDataComparer.MSSql
             return command;
         }
 
+        public async Task<IEnumerable<string>> GetStoredProcedureNames(string connectionString)
+        {
+            IEnumerable<string> ret = Enumerable.Empty<string>();
+            Viewer viewer = new Viewer();
+
+            using (SqlConnection sqlConn = CreateConnection(connectionString))
+            {
+                await sqlConn.OpenAsync();
+                ret = await viewer.GetNames(sqlConn, Viewer.LookupTypeEnum.StoredProcedure);
+            }
+
+            return ret;
+        }
+
+        public async Task<IEnumerable<string>> GetTableNames(string connectionString)
+        {
+            IEnumerable<string> ret = Enumerable.Empty<string>();
+            Viewer viewer = new Viewer();
+
+            using (SqlConnection sqlConn = CreateConnection(connectionString))
+            {
+                await sqlConn.OpenAsync();
+                ret = await viewer.GetNames(sqlConn, Viewer.LookupTypeEnum.Table);
+            }
+
+            return ret;
+        }
+
+        public async Task<IEnumerable<string>> GetViewNames(string connectionString)
+        {
+            IEnumerable<string> ret = Enumerable.Empty<string>();
+            Viewer viewer = new Viewer();
+
+            using (SqlConnection sqlConn = CreateConnection(connectionString))
+            {
+                await sqlConn.OpenAsync();
+                ret = await viewer.GetNames(sqlConn, Viewer.LookupTypeEnum.View);
+            }
+
+            return ret;
+        }
+
         private SqlConnection CreateConnection(string connectionString) => new SqlConnection(connectionString);
     }
 }

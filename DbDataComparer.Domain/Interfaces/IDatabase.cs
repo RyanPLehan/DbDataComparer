@@ -15,5 +15,11 @@ namespace DbDataComparer.Domain
 
         Task<Command> Explore(string connectionString, 
                               string databaseObject);
+
+        Task<IEnumerable<string>> GetStoredProcedureNames(string connectionString);
+
+        Task<IEnumerable<string>> GetTableNames(string connectionString);
+
+        Task<IEnumerable<string>> GetViewNames(string connectionString);
     }
 }
