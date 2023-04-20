@@ -47,7 +47,8 @@ namespace DbDataComparer.MSSql
                 CommandTimeout = command.TimeoutInSeconds,
             };
 
-            BuildParameters(sqlCommand.Parameters, command, testValues);
+            if (command.Type == CommandType.StoredProcedure)
+                BuildParameters(sqlCommand.Parameters, command, testValues);
 
             return sqlCommand;
         }
