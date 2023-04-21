@@ -7,7 +7,7 @@ namespace DbDataComparer.Domain.Formatters
 {
     public static class Text
     {
-        private const string DEFAULT_INDENT = "     ";
+        private const string DEFAULT_INDENT = "   ";
 
         public static string IndentChars { get => DEFAULT_INDENT; }
 
