@@ -17,13 +17,10 @@ namespace DbDataComparer.Domain
     public class TestDefinitionBuilder
     {
         private readonly IDatabase Database;
-        private readonly DatabaseSettings Settings;
 
-        public TestDefinitionBuilder(DatabaseSettings databaseSettings,
-                                     IDatabase database)
+        public TestDefinitionBuilder(IDatabase database)
         {
             this.Database = database;
-            this.Settings = databaseSettings;
         }
 
         public async Task<TestDefinition> Build(TestDefinitionBuilderOptions options)

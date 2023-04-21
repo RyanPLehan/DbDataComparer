@@ -115,7 +115,7 @@ namespace DbDataComparer.Explorer
         /// <returns></returns>
         private static async Task<TestDefinition> CreateTestDefinition(TestDefinitionBuilderOptions options)
         {
-            var builder = new TestDefinitionBuilder(Settings.Database, new SqlDatabase());
+            var builder = new TestDefinitionBuilder(new SqlDatabase());
             return await builder.Build(options);
         }
 
