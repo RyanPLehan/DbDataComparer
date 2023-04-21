@@ -4,8 +4,13 @@ using System.Data;
 
 namespace DbDataComparer.Domain.Models
 {
-    public class Command
+    public class ExecutionDefinition
     {
+        /// <summary>
+        /// Connection String to Database
+        /// </summary>
+        public string ConnectionString { get; set; }
+
         /// <summary>
         /// Command Text
         /// </summary>
@@ -21,7 +26,7 @@ namespace DbDataComparer.Domain.Models
         /// <summary>
         /// Timeout
         /// </summary>
-        public int TimeoutInSeconds { get; set; } = 30;
+        public int ExecutionTimeoutInSeconds { get; set; } = 30;
 
         /// <summary>
         /// Parameters if command type is StoredProcedure

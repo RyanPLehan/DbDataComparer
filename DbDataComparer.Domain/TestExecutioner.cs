@@ -13,13 +13,10 @@ namespace DbDataComparer.Domain
     public class TestExecutioner : ITestExecutioner
     {
         private readonly IDatabase Database;
-        private readonly DatabaseSettings Settings;
 
-        public TestExecutioner(DatabaseSettings databaseSettings,
-                               IDatabase database)
+        public TestExecutioner(IDatabase database)
         {
             this.Database = database;
-            this.Settings = databaseSettings;
         }
 
         /// <summary>
@@ -66,14 +63,14 @@ namespace DbDataComparer.Domain
         }
 
 
-        private async Task<TestExecutionResult> ExecuteTest(Command source, Command target, Test test)
+        private async Task<TestExecutionResult> ExecuteTest(ExecutionDefinition source, ExecutionDefinition target, Test test)
         {
             // Execute commands in parallel
-            var srcExeTask = this.Database.Execute(this.Settings.SourceConnection,
+            var srcExeTask = this.Database.Execute(source.ConnectionString,
                                                    source,
                                                    test.SourceTestValues);
 
-            var tgtExeTask = this.Database.Execute(this.Settings.TargetConnection,
+            var tgtExeTask = this.Database.Execute(target.ConnectionString,
                                                    target,
                                                    test.TargetTestValues);
 

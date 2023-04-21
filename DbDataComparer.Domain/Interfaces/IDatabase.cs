@@ -10,11 +10,11 @@ namespace DbDataComparer.Domain
     public interface IDatabase
     {
         Task<ExecutionResult> Execute(string connectionString, 
-                                      Command command, 
+                                      ExecutionDefinition command, 
                                       IEnumerable<ParameterTestValue> testValues);
 
-        Task<Command> Explore(string connectionString, 
-                              string databaseObject);
+        Task<ExecutionDefinition> Explore(string connectionString, 
+                                          string databaseObject);
 
         Task<IEnumerable<string>> GetStoredProcedureNames(string connectionString);
 

@@ -18,12 +18,12 @@ namespace DbDataComparer.Domain.Models
         /// <summary>
         /// Source command defintion
         /// </summary>
-        public Command Source { get; set; }
+        public ExecutionDefinition Source { get; set; }
 
         /// <summary>
         /// Target command defintion
         /// </summary>
-        public Command Target { get; set; }
+        public ExecutionDefinition Target { get; set; }
 
         /// <summary>
         /// One or more tests for comparison

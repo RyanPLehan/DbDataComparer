@@ -67,7 +67,8 @@ namespace DbDataComparer.Explorer
         private static async Task Execute(string[] args)
         {
             Console.WriteLine("Exploring {0} and {1}", args[1], args[2]);
-            TestDefinition td = await CreateTestDefinition(args[0], args[1], args[2]);
+            TestDefinitionBuilderOptions options = CreateOptions(args[0], args[1], args[2]);
+            TestDefinition td = await CreateTestDefinition(options);
 
             string pathName = CreatePathName(td.Name);
             string fileName = Path.GetFileName(pathName);
@@ -85,6 +86,26 @@ namespace DbDataComparer.Explorer
             }
         }
 
+        private static TestDefinitionBuilderOptions CreateOptions(string name, 
+                                                                  string sourceDbObjectName, 
+                                                                  string targetDbObjectName)
+        {
+            return new TestDefinitionBuilderOptions()
+            {
+                Name = name,
+                Source = new TestDefinitionBuilderOptions.DatabaseOptions()
+                {
+                    ConnectionString = Settings.Database.SourceConnection,
+                    DatabaseObjectName = sourceDbObjectName,
+                },
+                Target = new TestDefinitionBuilderOptions.DatabaseOptions()
+                {
+                    ConnectionString = Settings.Database.TargetConnection,
+                    DatabaseObjectName = targetDbObjectName,
+                },
+            };
+        }
+
         /// <summary>
         /// Create Test Definition by exploring the MS database objects and creating sample test values
         /// </summary>
@@ -92,17 +113,9 @@ namespace DbDataComparer.Explorer
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        private static async Task<TestDefinition> CreateTestDefinition(string name, string source, string target)
+        private static async Task<TestDefinition> CreateTestDefinition(TestDefinitionBuilderOptions options)
         {
             var builder = new TestDefinitionBuilder(Settings.Database, new SqlDatabase());
-
-            var options = new TestDefinitionBuilderOptions()
-            {
-                Name = name,
-                Source = source,
-                Target = target,
-            };
-
             return await builder.Build(options);
         }
 

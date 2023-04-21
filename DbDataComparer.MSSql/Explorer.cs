@@ -14,27 +14,27 @@ namespace DbDataComparer.MSSql
 {
     internal class Explorer
     {
-        public async Task<Command> Explore(SqlConnection connection, 
-                                           string databaseObject)
+        public async Task<ExecutionDefinition> Explore(SqlConnection connection, 
+                                                       string databaseObjectName)
         {
             // Assume database object is a table/view.  Create default select
-            Command command = new Command() 
+            ExecutionDefinition exeDefinition = new ExecutionDefinition() 
             { 
-                Text = $"SELECT TOP 10 * FROM {databaseObject}", 
+                Text = $"SELECT TOP 10 * FROM {databaseObjectName}", 
                 Type = CommandType.Text 
             };
 
-            var schema = FQNParser.GetSchema(databaseObject);
-            var dbObject = FQNParser.GetDbObject(databaseObject);
+            var schema = FQNParser.GetSchema(databaseObjectName);
+            var dbObject = FQNParser.GetDbObject(databaseObjectName);
 
             if (await IsStoredProcedure(connection, schema, dbObject))
             {
-                command.Text = databaseObject;
-                command.Type = CommandType.StoredProcedure;
-                command.Parameters = await GetParameters(connection, schema, dbObject);
+                exeDefinition.Text = databaseObjectName;
+                exeDefinition.Type = CommandType.StoredProcedure;
+                exeDefinition.Parameters = await GetParameters(connection, schema, dbObject);
             }
 
-            return command;
+            return exeDefinition;
         }
 
 

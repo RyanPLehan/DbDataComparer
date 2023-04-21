@@ -18,12 +18,12 @@ namespace DbDataComparer.MSSql
 
 
         public async Task<ExecutionResult> Execute(SqlConnection connection, 
-                                                   Command command, 
+                                                   ExecutionDefinition executionDefinition, 
                                                    IEnumerable<ParameterTestValue> testValues)
         {
-            ExecutionResult result = new ExecutionResult(command);
+            ExecutionResult result = new ExecutionResult(executionDefinition);
 
-            var sqlCmd = CreateCommand(connection, command, testValues);
+            var sqlCmd = CreateCommand(connection, executionDefinition, testValues);
             SqlDataReader dataReader = await sqlCmd.ExecuteReaderAsync();
             result.ResultSets = await GetResultSets(dataReader);
             await dataReader.CloseAsync();
@@ -36,7 +36,7 @@ namespace DbDataComparer.MSSql
 
         #region Command Creation
         private SqlCommand CreateCommand(SqlConnection connection, 
-                                         Command command, 
+                                         ExecutionDefinition command, 
                                          IEnumerable<ParameterTestValue> testValues)
         {
             SqlCommand sqlCommand = new SqlCommand()
@@ -44,7 +44,7 @@ namespace DbDataComparer.MSSql
                 Connection = connection,
                 CommandText = command.Text,
                 CommandType = command.Type,
-                CommandTimeout = command.TimeoutInSeconds,
+                CommandTimeout = command.ExecutionTimeoutInSeconds,
             };
 
             if (command.Type == CommandType.StoredProcedure)
@@ -54,7 +54,7 @@ namespace DbDataComparer.MSSql
         }
 
         private void BuildParameters(SqlParameterCollection sqlParameterCollection, 
-                                     Command command, 
+                                     ExecutionDefinition command, 
                                      IEnumerable<ParameterTestValue> testValues)
         {
             // Create and Populate Sql Parameters

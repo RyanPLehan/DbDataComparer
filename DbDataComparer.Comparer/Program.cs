@@ -84,7 +84,7 @@ namespace DbDataComparer.Comparer
             string resultsFileName = String.Format("Results [{0}].txt", now);
             string resultsPathName = Path.Combine(Settings.Location.ComparisonResultsPath, resultsFileName);
 
-            ITestExecutioner testExecutioner = new TestExecutioner(Settings.Database, new SqlDatabase());
+            ITestExecutioner testExecutioner = new TestExecutioner(new SqlDatabase());
             IEnumerable<string> pathNames = GetTestDefinitionFiles(fileName);
 
             // Iterate through files, continue even there is an error            

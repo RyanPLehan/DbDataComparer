@@ -7,7 +7,7 @@ namespace DbDataComparer.Domain.Models
 {
     public class ExecutionResult
     {
-        public Command Command { get; init; }
+        public ExecutionDefinition ExecutionDefinition { get; init; }
         
         public TimeSpan ExecutionTime { get; set; }
 
@@ -17,9 +17,9 @@ namespace DbDataComparer.Domain.Models
         public IDictionary<string, object?> OutputParameterResults { get; set; } = new Dictionary<string, object?>();
         public IDictionary<int, ResultSet> ResultSets { get; set; } = new Dictionary<int, ResultSet>();
 
-        public ExecutionResult(Command command)
+        public ExecutionResult(ExecutionDefinition executionDefinition)
         {
-            this.Command = command;
+            this.ExecutionDefinition = executionDefinition;
         }
     }
 }

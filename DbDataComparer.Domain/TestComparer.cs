@@ -32,8 +32,8 @@ namespace DbDataComparer.Domain
             IList<string> failureDescriptions = new List<string>();
             StringBuilder sb = new StringBuilder();
 
-            if (source.Command.Type == CommandType.StoredProcedure &&
-                target.Command.Type == CommandType.StoredProcedure)
+            if (source.ExecutionDefinition.Type == CommandType.StoredProcedure &&
+                target.ExecutionDefinition.Type == CommandType.StoredProcedure)
             {
                 // Default to Passed
                 tcr.Result = ComparisonResultTypeEnum.Passed;
@@ -69,9 +69,9 @@ namespace DbDataComparer.Domain
             }
             else
             {
-                sb.AppendFormat("Source command type is: {0}", source.Command.TypeDescription);
+                sb.AppendFormat("Source command type is: {0}", source.ExecutionDefinition.TypeDescription);
                 sb.AppendLine();
-                sb.AppendFormat("Target command type is: {0}", target.Command.TypeDescription);
+                sb.AppendFormat("Target command type is: {0}", target.ExecutionDefinition.TypeDescription);
                 sb.AppendLine();
             }
 
@@ -92,8 +92,8 @@ namespace DbDataComparer.Domain
             TestComparisonResult tcr = new TestComparisonResult();
             StringBuilder sb = new StringBuilder();
 
-            if (source.Command.Type == CommandType.StoredProcedure &&
-                target.Command.Type == CommandType.StoredProcedure)
+            if (source.ExecutionDefinition.Type == CommandType.StoredProcedure &&
+                target.ExecutionDefinition.Type == CommandType.StoredProcedure)
             {
                 // Default to Passed
                 tcr.Result = ComparisonResultTypeEnum.Passed;
@@ -112,9 +112,9 @@ namespace DbDataComparer.Domain
             }
             else
             {
-                sb.AppendFormat("Source command type is: {0}", source.Command.TypeDescription);
+                sb.AppendFormat("Source command type is: {0}", source.ExecutionDefinition.TypeDescription);
                 sb.AppendLine();
-                sb.AppendFormat("Target command type is: {0}", target.Command.TypeDescription);
+                sb.AppendFormat("Target command type is: {0}", target.ExecutionDefinition.TypeDescription);
                 sb.AppendLine();
             }
 

@@ -2,7 +2,7 @@
   "profiles": {
     "DbDataComparer.Explorer": {
       "commandName": "Project",
-      "commandLineArgs": "spFCM_GetLinkedCarriers dbo.spFCM_GetLinkedCarriers fin.spFCM_GetLinkedCarriers"
+      "commandLineArgs": "\"spFCM_GetLinkedCarriers - V2\" dbo.spFCM_GetLinkedCarriers fin.spFCM_GetLinkedCarriers"
     }
   }
 }

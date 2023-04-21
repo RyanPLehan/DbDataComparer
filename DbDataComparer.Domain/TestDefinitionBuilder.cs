@@ -32,8 +32,17 @@ namespace DbDataComparer.Domain
 
             TestDefinition def = new TestDefinition() { Name = options.Name };
 
-            def.Source = await this.Database.Explore(this.Settings.SourceConnection, options.Source);
-            def.Target = await this.Database.Explore(this.Settings.TargetConnection, options.Target);
+            // Configure source
+            def.Source = await this.Database.Explore(options.Source.ConnectionString, 
+                                                     options.Source.DatabaseObjectName);
+            def.Source.ConnectionString = options.Source.ConnectionString;
+
+            // Configure Target
+            def.Target = await this.Database.Explore(options.Target.ConnectionString, 
+                                                     options.Target.DatabaseObjectName);
+            def.Target.ConnectionString = options.Target.ConnectionString;
+
+            // Create Sample tests
             def.Tests = CreateSampleTests(def.Source, def.Target);
             
             return def;
@@ -47,16 +56,32 @@ namespace DbDataComparer.Domain
             if (String.IsNullOrWhiteSpace(options.Name))
                 throw new Exception("Test Definition Name must be supplied");
 
-            if (String.IsNullOrWhiteSpace(options.Source))
-                throw new Exception("Source Database Object Name must be supplied");
+            if (options.Source == null)
+                throw new Exception("Source Database Options must be supplied");
+            else
+            {
+                if (String.IsNullOrWhiteSpace(options.Source.ConnectionString))
+                    throw new Exception("Source Connection String must be supplied");
 
-            if (String.IsNullOrWhiteSpace(options.Target))
-                throw new Exception("Target Database Object Name must be supplied");
+                if (String.IsNullOrWhiteSpace(options.Source.DatabaseObjectName))
+                    throw new Exception("Source Database Object Name must be supplied");
+            }
+
+            if (options.Target == null)
+                throw new Exception("Target Database Options must be supplied");
+            else
+            {
+                if (String.IsNullOrWhiteSpace(options.Target.ConnectionString))
+                    throw new Exception("Target Connection String must be supplied");
+
+                if (String.IsNullOrWhiteSpace(options.Target.DatabaseObjectName))
+                    throw new Exception("Target Database Object Name must be supplied");
+            }
         }
 
 
         #region Sample Tests Creation
-        private IEnumerable<Test> CreateSampleTests(Command source, Command target)
+        private IEnumerable<Test> CreateSampleTests(ExecutionDefinition source, ExecutionDefinition target)
         {
             const int MAX_SAMPLE_TESTS = 3;
             IList<Test> tests = new List<Test>();
@@ -77,7 +102,7 @@ namespace DbDataComparer.Domain
             return tests;
         }
 
-        private IEnumerable<ParameterTestValue> CreateSampleTestValues(Command command)
+        private IEnumerable<ParameterTestValue> CreateSampleTestValues(ExecutionDefinition command)
         {
             IList<ParameterTestValue> testValues = new List<ParameterTestValue>();
 

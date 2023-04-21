@@ -11,7 +11,7 @@ namespace DbDataComparer.MSSql
     public class SqlDatabase : IDatabase
     {
         public async Task<ExecutionResult> Execute(string connectionString, 
-                                                   Command command, 
+                                                   ExecutionDefinition command, 
                                                    IEnumerable<ParameterTestValue> testValues)
         {
             Stopwatch sw = new Stopwatch();
@@ -38,19 +38,19 @@ namespace DbDataComparer.MSSql
         }
 
 
-        public async Task<Command> Explore(string connectionString, 
-                                           string databaseObject)
+        public async Task<ExecutionDefinition> Explore(string connectionString, 
+                                                       string databaseObject)
         {
-            Command command = null;            
+            ExecutionDefinition exeDefinition = null;            
             Explorer explorer = new Explorer();
 
             using (SqlConnection sqlConn = CreateConnection(connectionString))
             {
                 await sqlConn.OpenAsync();
-                command = await explorer.Explore(sqlConn, databaseObject);
+                exeDefinition = await explorer.Explore(sqlConn, databaseObject);
             }
 
-            return command;
+            return exeDefinition;
         }
 
         public async Task<IEnumerable<string>> GetStoredProcedureNames(string connectionString)
