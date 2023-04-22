@@ -12,14 +12,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{72
 		Settings\appsettings.json = Settings\appsettings.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbDataComparer.Comparer", "DbDataComparer.Comparer\DbDataComparer.Comparer.csproj", "{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbDataComparer.Comparer", "DbDataComparer.Comparer\DbDataComparer.Comparer.csproj", "{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbDataComparer.Explorer", "DbDataComparer.Explorer\DbDataComparer.Explorer.csproj", "{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbDataComparer.Explorer", "DbDataComparer.Explorer\DbDataComparer.Explorer.csproj", "{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Definition Example Files", "Test Definition Example Files", "{FE7F312C-C42F-40B2-8036-765EA589C0E3}"
 	ProjectSection(SolutionItems) = preProject
-		Test Definition Example Files\spFCM_GetLinkedCarriers.td = Test Definition Example Files\spFCM_GetLinkedCarriers.td
+		Test Definition Example Files\spFCM_GetLinkedCarriers - V1.td = Test Definition Example Files\spFCM_GetLinkedCarriers - V1.td
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbDataComparer.UI", "DbDataComparer.UI\DbDataComparer.UI.csproj", "{E66CF924-A833-4156-824A-350BBC0DCB53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +45,10 @@ Global
 		{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAC55474-5BC4-46ED-985D-F43B2EB0C7EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E66CF924-A833-4156-824A-350BBC0DCB53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E66CF924-A833-4156-824A-350BBC0DCB53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E66CF924-A833-4156-824A-350BBC0DCB53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E66CF924-A833-4156-824A-350BBC0DCB53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
