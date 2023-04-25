@@ -16,19 +16,7 @@ namespace DbDataComparer.MSSql
                 throw new ArgumentNullException(nameof(options));
 
             ValidateOptions(options);
-            return new ConnectionProperties(CreateDataProvider(), CreateConnectionStringBuilder(options));
-        }
-
-        public static DataProvider CreateDataProvider()
-        {
-            return new DataProvider()
-            {
-                Name = "Microsoft.Data.SqlClient",
-                DisplayName = ".NET Framework Data Provider for SQL Server",
-                ShortDisplayName = "SqlClient",
-                Description = "Use this data provider to connect to Microsoft SQL Server 2005 or above.",
-                ConnectionType = typeof(Microsoft.Data.SqlClient.SqlConnection),
-            };
+            return new ConnectionProperties(CreateConnectionStringBuilder(options));
         }
 
         public static IEnumerable<ConnectionDataSource> EnumerateServers()
@@ -107,7 +95,7 @@ namespace DbDataComparer.MSSql
             if (String.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentException(nameof(connectionString));
 
-            return new ConnectionProperties(CreateDataProvider(), CreateConnectionStringBuilder(connectionString));
+            return new ConnectionProperties(CreateConnectionStringBuilder(connectionString));
         }
 
 

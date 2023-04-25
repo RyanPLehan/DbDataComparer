@@ -53,6 +53,7 @@ namespace DbDataComparer.MSSql
             return exeDefinition;
         }
 
+
         public async Task<IEnumerable<string>> GetStoredProcedureNames(string connectionString)
         {
             IEnumerable<string> ret = Enumerable.Empty<string>();
@@ -67,6 +68,7 @@ namespace DbDataComparer.MSSql
             return ret;
         }
 
+
         public async Task<IEnumerable<string>> GetTableNames(string connectionString)
         {
             IEnumerable<string> ret = Enumerable.Empty<string>();
@@ -80,6 +82,7 @@ namespace DbDataComparer.MSSql
 
             return ret;
         }
+
 
         public async Task<IEnumerable<string>> GetViewNames(string connectionString)
         {

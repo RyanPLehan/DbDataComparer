@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace DbDataComparer.UI.Models
 {
-    public class TestDefinitionCreatedEventArgs : EventArgs
+    public class TestDefinitionQueryRequestedEventArgs : EventArgs
     {
+        // Response Values
+        public string PathName { get; set; }
         public TestDefinition TestDefinition { get; set; }
     }
 }

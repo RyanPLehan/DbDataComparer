@@ -30,8 +30,8 @@
         {
             tdTabControl = new TabControl();
             sourceTabPage = new TabPage();
-            targetTabPage = new TabPage();
             sourceDataExplorerControl = new DataExplorerControl();
+            targetTabPage = new TabPage();
             targetDataExplorerControl = new DataExplorerControl();
             tdCancelButton = new Button();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -65,6 +65,13 @@
             sourceTabPage.Text = "Source";
             sourceTabPage.UseVisualStyleBackColor = true;
             // 
+            // sourceDataExplorerControl
+            // 
+            sourceDataExplorerControl.Location = new Point(0, 0);
+            sourceDataExplorerControl.Name = "sourceDataExplorerControl";
+            sourceDataExplorerControl.Size = new Size(410, 180);
+            sourceDataExplorerControl.TabIndex = 0;
+            // 
             // targetTabPage
             // 
             targetTabPage.Controls.Add(targetDataExplorerControl);
@@ -75,13 +82,6 @@
             targetTabPage.TabIndex = 1;
             targetTabPage.Text = "Target";
             targetTabPage.UseVisualStyleBackColor = true;
-            // 
-            // sourceDataExplorerControl
-            // 
-            sourceDataExplorerControl.Location = new Point(0, 0);
-            sourceDataExplorerControl.Name = "sourceDataExplorerControl";
-            sourceDataExplorerControl.Size = new Size(410, 180);
-            sourceDataExplorerControl.TabIndex = 0;
             // 
             // targetDataExplorerControl
             // 

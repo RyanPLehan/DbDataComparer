@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +10,41 @@ using DbDataComparer.Domain.Models;
 
 namespace DbDataComparer.Domain
 {
-    public class ComparisonResultFormatter
+    public static class TestDefinitionComparer
     {
+        public static IEnumerable<ComparisonResult> Compare(TestDefinition testDefinition, IEnumerable<TestExecutionResult> testResults)
+        {
+            Stopwatch sw = new Stopwatch();
+            ITestComparer testComparer = new TestComparer();
+            IList<ComparisonResult> comparisonResults = new List<ComparisonResult>();
+
+            foreach (TestExecutionResult testResult in testResults)
+            {
+                ComparisonResult comparisonResult = new ComparisonResult(testResult);
+                sw.Restart();
+
+                // Check each compare option and perform test
+                if (testDefinition.CompareOptions.ParameterReturn)
+                    comparisonResult.ParameterReturnResult = testComparer.CompareParameterReturn(testResult.Source, testResult.Target);
+
+                if (testDefinition.CompareOptions.ParameterOutput)
+                    comparisonResult.ParameterOutputResult = testComparer.CompareParameterOutput(testResult.Source, testResult.Target);
+
+                if (testDefinition.CompareOptions.ResultSetMetaData)
+                    comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target);
+
+                if (testDefinition.CompareOptions.ResultSetData)
+                    comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target);
+
+                sw.Stop();
+                comparisonResult.ComparisonTime = sw.Elapsed;
+
+                comparisonResults.Add(comparisonResult);
+            }
+
+            return comparisonResults;
+        }
+
         public static async Task WriteOverallResults(StreamWriter sw, TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
         {
             await sw.WriteLineAsync(String.Format("Results: {0}", testDefinition.Name));

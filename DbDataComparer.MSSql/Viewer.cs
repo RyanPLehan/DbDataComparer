@@ -25,7 +25,7 @@ namespace DbDataComparer.MSSql
             var cmd = CreateCommand(connection, sql);
             var reader = await cmd.ExecuteReaderAsync();
 
-            if (await reader.ReadAsync())
+            while (await reader.ReadAsync())
             {
                 ret.Add(String.Format("{0}.{1}", reader.GetString(0), reader.GetString(1)));
             }
@@ -59,7 +59,7 @@ namespace DbDataComparer.MSSql
 
         private string GenerateStoredProcedureSql()
         {
-            var select = "SELECT ROUTINE_SCHEMA AS [Schema], ROUTINE_NAME AS[Name]";
+            var select = "SELECT ROUTINE_SCHEMA AS [Schema], ROUTINE_NAME AS [Name]";
             var from = "FROM INFORMATION_SCHEMA.ROUTINES";
             var where = "WHERE ROUTINE_TYPE = 'PROCEDURE'";
             var orderBy = "ORDER BY ROUTINE_SCHEMA ASC, ROUTINE_NAME ASC";
@@ -69,7 +69,7 @@ namespace DbDataComparer.MSSql
 
         private string GenerateTableSql()
         {
-            var select = "SELECT TABLE_SCHEMA AS[Schema], TABLE_NAME AS[Name]";
+            var select = "SELECT TABLE_SCHEMA AS [Schema], TABLE_NAME AS [Name]";
             var from = "FROM INFORMATION_SCHEMA.TABLES";
             var where = "WHERE TABLE_TYPE = 'BASE TABLE'";
             var orderBy = "ORDER BY TABLE_SCHEMA ASC, TABLE_NAME ASC";
@@ -79,7 +79,7 @@ namespace DbDataComparer.MSSql
 
         private string GenerateViewSql()
         {
-            var select = "SELECT TABLE_SCHEMA AS[Schema], TABLE_NAME AS[Name]";
+            var select = "SELECT TABLE_SCHEMA AS [Schema], TABLE_NAME AS [Name]";
             var from = "FROM INFORMATION_SCHEMA.TABLES";
             var where = "WHERE TABLE_TYPE = 'VIEW'";
             var orderBy = "ORDER BY TABLE_SCHEMA ASC, TABLE_NAME ASC";

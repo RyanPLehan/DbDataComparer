@@ -14,32 +14,17 @@ namespace DbDataComparer.MSSql
         private const string SqlError_CannotTestNonExistentDatabase = "This connection cannot be tested because the specified database does not exist or is not visible to the specified user.";
         private const string SqlError_UnsupportedSqlVersion = "This server version is not supported.  You must have Microsoft SQL Server 2005 or later.";
 
-        private readonly DataProvider SqlDataProvider;
         private readonly SqlConnectionStringBuilder SqlConnectionStringBuilder;
 
 
-        public ConnectionProperties(DataProvider dataProvider,
-                                    SqlConnectionStringBuilder sqlConnectionStringBuilder)
+        public ConnectionProperties(SqlConnectionStringBuilder sqlConnectionStringBuilder)
         {
-            this.SqlDataProvider = dataProvider ??
-                throw new ArgumentNullException(nameof(dataProvider));
-
             this.SqlConnectionStringBuilder = sqlConnectionStringBuilder ??
                 throw new ArgumentNullException(nameof(sqlConnectionStringBuilder));
         }
 
         public string ConnectionString { get => this.SqlConnectionStringBuilder.ConnectionString; }
 
-        public DataProvider DataProvider 
-        {
-            get => new DataProvider()
-            {
-                Name = this.SqlDataProvider.Name,
-                DisplayName = this.SqlDataProvider.DisplayName,
-                ShortDisplayName = this.SqlDataProvider.ShortDisplayName,
-                ConnectionType = this.SqlDataProvider.ConnectionType,
-            };
-        }
 
         public ConnectionBuilderOptions ConnectionBuilderOptions
         {

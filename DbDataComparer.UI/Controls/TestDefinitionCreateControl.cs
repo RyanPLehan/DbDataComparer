@@ -16,23 +16,45 @@ namespace DbDataComparer.UI
 {
     public partial class TestDefinitionCreateControl : UserControl
     {
-        public event EventHandler<TestDefinitionCreatedEventArgs> TestDefinitionCreated;
+        private TestDefinition TestDefinition { get; set; }
+
+        private const int SourceTabPageIndex = 0;
+        private const int TargetTabPageIndex = 1;
+
+        public event EventHandler<TestDefinitionSaveRequestedEventArgs> TestDefinitionSaveRequested;
+        public event EventHandler<TestDefinitionSetRequestedEventArgs> TestDefinitionSetRequested;
+        public event EventHandler<TestDefinitionStatusUpdatedEventArgs> TestDefinitionStatusUpdated;
 
         public TestDefinitionCreateControl()
         {
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Raise Event
-        /// </summary>
-        /// <param name=""></param>
-        private void OnTestDefinitionCreated(TestDefinitionCreatedEventArgs e)
+
+        #region Event Raising Methods
+        private void OnTestDefinitionSaveRequested(TestDefinitionSaveRequestedEventArgs e)
         {
-            EventHandler<TestDefinitionCreatedEventArgs> handler = TestDefinitionCreated;
+            EventHandler<TestDefinitionSaveRequestedEventArgs> handler = TestDefinitionSaveRequested;
             if (handler != null)
                 handler(this, e);
         }
+
+
+        private void OnTestDefinitionSetRequested(TestDefinitionSetRequestedEventArgs e)
+        {
+            EventHandler<TestDefinitionSetRequestedEventArgs> handler = TestDefinitionSetRequested;
+            if (handler != null)
+                handler(this, e);
+        }
+
+
+        private void OnTestDefinitionStatusUpdated(TestDefinitionStatusUpdatedEventArgs e)
+        {
+            EventHandler<TestDefinitionStatusUpdatedEventArgs> handler = TestDefinitionStatusUpdated;
+            if (handler != null)
+                handler(this, e);
+        }
+        #endregion
 
         private TestDefinitionBuilderOptions CreateTestDefinitionBuilderOptions()
         {
@@ -40,7 +62,7 @@ namespace DbDataComparer.UI
             options.Name = this.tdNameTextBox.Text;
 
             // Source
-            Control control = this.tdTabControl.TabPages["sourceTabPage"].Controls["sourceDataExplorer"];
+            Control control = this.tdTabControl.TabPages["sourceTabPage"].Controls["sourceDataExplorerControl"];
             DataExplorerControl.DataExplorerResult deResult = GetDataExplorerResult(control);
             options.Source = new TestDefinitionBuilderOptions.DatabaseOptions()
             {
@@ -49,7 +71,7 @@ namespace DbDataComparer.UI
             };
 
             // Target
-            control = this.tdTabControl.TabPages["targetTabPage"].Controls["targetDataExplorer"];
+            control = this.tdTabControl.TabPages["targetTabPage"].Controls["targetDataExplorerControl"];
             deResult = GetDataExplorerResult(control);
             options.Target = new TestDefinitionBuilderOptions.DatabaseOptions()
             {
@@ -92,7 +114,8 @@ namespace DbDataComparer.UI
                 throw new Exception(String.Format("Missing {0} database object name", description));
         }
 
-        private void tdCreateButton_Click(object sender, EventArgs e)
+
+        private async void tdCreateButton_Click(object sender, EventArgs e)
         {
             Cursor currentCursor = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
@@ -102,18 +125,34 @@ namespace DbDataComparer.UI
                 var options = CreateTestDefinitionBuilderOptions();
                 ValidateOptions(options);
                 var builder = new TestDefinitionBuilder(new SqlDatabase());
-                TestDefinition td = builder.Build(options).GetAwaiter().GetResult();
+                this.TestDefinition = await builder.Build(options);
                 Cursor.Current = currentCursor;
 
                 // Raise event for successful Test Definition Createion
-                var eventArgs = new TestDefinitionCreatedEventArgs { TestDefinition = td };
-                OnTestDefinitionCreated(eventArgs);
+                var saveEventArgs = new TestDefinitionSaveRequestedEventArgs() { TestDefinition = this.TestDefinition };
+                OnTestDefinitionSaveRequested(saveEventArgs);
+
+                if (saveEventArgs.SuccessfullySaved)
+                {
+                    var setEventArgs = new TestDefinitionSetRequestedEventArgs()
+                    {
+                        PathName = saveEventArgs.PathName,
+                        TestDefinition = this.TestDefinition,
+                    };
+                    OnTestDefinitionSetRequested(setEventArgs);
+
+                    var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Created" };
+                    OnTestDefinitionStatusUpdated(statusEventArgs);
+                }
             }
 
             catch (Exception ex)
             {
                 Cursor.Current = currentCursor;
                 RTLAwareMessageBox.ShowError("Test Definition Creation", ex);
+
+                var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Creation Failed" };
+                OnTestDefinitionStatusUpdated(statusEventArgs);
             }
         }
     }

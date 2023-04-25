@@ -1,16 +1,20 @@
 using System;
 using System.IO;
+using DbDataComparer.Domain;
 using DbDataComparer.Domain.Configuration;
 using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
+using DbDataComparer.MSSql;
 using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
     public partial class Main : Form
     {
-        private const string FILE_EXTENSION = ".td";
         private readonly ConfigurationSettings Settings;
+
+        private string PathName { get; set; }
+        private TestDefinition TestDefinition { get; set; }
 
 
         public Main(ConfigurationSettings settings)
@@ -22,91 +26,136 @@ namespace DbDataComparer.UI
         }
 
 
-
-        private void HideGroupBoxes()
+        #region General routines
+        private void HideTestDefinitionControls()
         {
-            this.createGroupBox.Visible = false;
+            this.testDefinitionCreateControl.Visible = false;
             //this.ModifyGroupBox.Visible = false;
-            //this.TestGroupBox.Visible = false;
+            this.testDefinitionCompareControl.Visible = false;
 
         }
 
-        private void Main_Load(object sender, EventArgs e)
+        private void SetTestDefinition(TestDefinition td, string pathName)
         {
-            // Setup Event Handler for Test Definition operations
-
-            HideGroupBoxes();
+            this.TestDefinition = td;
+            this.PathName = pathName;
+            this.Text = "Database Data Comparer";
+            if (!String.IsNullOrWhiteSpace(td?.Name))
+                this.Text += "  -  " + td.Name;
         }
+        #endregion
 
-        private void testDefinitionCreate_Click(object sender, EventArgs e)
+
+        #region Event Handler Routines for Test Definition operations
+        private void TestDefinitionLoadRequested(object sender, TestDefinitionLoadRequestedEventArgs e)
         {
-            HideGroupBoxes();
-            this.createGroupBox.Visible = true;
-            
-
-            /*
-            var dialog = new DataConnectionDialog();
-            dialog.ConnectionString = "Data Source = DEVACCTING; Initial Catalog = AcctWF; Integrated Security = SSPI;Application Name=DbDataComparer;TrustServerCertificate=true;";
-            var result = DataConnectionDialog.Show(dialog, this);
-            MessageBox.Show(result.ToString());
-            */
-        }
-
-        // Event Handler Routines for Test Definition operations
-        private void TestDefinitionCreated(object sender, TestDefinitionCreatedEventArgs e)
-        {
-            string pathName = CreatePathName(e.TestDefinition.Name);
-            string fileName = Path.GetFileName(pathName);
-
-            if (File.Exists(pathName) &&
-                RTLAwareMessageBox.ShowYesNo(fileName, "File already exists.  Overwrite", MessageBoxIcon.Question) == DialogResult.No)
+            using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                RTLAwareMessageBox.ShowMessage("Test Definition", "Aborting");
-            }
-            else
-            {
-                CreateFile(pathName, e.TestDefinition).GetAwaiter().GetResult();
-            }
-        }
+                dialog.InitialDirectory = Path.Combine(IOUtility.ExecutablePath(), this.Settings.Location.TestDefinitionsPath);
+                dialog.Filter = "td files (*.td)|*.td|All files (*.*)|*.*";
+                dialog.FilterIndex = 0;                         // default to first filter
+                dialog.RestoreDirectory = true;                 // Restore directory to original setting
 
-
-        /// <summary>
-        /// Clean, standardize file name and prepend directory path
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        private string CreatePathName(string fileName)
-        {
-            string cleansed = fileName.Replace(@"\", "_").Replace(@"/", "_").Replace(":", "_");
-            if (!fileName.EndsWith(FILE_EXTENSION, StringComparison.OrdinalIgnoreCase))
-                cleansed = cleansed + FILE_EXTENSION;
-
-            return Path.Combine(this.Settings.Location.TestDefinitionsPath, cleansed);
-        }
-
-
-        /// <summary>
-        /// Create Test Definition File stored in the path defined in the Location Settings
-        /// </summary>
-        /// <returns></returns>
-        private async Task CreateFile(string pathName, TestDefinition testDefinition)
-        {
-            using (FileStream fs = new FileStream(pathName, FileMode.Create, FileAccess.Write))
-            {
-                using (StreamWriter sw = new StreamWriter(fs))
+                try
                 {
-                    try
+                    if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        await sw.WriteLineAsync(NSJson.Serialize(testDefinition));
-                        RTLAwareMessageBox.ShowMessage("Test Definition File", "Successful");
+                        var pathName = dialog.FileName;
+                        var testDefinition = TestDefinitionIO.LoadFile(pathName);
+                        e.TestDefinition = testDefinition;
+                        e.PathName = pathName;
+                        e.SuccessfullyLoaded = true;
                     }
-                    catch (Exception ex)
-                    {
-                        RTLAwareMessageBox.ShowError("Saving Test Definition File", ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    e.SuccessfullyLoaded = false;
+                    RTLAwareMessageBox.ShowError("Loading Test Definition", ex);
                 }
             }
         }
 
+
+        private void TestDefinitionQueryRequested(object sender, TestDefinitionQueryRequestedEventArgs e)
+        {
+            e.PathName = this.PathName;
+            e.TestDefinition = this.TestDefinition;
+        }
+
+
+        private void TestDefinitionSetRequested(object sender, TestDefinitionSetRequestedEventArgs e)
+        {
+            SetTestDefinition(e.TestDefinition, e.PathName);
+        }
+
+
+        private void TestDefinitionSaveRequested(object sender, TestDefinitionSaveRequestedEventArgs e)
+        {
+            string rootPath = Path.Combine(IOUtility.ExecutablePath(), this.Settings.Location.TestDefinitionsPath);
+            string pathName = IOUtility.CreatePathName(rootPath, e.TestDefinition);
+            string fileName = Path.GetFileName(pathName);
+
+            if (!e.ForceOverwrite &&
+                File.Exists(pathName) &&
+                RTLAwareMessageBox.ShowYesNo(fileName, "File already exists.  Overwrite", MessageBoxIcon.Question) == DialogResult.No)
+            {
+                e.SuccessfullySaved = false;
+                RTLAwareMessageBox.ShowMessage("Test Definition", "Aborting");
+            }
+            else
+            {
+                try
+                {
+                    TestDefinitionIO.CreateFile(pathName, e.TestDefinition);
+                    e.PathName = PathName;
+                    e.SuccessfullySaved = true;
+                }
+                catch (Exception ex)
+                {
+                    e.SuccessfullySaved = false;
+                    RTLAwareMessageBox.ShowError("Creating Test Definition", ex);
+                }
+            }
+        }
+
+
+        private void TestDefinitionStatusUpdated(object sender, TestDefinitionStatusUpdatedEventArgs e)
+        {
+            this.mainStatusTDStatusLabel.Text = e.Status;
+        }
+        #endregion
+
+
+        #region Form Control Events
+        private void Main_Load(object sender, EventArgs e)
+        {
+            // Setup Event Handler for Test Definition operations
+            this.testDefinitionCreateControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
+            this.testDefinitionCreateControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
+            this.testDefinitionCreateControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
+
+            this.testDefinitionCompareControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
+            this.testDefinitionCompareControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
+            this.testDefinitionCompareControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
+
+
+            HideTestDefinitionControls();
+            SetTestDefinition(null, null);
+        }
+
+        private void testDefinitionCreate_Click(object sender, EventArgs e)
+        {
+            HideTestDefinitionControls();
+            this.testDefinitionCreateControl.Visible = true;
+        }
+
+        #endregion
+
+
+        private void testDefinitionCompare_Click(object sender, EventArgs e)
+        {
+            HideTestDefinitionControls();
+            this.testDefinitionCompareControl.Visible = true;
+        }
     }
 }

@@ -7,7 +7,6 @@ namespace DbDataComparer.Domain
     public interface IConnectionProperties
     {
         string ConnectionString { get; }
-        DataProvider DataProvider { get; }
         ConnectionBuilderOptions ConnectionBuilderOptions { get; }
 
         void Test();

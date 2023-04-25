@@ -61,8 +61,11 @@ namespace DbDataComparer.UI
         }
 
 
-        private void dbSprocRadioButton_CheckedChanged(object sender, EventArgs e)
+        private async void dbSprocRadioButton_CheckedChanged(object sender, EventArgs e)
         {
+            if (!this.dbSprocRadioButton.Checked)
+                return;
+
             Cursor currentCursor = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
 
@@ -70,7 +73,7 @@ namespace DbDataComparer.UI
             {
                 string connStr = this.dataSourceTextBox.Text;
                 IDatabase database = new SqlDatabase();
-                IEnumerable<string> items = database.GetStoredProcedureNames(connStr).GetAwaiter().GetResult();
+                IEnumerable<string> items = await database.GetStoredProcedureNames(connStr);
                 PopulateComboBox(this.dbObjectComboBox, items);
                 Cursor.Current = currentCursor;
             }
@@ -82,8 +85,11 @@ namespace DbDataComparer.UI
             }
         }
 
-        private void dbTableRadioButton_CheckedChanged(object sender, EventArgs e)
+        private async void dbTableRadioButton_CheckedChanged(object sender, EventArgs e)
         {
+            if (!this.dbTableRadioButton.Checked)
+                return;
+
             Cursor currentCursor = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
 
@@ -91,7 +97,7 @@ namespace DbDataComparer.UI
             {
                 string connStr = this.dataSourceTextBox.Text;
                 IDatabase database = new SqlDatabase();
-                IEnumerable<string> items = database.GetTableNames(connStr).GetAwaiter().GetResult();
+                IEnumerable<string> items = await database.GetTableNames(connStr);
                 PopulateComboBox(this.dbObjectComboBox, items);
                 Cursor.Current = currentCursor;
             }
@@ -103,8 +109,11 @@ namespace DbDataComparer.UI
             }
         }
 
-        private void dbViewRadioButton_CheckedChanged(object sender, EventArgs e)
+        private async void dbViewRadioButton_CheckedChanged(object sender, EventArgs e)
         {
+            if (!this.dbViewRadioButton.Checked)
+                return;
+
             Cursor currentCursor = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
 
@@ -112,7 +121,7 @@ namespace DbDataComparer.UI
             {
                 string connStr = this.dataSourceTextBox.Text;
                 IDatabase database = new SqlDatabase();
-                IEnumerable<string> items = database.GetViewNames(connStr).GetAwaiter().GetResult();
+                IEnumerable<string> items = await database.GetViewNames(connStr);
                 PopulateComboBox(this.dbObjectComboBox, items);
                 Cursor.Current = currentCursor;
             }
@@ -127,6 +136,10 @@ namespace DbDataComparer.UI
         private void dataSourceBuild_Click(object sender, EventArgs e)
         {
             var dialog = new DataConnectionDialog();
+
+            if (!String.IsNullOrWhiteSpace(this.dataSourceTextBox.Text))
+                dialog.ConnectionString = this.dataSourceTextBox.Text;
+
             var result = DataConnectionDialog.Show(dialog, this);
             if (result == DialogResult.OK)
                 this.dataSourceTextBox.Text = dialog.ConnectionString;

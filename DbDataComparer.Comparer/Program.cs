@@ -15,9 +15,6 @@ namespace DbDataComparer.Comparer
 {
     public class Program
     {
-        private const string FILE_EXTENSION = ".td";
-        private const string SEARCH_PATTERN = "*" + FILE_EXTENSION;
-
         private static ConfigurationSettings Settings;
 
         public static void Main(string[] args)
@@ -94,23 +91,23 @@ namespace DbDataComparer.Comparer
                 string errorFileName = String.Format("{0} [{1}].txt", parsedFileName, now);
                 string errorPathName = Path.Combine(Settings.Location.ComparisonErrorsPath, errorFileName);
 
-                Console.WriteLine("Processing File: {0}{1}", parsedFileName, FILE_EXTENSION);
+                Console.WriteLine("Processing File: {0}{1}", parsedFileName, TestDefinitionIO.FILE_EXTENSION);
 
                 try
                 {
                     Console.WriteLine("\tLoading Test Definition");
-                    TestDefinition testDefinition = await LoadTestDefinition(pathName);
+                    TestDefinition testDefinition = await TestDefinitionIO.LoadFileAsync(pathName);
 
                     Console.WriteLine("\tExecuting Tests");
                     IEnumerable<TestExecutionResult> testResults = await testExecutioner.Execute(testDefinition);
 
                     Console.WriteLine("\tComparing Test Results");
-                    IEnumerable<ComparisonResult> comparisonResults = Compare(testDefinition, testResults);
+                    IEnumerable<ComparisonResult> comparisonResults = TestDefinitionComparer.Compare(testDefinition, testResults);
 
                     Console.WriteLine("\tWriting Test Results");
                     await WriteOverallResults(resultsPathName, testDefinition, comparisonResults);
 
-                    if (ComparisonResultFormatter.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
+                    if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
                         await WriteDetailResults(errorPathName, testDefinition, comparisonResults);
                 }
                 catch (Exception ex)
@@ -126,67 +123,15 @@ namespace DbDataComparer.Comparer
         }
         
 
-        /// <summary>
-        /// Create Test Definition File stored in the path defined in the Location Settings
-        /// </summary>
-        /// <returns></returns>
-        private static async Task<TestDefinition> LoadTestDefinition(string pathName)
-        {
-            TestDefinition td = null;
-
-            using (FileStream fs = new FileStream(pathName, FileMode.Open, FileAccess.Read))
-            {
-                using (StreamReader sr = new StreamReader(fs))
-                {
-                    string json = await sr.ReadToEndAsync();
-                    td = NSJson.Deserialize<TestDefinition>(json);
-                }
-            }
-
-            return td;
-        }
 
         private static IEnumerable<string> GetTestDefinitionFiles(string fileName = null)
         {
-            string searchPattern = SEARCH_PATTERN;
+            string searchPattern = TestDefinitionIO.SEARCH_PATTERN;
 
             if (!String.IsNullOrWhiteSpace(fileName))
-                searchPattern = String.Format("{0}{1}", Path.GetFileNameWithoutExtension(fileName), FILE_EXTENSION);
+                searchPattern = String.Format("{0}{1}", Path.GetFileNameWithoutExtension(fileName), TestDefinitionIO.FILE_EXTENSION);
 
             return Directory.GetFiles(Settings.Location.TestDefinitionsPath, searchPattern);
-        }
-
-        private static IEnumerable<ComparisonResult> Compare(TestDefinition testDefinition, IEnumerable<TestExecutionResult> testResults)
-        {
-            Stopwatch sw = new Stopwatch();
-            ITestComparer testComparer = new TestComparer();
-            IList<ComparisonResult> comparisonResults = new List<ComparisonResult>();
-
-            foreach (TestExecutionResult testResult in testResults)
-            {
-                ComparisonResult comparisonResult = new ComparisonResult(testResult);
-                sw.Restart();
-
-                // Check each compare option and perform test
-                if (testDefinition.CompareOptions.ParameterReturn)
-                    comparisonResult.ParameterReturnResult = testComparer.CompareParameterReturn(testResult.Source, testResult.Target);
-
-                if (testDefinition.CompareOptions.ParameterOutput)
-                    comparisonResult.ParameterOutputResult = testComparer.CompareParameterOutput(testResult.Source, testResult.Target);
-
-                if (testDefinition.CompareOptions.ResultSetMetaData)
-                    comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target);
-
-                if (testDefinition.CompareOptions.ResultSetData)
-                    comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target);
-
-                sw.Stop();
-                comparisonResult.ComparisonTime = sw.Elapsed;
-
-                comparisonResults.Add(comparisonResult);
-            }
-
-            return comparisonResults;
         }
 
         private static async Task WriteOverallResults(string pathName, TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
@@ -195,7 +140,7 @@ namespace DbDataComparer.Comparer
             {
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    await ComparisonResultFormatter.WriteOverallResults(sw, testDefinition, comparisonResults);
+                    await TestDefinitionComparer.WriteOverallResults(sw, testDefinition, comparisonResults);
                 }
             }
         }
@@ -206,7 +151,7 @@ namespace DbDataComparer.Comparer
             {
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    await ComparisonResultFormatter.WriteDetailResults(sw, testDefinition, comparisonResults);
+                    await TestDefinitionComparer.WriteDetailResults(sw, testDefinition, comparisonResults);
                 }
             }
         }
@@ -217,7 +162,7 @@ namespace DbDataComparer.Comparer
             {
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    await ComparisonResultFormatter.WriteError(sw, ex);
+                    await TestDefinitionComparer.WriteError(sw, ex);
                 }
             }
         }
