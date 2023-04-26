@@ -14,7 +14,6 @@ namespace DbDataComparer.UI
         public event EventHandler<TestDefinitionLoadRequestedEventArgs> TestDefinitionLoadRequested;
         public event EventHandler<TestDefinitionQueryRequestedEventArgs> TestDefinitionQueryRequested;
         public event EventHandler<TestDefinitionSaveRequestedEventArgs> TestDefinitionSaveRequested;
-        public event EventHandler<TestDefinitionSetRequestedEventArgs> TestDefinitionSetRequested;
         public event EventHandler<TestDefinitionStatusUpdatedEventArgs> TestDefinitionStatusUpdated;
 
         protected string PathName { get; set; }
@@ -52,14 +51,6 @@ namespace DbDataComparer.UI
         protected virtual void OnTestDefinitionSaveRequested(TestDefinitionSaveRequestedEventArgs e)
         {
             EventHandler<TestDefinitionSaveRequestedEventArgs> handler = TestDefinitionSaveRequested;
-            if (handler != null)
-                handler(this, e);
-        }
-
-
-        protected virtual void OnTestDefinitionSetRequested(TestDefinitionSetRequestedEventArgs e)
-        {
-            EventHandler<TestDefinitionSetRequestedEventArgs> handler = TestDefinitionSetRequested;
             if (handler != null)
                 handler(this, e);
         }

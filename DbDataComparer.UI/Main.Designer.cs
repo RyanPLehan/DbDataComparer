@@ -40,6 +40,7 @@
             testDefinitionCompareControl = new TestDefinitionCompareControl();
             createPanel = new Panel();
             comparePanel = new Panel();
+            modifyPanel = new Panel();
             mainTableLayoutPanel.SuspendLayout();
             mainStatusBar.SuspendLayout();
             createPanel.SuspendLayout();
@@ -83,6 +84,7 @@
             TestDefinitionModify.TabIndex = 1;
             TestDefinitionModify.Text = "Modifiy";
             TestDefinitionModify.UseVisualStyleBackColor = true;
+            TestDefinitionModify.Click += TestDefinitionModify_Click;
             // 
             // testDefinitionCompare
             // 
@@ -160,11 +162,19 @@
             comparePanel.Size = new Size(600, 500);
             comparePanel.TabIndex = 3;
             // 
+            // modifyPanel
+            // 
+            modifyPanel.Location = new Point(185, 25);
+            modifyPanel.Name = "modifyPanel";
+            modifyPanel.Size = new Size(600, 500);
+            modifyPanel.TabIndex = 4;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(804, 560);
+            Controls.Add(modifyPanel);
             Controls.Add(comparePanel);
             Controls.Add(createPanel);
             Controls.Add(mainStatusBar);
@@ -197,5 +207,6 @@
         private TestDefinitionCompareControl testDefinitionCompareControl;
         private Panel createPanel;
         private Panel comparePanel;
+        private Panel modifyPanel;
     }
 }

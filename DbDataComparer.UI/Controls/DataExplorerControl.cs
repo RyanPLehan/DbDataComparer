@@ -32,7 +32,7 @@ namespace DbDataComparer.UI
         }
 
 
-        private void Reset()
+        public void Reset()
         {
             this.dbSprocRadioButton.Checked = false;
             this.dbTableRadioButton.Checked = false;

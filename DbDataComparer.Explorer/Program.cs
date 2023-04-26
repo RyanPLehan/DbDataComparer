@@ -13,7 +13,6 @@ namespace DbDataComparer.Explorer
 {
     public class Program
     {
-        private const string FILE_EXTENSION = ".td";
         private static ConfigurationSettings Settings;
 
         public static void Main(string[] args)
@@ -70,7 +69,7 @@ namespace DbDataComparer.Explorer
             TestDefinitionBuilderOptions options = CreateOptions(args[0], args[1], args[2]);
             TestDefinition td = await CreateTestDefinition(options);
 
-            string pathName = CreatePathName(td.Name);
+            string pathName = Path.Combine(Settings.Location.TestDefinitionsPath, TestDefinitionIO.CreateFileName(td));
             string fileName = Path.GetFileName(pathName);
             Console.WriteLine("Creating file: {0}", fileName);
 
@@ -119,19 +118,6 @@ namespace DbDataComparer.Explorer
             return await builder.Build(options);
         }
 
-        /// <summary>
-        /// Clean, standardize file name and prepend directory path
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        private static string CreatePathName(string fileName)
-        {
-            string cleansed = fileName.Replace(@"\", "_").Replace(@"/", "_").Replace(":", "_");
-            if (!fileName.EndsWith(FILE_EXTENSION, StringComparison.OrdinalIgnoreCase))
-                cleansed = cleansed + FILE_EXTENSION;
-
-            return Path.Combine(Settings.Location.TestDefinitionsPath, cleansed);
-        }
 
         private static bool ContinueFileCreation(string pathName)
         {

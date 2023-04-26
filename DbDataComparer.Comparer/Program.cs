@@ -16,6 +16,8 @@ namespace DbDataComparer.Comparer
     public class Program
     {
         private static ConfigurationSettings Settings;
+        private static string ProcessDateTime { get; set; }
+        private static string ResultsPathName { get; set; }
 
         public static void Main(string[] args)
         {
@@ -23,24 +25,12 @@ namespace DbDataComparer.Comparer
             {
                 InitializeSettings();
 
-                switch (args.Length)
-                {
-                    case 0:
-                        Execute().GetAwaiter().GetResult();
-                        break;
-
-                    case 1:
-                        if (args[0].StartsWith('/') || args[0].StartsWith('\\') || args[0].StartsWith('-') || args[0].StartsWith('?'))
-                            DisplayArgs();
-                        else
-                            Execute(args[0].Trim()).GetAwaiter().GetResult();
-                        break;
-
-                    default:
-                        DisplayArgs();
-                        break;
-                }
+                if (args == null || args.Length == 0)
+                    Execute().GetAwaiter().GetResult();
+                else
+                    DisplayArgs();
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine();
@@ -60,11 +50,6 @@ namespace DbDataComparer.Comparer
             sb.AppendLine("The results from each test will then be compared and saved to a file in the location specified in the settings file.");
             sb.AppendLine();
 
-            sb.AppendLine("Usage: Comparer [fileName]");
-            sb.AppendLine("\tfileName\tFile name of Test Definition.  This option allows for a single comparison.");
-            sb.AppendLine("\t\t\tNote: The file must reside in the the locations that is specified in the settings file.");
-            sb.AppendLine();
-
             Console.WriteLine(sb.ToString());
         }
 
@@ -77,18 +62,38 @@ namespace DbDataComparer.Comparer
 
         private static async Task Execute(string fileName = null)
         {
-            string now = DateTime.Now.ToString("yyy-MM-dd HH-mm-ss");
-            string resultsFileName = String.Format("Results [{0}].txt", now);
-            string resultsPathName = Path.Combine(Settings.Location.ComparisonResultsPath, resultsFileName);
+            ProcessDateTime = DateTime.Now.ToString("yyy-MM-dd HH-mm-ss");
+            string resultsFileName = String.Format("Results [{0}].txt", ProcessDateTime);
+            ResultsPathName = Path.Combine(Settings.Location.ComparisonResultsPath, resultsFileName);
+            await ProcessDirectory(Settings.Location.TestDefinitionsPath);
+        }
+        
 
+        private static async Task ProcessDirectory(string directory)
+        {
+            Console.WriteLine("Processing Directory: {0}", directory);
+            Console.WriteLine();
+
+            // Process all files first, then the directories
+            var pathNames = Directory.GetFiles(directory, TestDefinitionIO.SEARCH_PATTERN);
+            if (pathNames != null && pathNames.Length > 0)
+                await ProcessFiles(pathNames);
+
+            // Use recursion to process directories
+            var directories = Directory.GetDirectories(directory);
+            foreach (string dir in directories)
+                await ProcessDirectory(dir);
+        }
+
+        private static async Task ProcessFiles(string[] pathNames)
+        {
             ITestExecutioner testExecutioner = new TestExecutioner(new SqlDatabase());
-            IEnumerable<string> pathNames = GetTestDefinitionFiles(fileName);
 
             // Iterate through files, continue even there is an error            
-            foreach(string pathName in pathNames)
+            foreach (string pathName in pathNames)
             {
                 string parsedFileName = Path.GetFileNameWithoutExtension(pathName);
-                string errorFileName = String.Format("{0} [{1}].txt", parsedFileName, now);
+                string errorFileName = String.Format("{0} [{1}].txt", parsedFileName, ProcessDateTime);
                 string errorPathName = Path.Combine(Settings.Location.ComparisonErrorsPath, errorFileName);
 
                 Console.WriteLine("Processing File: {0}{1}", parsedFileName, TestDefinitionIO.FILE_EXTENSION);
@@ -105,7 +110,7 @@ namespace DbDataComparer.Comparer
                     IEnumerable<ComparisonResult> comparisonResults = TestDefinitionComparer.Compare(testDefinition, testResults);
 
                     Console.WriteLine("\tWriting Test Results");
-                    await WriteOverallResults(resultsPathName, testDefinition, comparisonResults);
+                    await WriteOverallResults(ResultsPathName, testDefinition, comparisonResults);
 
                     if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
                         await WriteDetailResults(errorPathName, testDefinition, comparisonResults);
@@ -120,18 +125,6 @@ namespace DbDataComparer.Comparer
                 Console.WriteLine();
             }
 
-        }
-        
-
-
-        private static IEnumerable<string> GetTestDefinitionFiles(string fileName = null)
-        {
-            string searchPattern = TestDefinitionIO.SEARCH_PATTERN;
-
-            if (!String.IsNullOrWhiteSpace(fileName))
-                searchPattern = String.Format("{0}{1}", Path.GetFileNameWithoutExtension(fileName), TestDefinitionIO.FILE_EXTENSION);
-
-            return Directory.GetFiles(Settings.Location.TestDefinitionsPath, searchPattern);
         }
 
         private static async Task WriteOverallResults(string pathName, TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)

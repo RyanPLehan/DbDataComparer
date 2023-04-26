@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ComparerUI</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\TestDefinitionModifyControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Controls\TestDefinitionCompareControl.cs" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>

@@ -15,13 +15,13 @@ using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TestDefinitionCompareControl : TestDefinitionUserControl
+    public partial class TestDefinitionModifyControl : TestDefinitionUserControl
     {
         private const int OverallResultsTabPageIndex = 0;
         private const int ErrorsTabPageIndex = 1;
 
 
-        public TestDefinitionCompareControl()
+        public TestDefinitionModifyControl()
         {
             InitializeComponent();
         }
@@ -39,6 +39,7 @@ namespace DbDataComparer.UI
                 if (loadEventArgs.SuccessfullyLoaded)
                 {
                     this.QueryTestDefinition();
+
                     var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Loaded" };
                     OnTestDefinitionStatusUpdated(statusEventArgs);
                 }

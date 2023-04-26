@@ -83,6 +83,11 @@ namespace DbDataComparer.UI
                 throw new Exception(String.Format("Missing {0} database object name", description));
         }
 
+        private void ResetDataExplorer(DataExplorerControl control)
+        {
+            control.Reset();
+        }
+
 
         private async void tdCreateButton_Click(object sender, EventArgs e)
         {
@@ -94,21 +99,16 @@ namespace DbDataComparer.UI
                 var options = CreateTestDefinitionBuilderOptions();
                 ValidateOptions(options);
                 var builder = new TestDefinitionBuilder(new SqlDatabase());
-                this.TestDefinition = await builder.Build(options);
+                var testDefinition = await builder.Build(options);
                 Cursor.Current = currentCursor;
 
                 // Raise event for successful Test Definition Createion
-                var saveEventArgs = new TestDefinitionSaveRequestedEventArgs() { TestDefinition = this.TestDefinition };
+                var saveEventArgs = new TestDefinitionSaveRequestedEventArgs() { TestDefinition = testDefinition };
                 OnTestDefinitionSaveRequested(saveEventArgs);
 
                 if (saveEventArgs.SuccessfullySaved)
                 {
-                    var setEventArgs = new TestDefinitionSetRequestedEventArgs()
-                    {
-                        PathName = saveEventArgs.PathName,
-                        TestDefinition = this.TestDefinition,
-                    };
-                    OnTestDefinitionSetRequested(setEventArgs);
+                    this.QueryTestDefinition();
 
                     var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Created" };
                     OnTestDefinitionStatusUpdated(statusEventArgs);
@@ -123,6 +123,18 @@ namespace DbDataComparer.UI
                 var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Creation Failed" };
                 OnTestDefinitionStatusUpdated(statusEventArgs);
             }
+        }
+
+        private void tdCancelButton_Click(object sender, EventArgs e)
+        {
+            // Reset all fields
+            this.tdNameTextBox.Text = null;
+            Control control = this.tdTabControl.TabPages["sourceTabPage"].Controls["sourceDataExplorerControl"];
+            this.ResetDataExplorer((DataExplorerControl)control);
+
+            // Target
+            control = this.tdTabControl.TabPages["targetTabPage"].Controls["targetDataExplorerControl"];
+            this.ResetDataExplorer((DataExplorerControl)control);
         }
     }
 }

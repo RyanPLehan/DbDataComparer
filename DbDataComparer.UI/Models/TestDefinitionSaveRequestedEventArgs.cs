@@ -14,7 +14,6 @@ namespace DbDataComparer.UI.Models
         public bool ForceOverwrite { get; set; } = false;
 
         // Response values
-        public string PathName { get; set; }
         public bool SuccessfullySaved { get; set; } = false;
     }
 }

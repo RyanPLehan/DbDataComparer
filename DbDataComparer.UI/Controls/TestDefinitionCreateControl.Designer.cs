@@ -99,6 +99,7 @@
             tdCancelButton.TabIndex = 2;
             tdCancelButton.Text = "Cancel";
             tdCancelButton.UseVisualStyleBackColor = true;
+            tdCancelButton.Click += tdCancelButton_Click;
             // 
             // tableLayoutPanel1
             // 

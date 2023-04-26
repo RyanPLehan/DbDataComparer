@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{7260C8F0-0E55-4D1C-AF35-C61BBDFB2367}"
 	ProjectSection(SolutionItems) = preProject
 		Settings\appsettings.json = Settings\appsettings.json
+		Settings\appsettings.json.bak = Settings\appsettings.json.bak
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbDataComparer.Comparer", "DbDataComparer.Comparer\DbDataComparer.Comparer.csproj", "{FEDCBFA5-3D0B-4AEC-8D87-1428289991AD}"
