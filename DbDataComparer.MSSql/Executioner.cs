@@ -9,6 +9,8 @@ using Microsoft.Data.SqlClient;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Models;
 using System.Collections.ObjectModel;
+using Microsoft.VisualBasic;
+using System.Runtime.CompilerServices;
 
 namespace DbDataComparer.MSSql
 {
@@ -16,14 +18,41 @@ namespace DbDataComparer.MSSql
     {
         private IEnumerable<SqlDbType> TextTypes = new SqlDbType[] { SqlDbType.Char, SqlDbType.NChar, SqlDbType.NVarChar, SqlDbType.VarChar };
 
+        /// <summary>
+        /// Execute Specific Sql statement
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="executionDefinition"></param>
+        /// <param name="testValues"></param>
+        /// <returns></returns>
+        public async Task<ExecutionResult> Execute(SqlConnection connection,
+                                                   ExecutionDefinition executionDefinition,
+                                                   string sql)
+        {
+            var sqlCmd = CreateCommand(connection, executionDefinition, sql);
+            return await Execute(sqlCmd, executionDefinition);
+        }
 
+
+        /// <summary>
+        /// Execute Stored Procedure
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="executionDefinition"></param>
+        /// <param name="testValues"></param>
+        /// <returns></returns>
         public async Task<ExecutionResult> Execute(SqlConnection connection, 
                                                    ExecutionDefinition executionDefinition, 
                                                    IEnumerable<ParameterTestValue> testValues)
         {
+            var sqlCmd = CreateCommand(connection, executionDefinition, testValues);
+            return await Execute(sqlCmd, executionDefinition);
+        }
+
+        private async Task<ExecutionResult> Execute(SqlCommand sqlCmd, ExecutionDefinition executionDefinition)
+        {
             ExecutionResult result = new ExecutionResult(executionDefinition);
 
-            var sqlCmd = CreateCommand(connection, executionDefinition, testValues);
             SqlDataReader dataReader = await sqlCmd.ExecuteReaderAsync();
             result.ResultSets = await GetResultSets(dataReader);
             await dataReader.CloseAsync();
@@ -35,20 +64,35 @@ namespace DbDataComparer.MSSql
         }
 
         #region Command Creation
+        private SqlCommand CreateCommand(SqlConnection connection,
+                                         ExecutionDefinition executionDefinition,
+                                         string sql)
+        {
+            SqlCommand sqlCommand = new SqlCommand()
+            {
+                Connection = connection,
+                CommandText = sql,
+                CommandType = executionDefinition.Type,
+                CommandTimeout = executionDefinition.ExecutionTimeoutInSeconds,
+            };
+
+            return sqlCommand;
+        }
+
         private SqlCommand CreateCommand(SqlConnection connection, 
-                                         ExecutionDefinition command, 
+                                         ExecutionDefinition executionDefinition, 
                                          IEnumerable<ParameterTestValue> testValues)
         {
             SqlCommand sqlCommand = new SqlCommand()
             {
                 Connection = connection,
-                CommandText = command.Text,
-                CommandType = command.Type,
-                CommandTimeout = command.ExecutionTimeoutInSeconds,
+                CommandText = executionDefinition.Text,
+                CommandType = executionDefinition.Type,
+                CommandTimeout = executionDefinition.ExecutionTimeoutInSeconds,
             };
 
-            if (command.Type == CommandType.StoredProcedure)
-                BuildParameters(sqlCommand.Parameters, command, testValues);
+            if (testValues.Any())
+                BuildParameters(sqlCommand.Parameters, executionDefinition, testValues);
 
             return sqlCommand;
         }

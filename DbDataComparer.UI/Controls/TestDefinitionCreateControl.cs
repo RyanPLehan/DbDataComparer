@@ -14,47 +14,16 @@ using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TestDefinitionCreateControl : UserControl
+    public partial class TestDefinitionCreateControl : TestDefinitionUserControl
     {
-        private TestDefinition TestDefinition { get; set; }
-
         private const int SourceTabPageIndex = 0;
         private const int TargetTabPageIndex = 1;
-
-        public event EventHandler<TestDefinitionSaveRequestedEventArgs> TestDefinitionSaveRequested;
-        public event EventHandler<TestDefinitionSetRequestedEventArgs> TestDefinitionSetRequested;
-        public event EventHandler<TestDefinitionStatusUpdatedEventArgs> TestDefinitionStatusUpdated;
 
         public TestDefinitionCreateControl()
         {
             InitializeComponent();
         }
 
-
-        #region Event Raising Methods
-        private void OnTestDefinitionSaveRequested(TestDefinitionSaveRequestedEventArgs e)
-        {
-            EventHandler<TestDefinitionSaveRequestedEventArgs> handler = TestDefinitionSaveRequested;
-            if (handler != null)
-                handler(this, e);
-        }
-
-
-        private void OnTestDefinitionSetRequested(TestDefinitionSetRequestedEventArgs e)
-        {
-            EventHandler<TestDefinitionSetRequestedEventArgs> handler = TestDefinitionSetRequested;
-            if (handler != null)
-                handler(this, e);
-        }
-
-
-        private void OnTestDefinitionStatusUpdated(TestDefinitionStatusUpdatedEventArgs e)
-        {
-            EventHandler<TestDefinitionStatusUpdatedEventArgs> handler = TestDefinitionStatusUpdated;
-            if (handler != null)
-                handler(this, e);
-        }
-        #endregion
 
         private TestDefinitionBuilderOptions CreateTestDefinitionBuilderOptions()
         {

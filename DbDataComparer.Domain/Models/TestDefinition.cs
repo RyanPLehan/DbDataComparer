@@ -28,6 +28,11 @@ namespace DbDataComparer.Domain.Models
         /// <summary>
         /// One or more tests for comparison
         /// </summary>
-        public IEnumerable<Test> Tests { get; set; }
+        public IEnumerable<StoredProcedureTest> StoredProcedureTests { get; set; }
+
+        /// <summary>
+        /// One or more tests for comparison
+        /// </summary>
+        public IEnumerable<TableViewTest> TableViewTests { get; set; }
     }
 }

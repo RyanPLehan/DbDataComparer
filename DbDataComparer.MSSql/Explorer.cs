@@ -20,8 +20,8 @@ namespace DbDataComparer.MSSql
             // Assume database object is a table/view.  Create default select
             ExecutionDefinition exeDefinition = new ExecutionDefinition() 
             { 
-                Text = $"SELECT TOP 10 * FROM {databaseObjectName}", 
-                Type = CommandType.Text 
+                Text = $"Database Object ({databaseObjectName}) not found", 
+                Type = CommandType.Text,
             };
 
             var schema = FQNParser.GetSchema(databaseObjectName);
@@ -32,6 +32,11 @@ namespace DbDataComparer.MSSql
                 exeDefinition.Text = databaseObjectName;
                 exeDefinition.Type = CommandType.StoredProcedure;
                 exeDefinition.Parameters = await GetParameters(connection, schema, dbObject);
+            }
+            else if (await IsTableOrView(connection, schema, dbObject))
+            {
+                exeDefinition.Text = databaseObjectName;
+                exeDefinition.Type = CommandType.Text;
             }
 
             return exeDefinition;
@@ -67,6 +72,34 @@ namespace DbDataComparer.MSSql
         }
         #endregion
 
+        #region Table/View Check/Generation
+        private async Task<bool> IsTableOrView(SqlConnection connection, string schema, string databaseObject)
+        {
+            bool ret = false;
+            var sql = GenerateTableViewSql(schema, databaseObject);
+            var cmd = CreateCommand(connection, sql);
+            var reader = await cmd.ExecuteReaderAsync();
+
+            if (await reader.ReadAsync())
+            {
+                int index = reader.GetOrdinal("Name");
+                ret = !reader.IsDBNull(index);
+            }
+
+            await reader.CloseAsync();
+
+            return ret;
+        }
+
+        private string GenerateTableViewSql(string schema, string routineName)
+        {
+            var select = "SELECT TABLE_SCHEMA AS [Schema], TABLE_NAME AS [Name], TABLE_TYPE AS [Type]";
+            var from = "FROM INFORMATION_SCHEMA.TABLES";
+            var where = $"WHERE TABLE_SCHEMA = '{schema}' AND TABLE_NAME = '{routineName}'";
+
+            return $"{select} {from} {where}";
+        }
+        #endregion
 
         #region Parameter Generation
         private async Task<IEnumerable<Parameter>> GetParameters(SqlConnection connection, string schema, string sprocName)

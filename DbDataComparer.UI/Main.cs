@@ -27,11 +27,33 @@ namespace DbDataComparer.UI
 
 
         #region General routines
+
+        private void SetTestDefinitionEventHandlers(Control.ControlCollection controls)
+        {
+            foreach (Control control in controls)
+            {
+                // A little bit of recursion here
+                if (control.HasChildren)
+                    this.SetTestDefinitionEventHandlers(control.Controls);
+
+                if (control is TestDefinitionUserControl)
+                {
+                    TestDefinitionUserControl c = (TestDefinitionUserControl)control;
+                    c.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
+                    c.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
+                    c.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
+                    c.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
+                    c.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
+                }
+            }
+        }
+
+
         private void HideTestDefinitionControls()
         {
-            this.testDefinitionCreateControl.Visible = false;
+            this.createPanel.Visible = false;
             //this.ModifyGroupBox.Visible = false;
-            this.testDefinitionCompareControl.Visible = false;
+            this.comparePanel.Visible = false;
 
         }
 
@@ -130,13 +152,21 @@ namespace DbDataComparer.UI
         private void Main_Load(object sender, EventArgs e)
         {
             // Setup Event Handler for Test Definition operations
+            this.SetTestDefinitionEventHandlers(this.Controls);
+
+            /*
+            this.testDefinitionCreateControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
+            this.testDefinitionCreateControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
             this.testDefinitionCreateControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
             this.testDefinitionCreateControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
             this.testDefinitionCreateControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
 
             this.testDefinitionCompareControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
+            this.testDefinitionCompareControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
+            this.testDefinitionCompareControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
             this.testDefinitionCompareControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
             this.testDefinitionCompareControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
+            */
 
 
             HideTestDefinitionControls();
@@ -146,7 +176,7 @@ namespace DbDataComparer.UI
         private void testDefinitionCreate_Click(object sender, EventArgs e)
         {
             HideTestDefinitionControls();
-            this.testDefinitionCreateControl.Visible = true;
+            this.createPanel.Visible = true;
         }
 
         #endregion
@@ -155,7 +185,7 @@ namespace DbDataComparer.UI
         private void testDefinitionCompare_Click(object sender, EventArgs e)
         {
             HideTestDefinitionControls();
-            this.testDefinitionCompareControl.Visible = true;
+            this.comparePanel.Visible = true;
         }
     }
 }

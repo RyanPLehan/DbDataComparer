@@ -40,8 +40,14 @@ namespace DbDataComparer.Domain
             def.Target.ConnectionString = options.Target.ConnectionString;
 
             // Create Sample tests
-            def.Tests = CreateSampleTests(def.Source, def.Target);
-            
+            if (def.Source.Type == CommandType.StoredProcedure &&
+                def.Target.Type == CommandType.StoredProcedure)
+                def.StoredProcedureTests = CreateSampleStoredProcedureTests(def.Source, def.Target);
+
+            if (def.Source.Type == CommandType.Text &&
+                def.Target.Type == CommandType.Text)
+                def.TableViewTests = CreateSampleTableViewTests(def.Source, def.Target);
+
             return def;
         }
 
@@ -77,15 +83,15 @@ namespace DbDataComparer.Domain
         }
 
 
-        #region Sample Tests Creation
-        private IEnumerable<Test> CreateSampleTests(ExecutionDefinition source, ExecutionDefinition target)
+        #region Sample Stored Procedure Tests Creation
+        private IEnumerable<StoredProcedureTest> CreateSampleStoredProcedureTests(ExecutionDefinition source, ExecutionDefinition target)
         {
             const int MAX_SAMPLE_TESTS = 3;
-            IList<Test> tests = new List<Test>();
+            IList<StoredProcedureTest> tests = new List<StoredProcedureTest>();
 
             for(int i = 1; i <= MAX_SAMPLE_TESTS; i++)
             {
-                Test test = new Test { Name = $"Sample Test {i}" };
+                StoredProcedureTest test = new StoredProcedureTest { Name = $"Sample Stored Procedure Test {i}" };
 
                 if (source != null && source.Type == System.Data.CommandType.StoredProcedure)
                     test.SourceTestValues = CreateSampleTestValues(source);
@@ -192,6 +198,30 @@ namespace DbDataComparer.Domain
             }
 
             return value;
+        }
+        #endregion
+
+
+        #region Sample Table/View Tests Creation
+        private IEnumerable<TableViewTest> CreateSampleTableViewTests(ExecutionDefinition source, ExecutionDefinition target)
+        {
+            const int MAX_SAMPLE_TESTS = 3;
+            IList<TableViewTest> tests = new List<TableViewTest>();
+
+            for (int i = 1; i <= MAX_SAMPLE_TESTS; i++)
+            {
+                TableViewTest test = new TableViewTest { Name = $"Sample Table/View Test {i}" };
+
+                if (source != null && source.Type != System.Data.CommandType.StoredProcedure)
+                    test.SourceSql = $"SELECT * FROM {source.Text} WHERE [Enter Where Clause]";
+
+                if (target != null && target.Type != System.Data.CommandType.StoredProcedure)
+                    test.TargetSql = $"SELECT * FROM {target.Text} WHERE [Enter Where Clause]";
+
+                tests.Add(test);
+            }
+
+            return tests;
         }
         #endregion
     }

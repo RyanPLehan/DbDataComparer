@@ -19,6 +19,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Definition Example Files", "Test Definition Example Files", "{FE7F312C-C42F-40B2-8036-765EA589C0E3}"
 	ProjectSection(SolutionItems) = preProject
 		Test Definition Example Files\spFCM_GetLinkedCarriers - V1.td = Test Definition Example Files\spFCM_GetLinkedCarriers - V1.td
+		Test Definition Example Files\spFCM_GetLinkedCarriers - V2.td = Test Definition Example Files\spFCM_GetLinkedCarriers - V2.td
+		Test Definition Example Files\vw_LoadTypes - V2.td = Test Definition Example Files\vw_LoadTypes - V2.td
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbDataComparer.UI", "DbDataComparer.UI\DbDataComparer.UI.csproj", "{E66CF924-A833-4156-824A-350BBC0DCB53}"

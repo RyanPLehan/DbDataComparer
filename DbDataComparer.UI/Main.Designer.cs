@@ -38,8 +38,12 @@
             mainStatusTDStatusDescLabel = new ToolStripStatusLabel();
             mainStatusTDStatusLabel = new ToolStripStatusLabel();
             testDefinitionCompareControl = new TestDefinitionCompareControl();
+            createPanel = new Panel();
+            comparePanel = new Panel();
             mainTableLayoutPanel.SuspendLayout();
             mainStatusBar.SuspendLayout();
+            createPanel.SuspendLayout();
+            comparePanel.SuspendLayout();
             SuspendLayout();
             // 
             // mainTableLayoutPanel
@@ -50,14 +54,14 @@
             mainTableLayoutPanel.Controls.Add(testDefinitionCreate, 0, 0);
             mainTableLayoutPanel.Controls.Add(TestDefinitionModify, 0, 1);
             mainTableLayoutPanel.Controls.Add(testDefinitionCompare, 0, 2);
-            mainTableLayoutPanel.Location = new Point(12, 79);
+            mainTableLayoutPanel.Location = new Point(12, 163);
             mainTableLayoutPanel.Name = "mainTableLayoutPanel";
             mainTableLayoutPanel.RowCount = 3;
             mainTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333359F));
             mainTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333359F));
             mainTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333359F));
             mainTableLayoutPanel.Size = new Size(150, 234);
-            mainTableLayoutPanel.TabIndex = 0;
+            mainTableLayoutPanel.TabIndex = 1;
             // 
             // testDefinitionCreate
             // 
@@ -95,16 +99,17 @@
             // 
             testDefinitionLabel.AutoSize = true;
             testDefinitionLabel.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point);
-            testDefinitionLabel.Location = new Point(12, 46);
+            testDefinitionLabel.Location = new Point(12, 130);
             testDefinitionLabel.Name = "testDefinitionLabel";
             testDefinitionLabel.Size = new Size(150, 30);
-            testDefinitionLabel.TabIndex = 1;
+            testDefinitionLabel.TabIndex = 0;
             testDefinitionLabel.Text = "Test Definition";
             // 
             // testDefinitionCreateControl
             // 
+            testDefinitionCreateControl.Anchor = AnchorStyles.None;
             testDefinitionCreateControl.BorderStyle = BorderStyle.FixedSingle;
-            testDefinitionCreateControl.Location = new Point(229, 26);
+            testDefinitionCreateControl.Location = new Point(74, 82);
             testDefinitionCreateControl.Name = "testDefinitionCreateControl";
             testDefinitionCreateControl.Size = new Size(442, 315);
             testDefinitionCreateControl.TabIndex = 2;
@@ -112,9 +117,9 @@
             // mainStatusBar
             // 
             mainStatusBar.Items.AddRange(new ToolStripItem[] { mainStatusTDStatusDescLabel, mainStatusTDStatusLabel });
-            mainStatusBar.Location = new Point(0, 441);
+            mainStatusBar.Location = new Point(0, 538);
             mainStatusBar.Name = "mainStatusBar";
-            mainStatusBar.Size = new Size(720, 22);
+            mainStatusBar.Size = new Size(804, 22);
             mainStatusBar.TabIndex = 3;
             // 
             // mainStatusTDStatusDescLabel
@@ -132,19 +137,37 @@
             // testDefinitionCompareControl
             // 
             testDefinitionCompareControl.BorderStyle = BorderStyle.FixedSingle;
-            testDefinitionCompareControl.Location = new Point(189, 16);
+            testDefinitionCompareControl.Location = new Point(47, 44);
             testDefinitionCompareControl.Name = "testDefinitionCompareControl";
             testDefinitionCompareControl.Size = new Size(505, 404);
-            testDefinitionCompareControl.TabIndex = 4;
+            testDefinitionCompareControl.TabIndex = 0;
+            // 
+            // createPanel
+            // 
+            createPanel.BorderStyle = BorderStyle.FixedSingle;
+            createPanel.Controls.Add(testDefinitionCreateControl);
+            createPanel.Location = new Point(185, 25);
+            createPanel.Name = "createPanel";
+            createPanel.Size = new Size(600, 500);
+            createPanel.TabIndex = 2;
+            // 
+            // comparePanel
+            // 
+            comparePanel.BorderStyle = BorderStyle.FixedSingle;
+            comparePanel.Controls.Add(testDefinitionCompareControl);
+            comparePanel.Location = new Point(185, 25);
+            comparePanel.Name = "comparePanel";
+            comparePanel.Size = new Size(600, 500);
+            comparePanel.TabIndex = 3;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(720, 463);
-            Controls.Add(testDefinitionCompareControl);
+            ClientSize = new Size(804, 560);
+            Controls.Add(comparePanel);
+            Controls.Add(createPanel);
             Controls.Add(mainStatusBar);
-            Controls.Add(testDefinitionCreateControl);
             Controls.Add(testDefinitionLabel);
             Controls.Add(mainTableLayoutPanel);
             Name = "Main";
@@ -153,6 +176,8 @@
             mainTableLayoutPanel.ResumeLayout(false);
             mainStatusBar.ResumeLayout(false);
             mainStatusBar.PerformLayout();
+            createPanel.ResumeLayout(false);
+            comparePanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -170,5 +195,7 @@
         private ToolStripStatusLabel mainStatusTDStatusLabel;
         private TestDefinitionCompareControl testDefinitionTestControl1;
         private TestDefinitionCompareControl testDefinitionCompareControl;
+        private Panel createPanel;
+        private Panel comparePanel;
     }
 }

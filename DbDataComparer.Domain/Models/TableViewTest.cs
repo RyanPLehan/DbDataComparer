@@ -2,7 +2,7 @@
 
 namespace DbDataComparer.Domain.Models
 {
-    public class Test
+    public class TableViewTest
     {
         /// <summary>
         /// Test name
@@ -12,11 +12,11 @@ namespace DbDataComparer.Domain.Models
         /// <summary>
         /// List of Test values for Source command
         /// </summary>
-        public IEnumerable<ParameterTestValue> SourceTestValues { get; set; }
+        public string SourceSql { get; set; }
 
         /// <summary>
         /// List of Test values for Target command
         /// </summary>
-        public IEnumerable<ParameterTestValue> TargetTestValues { get; set; }
+        public string TargetSql { get; set; }
     }
 }

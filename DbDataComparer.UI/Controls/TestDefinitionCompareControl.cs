@@ -15,46 +15,16 @@ using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TestDefinitionCompareControl : UserControl
+    public partial class TestDefinitionCompareControl : TestDefinitionUserControl
     {
-        private TestDefinition TestDefinition { get; set; }
-
         private const int OverallResultsTabPageIndex = 0;
         private const int ErrorsTabPageIndex = 1;
 
-        public event EventHandler<TestDefinitionLoadRequestedEventArgs> TestDefinitionLoadRequested;
-        public event EventHandler<TestDefinitionSetRequestedEventArgs> TestDefinitionSetRequested;
-        public event EventHandler<TestDefinitionStatusUpdatedEventArgs> TestDefinitionStatusUpdated;
 
         public TestDefinitionCompareControl()
         {
             InitializeComponent();
         }
-
-        #region Event Raising Methods
-        private void OnTestDefinitionLoadRequested(TestDefinitionLoadRequestedEventArgs e)
-        {
-            EventHandler<TestDefinitionLoadRequestedEventArgs> handler = TestDefinitionLoadRequested;
-            if (handler != null)
-                handler(this, e);
-        }
-
-
-        private void OnTestDefinitionSetRequested(TestDefinitionSetRequestedEventArgs e)
-        {
-            EventHandler<TestDefinitionSetRequestedEventArgs> handler = TestDefinitionSetRequested;
-            if (handler != null)
-                handler(this, e);
-        }
-
-
-        private void OnTestDefinitionStatusUpdated(TestDefinitionStatusUpdatedEventArgs e)
-        {
-            EventHandler<TestDefinitionStatusUpdatedEventArgs> handler = TestDefinitionStatusUpdated;
-            if (handler != null)
-                handler(this, e);
-        }
-        #endregion
 
 
 
@@ -94,6 +64,9 @@ namespace DbDataComparer.UI
 
         private async void tdCompareButton_Click(object sender, EventArgs e)
         {
+            // Let's query from main form for any loaded/created Test Definition object
+            this.QueryTestDefinition();
+
             if (this.TestDefinition == null)
             {
                 RTLAwareMessageBox.ShowMessage("Test Definition", "No Test Definition Loaded");
@@ -133,6 +106,7 @@ namespace DbDataComparer.UI
                 RTLAwareMessageBox.ShowError("Comparison", ex);
             }
         }
+
 
         private async Task WriteOverallResults(TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
         {

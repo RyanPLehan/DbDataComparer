@@ -10,6 +10,34 @@ namespace DbDataComparer.MSSql
 {
     public class SqlDatabase : IDatabase
     {
+        public async Task<ExecutionResult> Execute(string connectionString,
+                                                   ExecutionDefinition command,
+                                                   string sql)
+        {
+            Stopwatch sw = new Stopwatch();
+            ExecutionResult result = null;
+            Executioner commandExecutioner = new Executioner();
+
+            sw.Start();
+            using (SqlConnection sqlConn = CreateConnection(connectionString))
+            {
+                try
+                {
+                    await sqlConn.OpenAsync();
+                    result = await commandExecutioner.Execute(sqlConn, command, sql);
+                }
+                catch (Exception ex)
+                {
+                    result = new ExecutionResult(command) { Exception = ex };
+                }
+            }
+            sw.Stop();
+            result.ExecutionTime = sw.Elapsed;
+
+            return result;
+        }
+
+
         public async Task<ExecutionResult> Execute(string connectionString, 
                                                    ExecutionDefinition command, 
                                                    IEnumerable<ParameterTestValue> testValues)

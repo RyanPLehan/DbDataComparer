@@ -1,5 +1,5 @@
 {
-  "Name": "spFCM_GetLinkedCarriers - V2",
+  "Name": "spFCM_GetLinkedCarriers",
   "CompareOptions": {
     "ParameterOutput": true,
     "ParameterReturn": true,
@@ -7,7 +7,7 @@
     "ResultSetData": true
   },
   "Source": {
-    "ConnectionString": "Data Source = DEVACCTING; Initial Catalog = AcctWF; Integrated Security = SSPI;Application Name=DbDataComparer;TrustServerCertificate=true;",
+    "ConnectionString": "Data Source=devAccting;Initial Catalog=AcctWF;Integrated Security=True;Pooling=True;Trust Server Certificate=True;Application Name=DbDataComparer",
     "Text": "dbo.spFCM_GetLinkedCarriers",
     "Type": 4,
     "TypeDescription": "StoredProcedure",
@@ -25,7 +25,7 @@
     ]
   },
   "Target": {
-    "ConnectionString": "Data Source = DEVACCTING; Initial Catalog = AcctWF; Integrated Security = SSPI;Application Name=DbDataComparer;TrustServerCertificate=true;",
+    "ConnectionString": "Data Source=devAccting;Initial Catalog=AcctWF;Integrated Security=True;Pooling=True;Trust Server Certificate=True;Application Name=DbDataComparer",
     "Text": "fin.spFCM_GetLinkedCarriers",
     "Type": 4,
     "TypeDescription": "StoredProcedure",
@@ -42,51 +42,81 @@
       }
     ]
   },
-  "Tests": [
+  "StoredProcedureTests": [
     {
-      "Name": "Sample Test 1",
+      "Name": "Sample Stored Procedure Test 1 (1004)",
       "SourceTestValues": [
         {
           "ParameterName": "@fcmid",
-          "Value": 100
+          "Value": 1004
         }
       ],
       "TargetTestValues": [
         {
           "ParameterName": "@fcmid",
-          "Value": 100
+          "Value": 1004
         }
       ]
     },
     {
-      "Name": "Sample Test 2",
+      "Name": "Sample Stored Procedure Test 2 (1007)",
       "SourceTestValues": [
         {
           "ParameterName": "@fcmid",
-          "Value": 100
+          "Value": 1007
         }
       ],
       "TargetTestValues": [
         {
           "ParameterName": "@fcmid",
-          "Value": 100
+          "Value": 1007
         }
       ]
     },
     {
-      "Name": "Sample Test 3",
+      "Name": "Sample Stored Procedure Test 3 (1008)",
       "SourceTestValues": [
         {
           "ParameterName": "@fcmid",
-          "Value": 100
+          "Value": 1008
         }
       ],
       "TargetTestValues": [
         {
           "ParameterName": "@fcmid",
-          "Value": 100
+          "Value": 1008
         }
       ]
-    }
+    },
+    {
+      "Name": "Sample Stored Procedure Test 4 (1006 vs 1007)",
+      "SourceTestValues": [
+        {
+          "ParameterName": "@fcmid",
+          "Value": 1007
+        }
+      ],
+      "TargetTestValues": [
+        {
+          "ParameterName": "@fcmid",
+          "Value": 1006
+        }
+      ]
+	},
+    {
+      "Name": "Sample Stored Procedure Test 5 (1007 vs 1008)",
+      "SourceTestValues": [
+        {
+          "ParameterName": "@fcmid",
+          "Value": 1008
+        }
+      ],
+      "TargetTestValues": [
+        {
+          "ParameterName": "@fcmid",
+          "Value": 1007
+        }
+      ]
+    }	
   ]
 }

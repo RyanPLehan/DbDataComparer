@@ -9,8 +9,12 @@ namespace DbDataComparer.Domain
 {
     public interface IDatabase
     {
+        Task<ExecutionResult> Execute(string connectionString,
+                                      ExecutionDefinition executionDefinition,
+                                      string sql);
+
         Task<ExecutionResult> Execute(string connectionString, 
-                                      ExecutionDefinition command, 
+                                      ExecutionDefinition executionDefinition, 
                                       IEnumerable<ParameterTestValue> testValues);
 
         Task<ExecutionDefinition> Explore(string connectionString, 
