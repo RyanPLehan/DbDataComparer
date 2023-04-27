@@ -30,35 +30,16 @@ namespace DbDataComparer.UI
 
         private async void tdLoadButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                // Raise event to load Test Definition for testing
-                var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
-                OnTestDefinitionLoadRequested(loadEventArgs);
+            // Raise event to load Test Definition for testing
+            var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
+            OnTestDefinitionLoadRequested(loadEventArgs);
 
-                if (loadEventArgs.SuccessfullyLoaded)
-                {
-                    this.QueryTestDefinition();
-                    var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Loaded" };
-                    OnTestDefinitionStatusUpdated(statusEventArgs);
-                }
-
-            }
-
-            catch (Exception ex)
-            {
-                RTLAwareMessageBox.ShowError("Test Definition Load", ex);
-
-                var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Load Failed" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-            }
+            if (loadEventArgs.SuccessfullyLoaded)
+                this.QueryTestDefinition();
         }
 
         private async void tdCompareButton_Click(object sender, EventArgs e)
         {
-            // Let's query from main form for any loaded/created Test Definition object
-            this.QueryTestDefinition();
-
             if (this.TestDefinition == null)
             {
                 RTLAwareMessageBox.ShowMessage("Test Definition", "No Test Definition Loaded");

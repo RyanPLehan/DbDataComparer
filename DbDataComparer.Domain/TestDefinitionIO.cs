@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using DbDataComparer.Domain.Configuration;
 using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 
@@ -10,6 +13,7 @@ namespace DbDataComparer.Domain
         public const string FILE_EXTENSION = ".td";
         public const string SEARCH_PATTERN = "*" + FILE_EXTENSION;
 
+        private static string[] DatabaseSearchTerms = new string[] { "Initial Catalog", "Database" };
 
         public static string CreateFileName(TestDefinition testDefinition)
         {
@@ -24,7 +28,27 @@ namespace DbDataComparer.Domain
         }
 
 
+        /// <summary>
+        /// PathName is made up of base path + Source Database Name + Name of Test Definition 
+        /// </summary>
+        /// <param name="testDefinition"></param>
+        /// <returns></returns>
+        public static string CreatePathName(string path, TestDefinition testDefinition)
+        {
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
 
+            if (testDefinition == null)
+                throw new ArgumentNullException(nameof(testDefinition));
+
+            string database = SearchConnectionString(testDefinition.Source.ConnectionString, DatabaseSearchTerms);
+            string databasePath = Path.Combine(path, database);
+            ApplicationIO.CreateDirectory(databasePath);
+
+            return Path.Combine(databasePath, TestDefinitionIO.CreateFileName(testDefinition));
+        }
+
+        
         /// <summary>
         /// Create Test Definition File stored in the given path 
         /// </summary>
@@ -89,5 +113,13 @@ namespace DbDataComparer.Domain
             return td;
         }
 
+
+        private static string SearchConnectionString(string connectionString, IEnumerable<string> searchTerms)
+        {
+            string[] tokens = connectionString.Split(';');
+
+            // Find first occurance of one of the searchTerms
+            return tokens.FirstOrDefault(x => searchTerms.Contains(x.Trim(), StringComparer.OrdinalIgnoreCase));
+        }
     }
 }

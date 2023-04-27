@@ -17,7 +17,9 @@ namespace DbDataComparer.Comparer
     {
         private static ConfigurationSettings Settings;
         private static string ProcessDateTime { get; set; }
+        private static string ResultsPath { get; set; }
         private static string ResultsPathName { get; set; }
+        private static string ErrorsPath { get; set; }
 
         public static void Main(string[] args)
         {
@@ -64,8 +66,10 @@ namespace DbDataComparer.Comparer
         {
             ProcessDateTime = DateTime.Now.ToString("yyy-MM-dd HH-mm-ss");
             string resultsFileName = String.Format("Results [{0}].txt", ProcessDateTime);
-            ResultsPathName = Path.Combine(Settings.Location.ComparisonResultsPath, resultsFileName);
-            await ProcessDirectory(Settings.Location.TestDefinitionsPath);
+            ResultsPath = ApplicationIO.GetComparisonResultPath(Settings.Location);
+            ErrorsPath = ApplicationIO.GetComparisonErrorPath(Settings.Location);
+            ResultsPathName = Path.Combine(ResultsPath, resultsFileName);
+            await ProcessDirectory(ApplicationIO.GetTestDefinitionPath(Settings.Location));
         }
         
 
@@ -94,7 +98,7 @@ namespace DbDataComparer.Comparer
             {
                 string parsedFileName = Path.GetFileNameWithoutExtension(pathName);
                 string errorFileName = String.Format("{0} [{1}].txt", parsedFileName, ProcessDateTime);
-                string errorPathName = Path.Combine(Settings.Location.ComparisonErrorsPath, errorFileName);
+                string errorPathName = Path.Combine(ErrorsPath, errorFileName);
 
                 Console.WriteLine("Processing File: {0}{1}", parsedFileName, TestDefinitionIO.FILE_EXTENSION);
 

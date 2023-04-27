@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Enums;
+using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
 using DbDataComparer.UI.Models;
@@ -17,8 +18,10 @@ namespace DbDataComparer.UI
 {
     public partial class TestDefinitionModifyControl : TestDefinitionUserControl
     {
-        private const int OverallResultsTabPageIndex = 0;
-        private const int ErrorsTabPageIndex = 1;
+        private TestDefinition WorkingTestDefinition = null;
+
+        private const int CompareOptionsTabPageIndex = 0;
+        private const int TestsTabPageIndex = 1;
 
 
         public TestDefinitionModifyControl()
@@ -26,108 +29,159 @@ namespace DbDataComparer.UI
             InitializeComponent();
         }
 
+        public override void Activate()
+        {
+            base.Activate();
+            this.QueryTestDefinition();
+        }
+
+        protected override void QueryTestDefinition()
+        {
+            base.QueryTestDefinition();
+            SetWorkingTestDefinition(this.TestDefinition);
+            this.LoadTestDefinitionValues();
+        }
+
+        private void SetWorkingTestDefinition(TestDefinition testDefinition)
+        {
+            this.WorkingTestDefinition = Clone(testDefinition);
+        }
+
+        private TestDefinition Clone(TestDefinition testDefinition)
+        {
+            if (testDefinition == null)
+                return null;
+            else
+                return NSJson.Deserialize<TestDefinition>(NSJson.Serialize(testDefinition));
+        }
+
+
+        #region Load Form Field Value Routines
+        private void LoadTestDefinitionValues()
+        {
+            if (this.WorkingTestDefinition == null)
+                return;
+
+            LoadTestDefintionCompareOptions();
+        }
+
+        private void LoadTestDefintionCompareOptions()
+        {
+            Control control;
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["parameterOutputCheckBox"];
+            SetCompareOptionsCheckBox(control, this.WorkingTestDefinition.CompareOptions.ParameterOutput);
+
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["parameterReturnCheckBox"];
+            SetCompareOptionsCheckBox(control, this.WorkingTestDefinition.CompareOptions.ParameterReturn);
+
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["resultSetMetaDataCheckBox"];
+            SetCompareOptionsCheckBox(control, this.WorkingTestDefinition.CompareOptions.ResultSetMetaData);
+
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["resultSetDataCheckBox"];
+            SetCompareOptionsCheckBox(control, this.WorkingTestDefinition.CompareOptions.ResultSetData);
+        }
+
+        private void SetCompareOptionsCheckBox(Control control, bool value)
+        {
+            if (control is CheckBox)
+                ((CheckBox)control).Checked = value;
+        }
+
+        #endregion
+
+
+        #region Save Form Field Value Routines
+        private void SaveTestDefinitionValues()
+        {
+            if (this.WorkingTestDefinition == null)
+                return;
+
+            SaveTestDefintionCompareOptions();
+        }
+
+        private void SaveTestDefintionCompareOptions()
+        {
+            Control control;
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["parameterOutputCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.ParameterOutput = GetCompareOptionsCheckBox(control);
+
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["parameterReturnCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.ParameterReturn = GetCompareOptionsCheckBox(control);
+
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["resultSetMetaDataCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.ResultSetMetaData = GetCompareOptionsCheckBox(control);
+
+            control = this.tdTabControl.TabPages["compareOptionsTabPage"].Controls["resultSetDataCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.ResultSetData = GetCompareOptionsCheckBox(control);
+        }
+
+        private bool GetCompareOptionsCheckBox(Control control)
+        {
+            bool ret = false;
+            if (control is CheckBox)
+                ret = ((CheckBox)control).Checked;
+
+            return ret;
+        }
+
+        #endregion
+
+
+        private void TestDefinitionModifyControl_Load(object sender, EventArgs e)
+        {
+            saveButtonContextMenuStrip.ItemClicked += saveButtonContextMenuStrip_ItemClicked;
+        }
 
 
         private async void tdLoadButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                // Raise event to load Test Definition for testing
-                var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
-                OnTestDefinitionLoadRequested(loadEventArgs);
+            // Raise event to load Test Definition for testing
+            var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
+            OnTestDefinitionLoadRequested(loadEventArgs);
 
-                if (loadEventArgs.SuccessfullyLoaded)
-                {
-                    this.QueryTestDefinition();
-
-                    var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Loaded" };
-                    OnTestDefinitionStatusUpdated(statusEventArgs);
-                }
-
-            }
-
-            catch (Exception ex)
-            {
-                RTLAwareMessageBox.ShowError("Test Definition Load", ex);
-
-                var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Load Failed" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-            }
+            if (loadEventArgs.SuccessfullyLoaded)
+                this.QueryTestDefinition();
         }
 
-        private async void tdCompareButton_Click(object sender, EventArgs e)
+        private async void tdSaveButton_Click(object sender, EventArgs e)
         {
-            // Let's query from main form for any loaded/created Test Definition object
-            this.QueryTestDefinition();
-
-            if (this.TestDefinition == null)
+            if (this.WorkingTestDefinition == null)
             {
                 RTLAwareMessageBox.ShowMessage("Test Definition", "No Test Definition Loaded");
                 return;
             }
 
-            Cursor currentCursor = Cursor.Current;
-            Cursor.Current = Cursors.WaitCursor;
+            SaveTestDefinitionValues();
 
-            try
+            // Overlay saveButtonContextMenuStrip to give user a choice of save options
+            Point screenPoint = tdSaveButton.PointToScreen(new Point(tdSaveButton.Left, tdSaveButton.Bottom));
+            if (screenPoint.Y + saveButtonContextMenuStrip.Size.Height > Screen.PrimaryScreen.WorkingArea.Height)
             {
-                var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Executing Tests" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-                ITestExecutioner testExecutioner = new TestExecutioner(new SqlDatabase());
-                IEnumerable<TestExecutionResult> testResults = await testExecutioner.Execute(this.TestDefinition);
-
-                statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Comparing Results" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-                IEnumerable<ComparisonResult> comparisonResults = TestDefinitionComparer.Compare(this.TestDefinition, testResults);
-
-                statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Formatting Results" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-                await WriteOverallResults(this.TestDefinition, comparisonResults);
-
-                if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
-                    await WriteDetailResults(this.TestDefinition, comparisonResults);
-
-                statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Comparison Completed" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-
-                Cursor.Current = currentCursor;
+                saveButtonContextMenuStrip.Show(tdSaveButton, new Point(0, -saveButtonContextMenuStrip.Size.Height));
             }
-
-            catch (Exception ex)
+            else
             {
-                Cursor.Current = currentCursor;
-                RTLAwareMessageBox.ShowError("Comparison", ex);
+                saveButtonContextMenuStrip.Show(tdSaveButton, new Point(0, tdSaveButton.Height));
             }
         }
 
 
-        private async Task WriteOverallResults(TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
+        private async void saveButtonContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                StreamWriter sw = new StreamWriter(ms);
-                await TestDefinitionComparer.WriteOverallResults(sw, testDefinition, comparisonResults);
-                sw.Flush();
+            ToolStripItem item = e.ClickedItem;
 
-                ms.Position = 0;
-                StreamReader sr = new StreamReader(ms);
-                Control control = this.tdTabControl.TabPages["overallResultsTabPage"].Controls["overallResultsTextBox"];
-                ((TextBox)control).Text = sr.ReadToEnd();
+            if (item == this.saveForComparisonToolStripMenuItem)
+            {
+                this.SetTestDefinition(this.WorkingTestDefinition);
             }
-        }
 
-        private async Task WriteDetailResults(TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
-        {
-            using (MemoryStream ms = new MemoryStream())
+            if (item == this.saveToFileToolStripMenuItem)
             {
-                StreamWriter sw = new StreamWriter(ms);
-                await TestDefinitionComparer.WriteDetailResults(sw, testDefinition, comparisonResults);
-                sw.Flush();
+                var saveEventArgs = new TestDefinitionSaveRequestedEventArgs() { TestDefinition = this.WorkingTestDefinition };
+                OnTestDefinitionSaveRequested(saveEventArgs);
 
-                ms.Position = 0;
-                StreamReader sr = new StreamReader(ms);
-                Control control = this.tdTabControl.TabPages["errorsTabPage"].Controls["errorsTextBox"];
-                ((TextBox)control).Text = sr.ReadToEnd();
+                if (saveEventArgs.SuccessfullySaved)
+                    this.QueryTestDefinition();
             }
         }
     }

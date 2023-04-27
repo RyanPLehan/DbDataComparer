@@ -14,6 +14,7 @@ namespace DbDataComparer.UI
         public event EventHandler<TestDefinitionLoadRequestedEventArgs> TestDefinitionLoadRequested;
         public event EventHandler<TestDefinitionQueryRequestedEventArgs> TestDefinitionQueryRequested;
         public event EventHandler<TestDefinitionSaveRequestedEventArgs> TestDefinitionSaveRequested;
+        public event EventHandler<TestDefinitionSetRequestedEventArgs> TestDefinitionSetRequested;
         public event EventHandler<TestDefinitionStatusUpdatedEventArgs> TestDefinitionStatusUpdated;
 
         protected string PathName { get; set; }
@@ -21,6 +22,11 @@ namespace DbDataComparer.UI
 
 
         #region General routines
+        public virtual void Activate()
+        {
+            this.QueryTestDefinition();
+        }
+
         protected virtual void QueryTestDefinition()
         {
             var eventArgs = new TestDefinitionQueryRequestedEventArgs();
@@ -28,6 +34,12 @@ namespace DbDataComparer.UI
 
             this.PathName = eventArgs.PathName;
             this.TestDefinition = eventArgs.TestDefinition;
+        }
+
+        protected virtual void SetTestDefinition(TestDefinition testDefinition)
+        {
+            var eventArgs = new TestDefinitionSetRequestedEventArgs() { TestDefinition = testDefinition };
+            OnTestDefinitionSetRequested(eventArgs);
         }
         #endregion
 
@@ -56,6 +68,14 @@ namespace DbDataComparer.UI
         }
 
 
+        protected virtual void OnTestDefinitionSetRequested(TestDefinitionSetRequestedEventArgs e)
+        {
+            EventHandler<TestDefinitionSetRequestedEventArgs> handler = TestDefinitionSetRequested;
+            if (handler != null)
+                handler(this, e);
+        }
+
+
         protected virtual void OnTestDefinitionStatusUpdated(TestDefinitionStatusUpdatedEventArgs e)
         {
             EventHandler<TestDefinitionStatusUpdatedEventArgs> handler = TestDefinitionStatusUpdated;
@@ -63,7 +83,5 @@ namespace DbDataComparer.UI
                 handler(this, e);
         }
         #endregion
-
-
     }
 }

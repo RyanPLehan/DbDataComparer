@@ -78,7 +78,7 @@ namespace DbDataComparer.Domain
                 await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
                 await sw.WriteLineAsync(String.Format("Parameter Return: {0}", cr.ParameterReturnResult.Result.ToString()));
                 await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
-                await sw.WriteLineAsync(String.Format("Parameter Output: {0}:", cr.ParameterOutputResult.Result.ToString()));
+                await sw.WriteLineAsync(String.Format("Parameter Output: {0}", cr.ParameterOutputResult.Result.ToString()));
 
                 foreach (KeyValuePair<int, TestComparisonResult> kvp in cr.ResultsetMetaDataResults)
                 {

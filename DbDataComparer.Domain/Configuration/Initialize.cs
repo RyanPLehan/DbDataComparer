@@ -28,23 +28,18 @@ namespace DbDataComparer.Domain.Configuration
 
         public static void BuildDirectoryStructure(LocationSettings settings)
         {
-            CreateDirectory(settings.TestDefinitionsPath);
-            CreateDirectory(settings.ComparisonResultsPath);
-            CreateDirectory(settings.ComparisonErrorsPath);
+            ApplicationIO.CreateDirectory(ApplicationIO.GetTestDefinitionPath(settings));
+            ApplicationIO.CreateDirectory(ApplicationIO.GetComparisonResultPath(settings));
+            ApplicationIO.CreateDirectory(ApplicationIO.GetComparisonErrorPath(settings));
         }
 
         private static void LoadCustomSettings(IConfigurationBuilder builder)
         {
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var path = ApplicationIO.GetExecutablePath();
             var file = $"appsettings.json";
 
             builder.AddJsonFile(Path.Combine(path, file), true, true);
         }
 
-        private static void CreateDirectory(string path)
-        {
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-        }
     }
 }

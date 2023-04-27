@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             mainTableLayoutPanel = new TableLayoutPanel();
-            testDefinitionCreate = new Button();
-            TestDefinitionModify = new Button();
-            testDefinitionCompare = new Button();
+            testDefinitionCreateButton = new Button();
+            testDefinitionModifyButton = new Button();
+            testDefinitionCompareButton = new Button();
             testDefinitionLabel = new Label();
             testDefinitionCreateControl = new TestDefinitionCreateControl();
             mainStatusBar = new StatusStrip();
@@ -41,10 +41,12 @@
             createPanel = new Panel();
             comparePanel = new Panel();
             modifyPanel = new Panel();
+            testDefinitionModifyControl = new TestDefinitionModifyControl();
             mainTableLayoutPanel.SuspendLayout();
             mainStatusBar.SuspendLayout();
             createPanel.SuspendLayout();
             comparePanel.SuspendLayout();
+            modifyPanel.SuspendLayout();
             SuspendLayout();
             // 
             // mainTableLayoutPanel
@@ -52,9 +54,9 @@
             mainTableLayoutPanel.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
             mainTableLayoutPanel.ColumnCount = 1;
             mainTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            mainTableLayoutPanel.Controls.Add(testDefinitionCreate, 0, 0);
-            mainTableLayoutPanel.Controls.Add(TestDefinitionModify, 0, 1);
-            mainTableLayoutPanel.Controls.Add(testDefinitionCompare, 0, 2);
+            mainTableLayoutPanel.Controls.Add(testDefinitionCreateButton, 0, 0);
+            mainTableLayoutPanel.Controls.Add(testDefinitionModifyButton, 0, 1);
+            mainTableLayoutPanel.Controls.Add(testDefinitionCompareButton, 0, 2);
             mainTableLayoutPanel.Location = new Point(12, 163);
             mainTableLayoutPanel.Name = "mainTableLayoutPanel";
             mainTableLayoutPanel.RowCount = 3;
@@ -64,38 +66,38 @@
             mainTableLayoutPanel.Size = new Size(150, 234);
             mainTableLayoutPanel.TabIndex = 1;
             // 
-            // testDefinitionCreate
+            // testDefinitionCreateButton
             // 
-            testDefinitionCreate.Anchor = AnchorStyles.None;
-            testDefinitionCreate.Location = new Point(15, 9);
-            testDefinitionCreate.Name = "testDefinitionCreate";
-            testDefinitionCreate.Size = new Size(120, 60);
-            testDefinitionCreate.TabIndex = 0;
-            testDefinitionCreate.Text = "Create";
-            testDefinitionCreate.UseVisualStyleBackColor = true;
-            testDefinitionCreate.Click += testDefinitionCreate_Click;
+            testDefinitionCreateButton.Anchor = AnchorStyles.None;
+            testDefinitionCreateButton.Location = new Point(15, 9);
+            testDefinitionCreateButton.Name = "testDefinitionCreateButton";
+            testDefinitionCreateButton.Size = new Size(120, 60);
+            testDefinitionCreateButton.TabIndex = 0;
+            testDefinitionCreateButton.Text = "Create";
+            testDefinitionCreateButton.UseVisualStyleBackColor = true;
+            testDefinitionCreateButton.Click += testDefinitionCreateButton_Click;
             // 
-            // TestDefinitionModify
+            // testDefinitionModifyButton
             // 
-            TestDefinitionModify.Anchor = AnchorStyles.None;
-            TestDefinitionModify.Location = new Point(15, 86);
-            TestDefinitionModify.Name = "TestDefinitionModify";
-            TestDefinitionModify.Size = new Size(120, 60);
-            TestDefinitionModify.TabIndex = 1;
-            TestDefinitionModify.Text = "Modifiy";
-            TestDefinitionModify.UseVisualStyleBackColor = true;
-            TestDefinitionModify.Click += TestDefinitionModify_Click;
+            testDefinitionModifyButton.Anchor = AnchorStyles.None;
+            testDefinitionModifyButton.Location = new Point(15, 86);
+            testDefinitionModifyButton.Name = "testDefinitionModifyButton";
+            testDefinitionModifyButton.Size = new Size(120, 60);
+            testDefinitionModifyButton.TabIndex = 1;
+            testDefinitionModifyButton.Text = "Modifiy";
+            testDefinitionModifyButton.UseVisualStyleBackColor = true;
+            testDefinitionModifyButton.Click += TestDefinitionModifyButton_Click;
             // 
-            // testDefinitionCompare
+            // testDefinitionCompareButton
             // 
-            testDefinitionCompare.Anchor = AnchorStyles.None;
-            testDefinitionCompare.Location = new Point(15, 164);
-            testDefinitionCompare.Name = "testDefinitionCompare";
-            testDefinitionCompare.Size = new Size(120, 60);
-            testDefinitionCompare.TabIndex = 2;
-            testDefinitionCompare.Text = "Compare";
-            testDefinitionCompare.UseVisualStyleBackColor = true;
-            testDefinitionCompare.Click += testDefinitionCompare_Click;
+            testDefinitionCompareButton.Anchor = AnchorStyles.None;
+            testDefinitionCompareButton.Location = new Point(15, 164);
+            testDefinitionCompareButton.Name = "testDefinitionCompareButton";
+            testDefinitionCompareButton.Size = new Size(120, 60);
+            testDefinitionCompareButton.TabIndex = 2;
+            testDefinitionCompareButton.Text = "Compare";
+            testDefinitionCompareButton.UseVisualStyleBackColor = true;
+            testDefinitionCompareButton.Click += testDefinitionCompareButton_Click;
             // 
             // testDefinitionLabel
             // 
@@ -119,7 +121,7 @@
             // mainStatusBar
             // 
             mainStatusBar.Items.AddRange(new ToolStripItem[] { mainStatusTDStatusDescLabel, mainStatusTDStatusLabel });
-            mainStatusBar.Location = new Point(0, 538);
+            mainStatusBar.Location = new Point(0, 548);
             mainStatusBar.Name = "mainStatusBar";
             mainStatusBar.Size = new Size(804, 22);
             mainStatusBar.TabIndex = 3;
@@ -152,6 +154,7 @@
             createPanel.Name = "createPanel";
             createPanel.Size = new Size(600, 500);
             createPanel.TabIndex = 2;
+            createPanel.VisibleChanged += Panel_VisibleChanged;
             // 
             // comparePanel
             // 
@@ -161,19 +164,31 @@
             comparePanel.Name = "comparePanel";
             comparePanel.Size = new Size(600, 500);
             comparePanel.TabIndex = 3;
+            comparePanel.VisibleChanged += Panel_VisibleChanged;
             // 
             // modifyPanel
             // 
+            modifyPanel.BorderStyle = BorderStyle.FixedSingle;
+            modifyPanel.Controls.Add(testDefinitionModifyControl);
             modifyPanel.Location = new Point(185, 25);
             modifyPanel.Name = "modifyPanel";
             modifyPanel.Size = new Size(600, 500);
             modifyPanel.TabIndex = 4;
+            modifyPanel.VisibleChanged += Panel_VisibleChanged;
+            // 
+            // testDefinitionModifyControl
+            // 
+            testDefinitionModifyControl.BorderStyle = BorderStyle.FixedSingle;
+            testDefinitionModifyControl.Location = new Point(5, 5);
+            testDefinitionModifyControl.Name = "testDefinitionModifyControl";
+            testDefinitionModifyControl.Size = new Size(590, 490);
+            testDefinitionModifyControl.TabIndex = 0;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(804, 560);
+            ClientSize = new Size(804, 570);
             Controls.Add(modifyPanel);
             Controls.Add(comparePanel);
             Controls.Add(createPanel);
@@ -188,6 +203,7 @@
             mainStatusBar.PerformLayout();
             createPanel.ResumeLayout(false);
             comparePanel.ResumeLayout(false);
+            modifyPanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -195,16 +211,16 @@
         #endregion
 
         private TableLayoutPanel mainTableLayoutPanel;
-        private Button testDefinitionCreate;
-        private Button TestDefinitionModify;
-        private Button testDefinitionCompare;
+        private Button testDefinitionCreateButton;
+        private Button testDefinitionModifyButton;
+        private Button testDefinitionCompareButton;
         private Label testDefinitionLabel;
-        private TestDefinitionCreateControl testDefinitionCreateControl;
         private StatusStrip mainStatusBar;
         private ToolStripStatusLabel mainStatusTDStatusDescLabel;
         private ToolStripStatusLabel mainStatusTDStatusLabel;
-        private TestDefinitionCompareControl testDefinitionTestControl1;
+        private TestDefinitionCreateControl testDefinitionCreateControl;
         private TestDefinitionCompareControl testDefinitionCompareControl;
+        private TestDefinitionModifyControl testDefinitionModifyControl;
         private Panel createPanel;
         private Panel comparePanel;
         private Panel modifyPanel;

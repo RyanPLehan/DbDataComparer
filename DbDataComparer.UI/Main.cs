@@ -42,6 +42,7 @@ namespace DbDataComparer.UI
                     c.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
                     c.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
                     c.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
+                    c.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
                     c.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
                 }
             }
@@ -64,6 +65,20 @@ namespace DbDataComparer.UI
             if (!String.IsNullOrWhiteSpace(td?.Name))
                 this.Text += "  -  " + td.Name;
         }
+
+        private void SetStatus(string status)
+        {
+            this.mainStatusTDStatusLabel.Text = status;
+        }
+
+
+        private void ActivateUserControl(Control control)
+        {
+            if (control is TestDefinitionUserControl)
+            {
+                ((TestDefinitionUserControl)control).Activate();
+            }
+        }
         #endregion
 
 
@@ -72,7 +87,7 @@ namespace DbDataComparer.UI
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.InitialDirectory = Path.Combine(IOUtility.ExecutablePath(), this.Settings.Location.TestDefinitionsPath);
+                dialog.InitialDirectory = ApplicationIO.GetTestDefinitionPath(this.Settings.Location);
                 dialog.Filter = "td files (*.td)|*.td|All files (*.*)|*.*";
                 dialog.FilterIndex = 0;                         // default to first filter
                 dialog.RestoreDirectory = true;                 // Restore directory to original setting
@@ -85,12 +100,14 @@ namespace DbDataComparer.UI
                         var testDefinition = TestDefinitionIO.LoadFile(pathName);
                         e.SuccessfullyLoaded = true;
                         SetTestDefinition(testDefinition, pathName);
+                        SetStatus("Loaded");
                     }
                 }
                 catch (Exception ex)
                 {
                     e.SuccessfullyLoaded = false;
                     RTLAwareMessageBox.ShowError("Loading Test Definition", ex);
+                    SetStatus("Load Failed");
                 }
             }
         }
@@ -105,16 +122,16 @@ namespace DbDataComparer.UI
 
         private void TestDefinitionSaveRequested(object sender, TestDefinitionSaveRequestedEventArgs e)
         {
-            string rootPath = Path.Combine(IOUtility.ExecutablePath(), this.Settings.Location.TestDefinitionsPath);
-            string pathName = IOUtility.CreatePathName(rootPath, e.TestDefinition);
-            string fileName = Path.GetFileName(pathName);
+            string path = ApplicationIO.GetTestDefinitionPath(this.Settings.Location);
+            string pathName = TestDefinitionIO.CreatePathName(path, e.TestDefinition);
+            string fileName = TestDefinitionIO.CreateFileName(e.TestDefinition);
 
             if (!e.ForceOverwrite &&
                 File.Exists(pathName) &&
                 RTLAwareMessageBox.ShowYesNo(fileName, "File already exists.  Overwrite", MessageBoxIcon.Question) == DialogResult.No)
             {
                 e.SuccessfullySaved = false;
-                RTLAwareMessageBox.ShowMessage("Test Definition", "Aborting");
+                SetStatus("File creation aborted!");
             }
             else
             {
@@ -123,19 +140,27 @@ namespace DbDataComparer.UI
                     TestDefinitionIO.CreateFile(pathName, e.TestDefinition);
                     e.SuccessfullySaved = true;
                     SetTestDefinition(e.TestDefinition, pathName);
+                    SetStatus("File created");
                 }
                 catch (Exception ex)
                 {
                     e.SuccessfullySaved = false;
-                    RTLAwareMessageBox.ShowError("Creating Test Definition", ex);
+                    RTLAwareMessageBox.ShowError("Test Definition File", ex);
                 }
             }
         }
 
 
+        private void TestDefinitionSetRequested(object sender, TestDefinitionSetRequestedEventArgs e)
+        {
+            this.PathName = null;
+            this.TestDefinition = e.TestDefinition;
+        }
+
+
         private void TestDefinitionStatusUpdated(object sender, TestDefinitionStatusUpdatedEventArgs e)
         {
-            this.mainStatusTDStatusLabel.Text = e.Status;
+            SetStatus(e.Status);
         }
         #endregion
 
@@ -150,11 +175,19 @@ namespace DbDataComparer.UI
             this.testDefinitionCreateControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
             this.testDefinitionCreateControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
             this.testDefinitionCreateControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
+            this.testDefinitionCreateControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
             this.testDefinitionCreateControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
+
+            this.testDefinitionModifyControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
+            this.testDefinitionModifyControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
+            this.testDefinitionModifyControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
+            this.testDefinitionModifyControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
+            this.testDefinitionModifyControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
 
             this.testDefinitionCompareControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
             this.testDefinitionCompareControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
             this.testDefinitionCompareControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
+            this.testDefinitionCompareControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
             this.testDefinitionCompareControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
             */
 
@@ -163,25 +196,37 @@ namespace DbDataComparer.UI
             SetTestDefinition(null, null);
         }
 
-        private void testDefinitionCreate_Click(object sender, EventArgs e)
+        private void testDefinitionCreateButton_Click(object sender, EventArgs e)
         {
             HideTestDefinitionControls();
             this.createPanel.Visible = true;
         }
 
-        #endregion
 
-
-        private void testDefinitionCompare_Click(object sender, EventArgs e)
+        private void testDefinitionCompareButton_Click(object sender, EventArgs e)
         {
             HideTestDefinitionControls();
             this.comparePanel.Visible = true;
         }
 
-        private void TestDefinitionModify_Click(object sender, EventArgs e)
+        private void TestDefinitionModifyButton_Click(object sender, EventArgs e)
         {
             HideTestDefinitionControls();
             this.modifyPanel.Visible = true;
+        }
+        #endregion
+
+        private void Panel_VisibleChanged(object sender, EventArgs e)
+        {
+            if (sender is Panel)
+            {
+                Panel panel = (Panel)sender;
+                if (panel.Visible)
+                {
+                    foreach (Control control in panel.Controls)
+                        ActivateUserControl(control);
+                }
+            }
         }
     }
 }

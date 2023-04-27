@@ -22,19 +22,19 @@
   },
   "TableViewTests": [
     {
-      "Name": "Sample Table/View Test 1",
-      "SourceSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter = 1",
-      "TargetSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter = 1"
+      "Name": "Sample Table/View Test 1 - Pass",
+      "SourceSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter < 5",
+      "TargetSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter < 5"
     },
     {
-      "Name": "Sample Table/View Test 2",
-      "SourceSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter > 5",
+      "Name": "Sample Table/View Test 2 - Fail MetaData",
+      "SourceSql": "SELECT LoadType FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter > 5",
       "TargetSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter > 5"
     },
     {
-      "Name": "Sample Table/View Test 3",
+      "Name": "Sample Table/View Test 3 - Fail Data Set",
       "SourceSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter IN (1,3,5,7,9)",
-      "TargetSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter IN (1,3,5,7,9)"
+      "TargetSql": "SELECT * FROM lm.vw_LoadTypes WHERE LoadTypesRecordCounter IN (2,4,6,8)"
     }
   ]
 }

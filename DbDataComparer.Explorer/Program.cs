@@ -69,8 +69,9 @@ namespace DbDataComparer.Explorer
             TestDefinitionBuilderOptions options = CreateOptions(args[0], args[1], args[2]);
             TestDefinition td = await CreateTestDefinition(options);
 
-            string pathName = Path.Combine(Settings.Location.TestDefinitionsPath, TestDefinitionIO.CreateFileName(td));
-            string fileName = Path.GetFileName(pathName);
+            string tdPath = ApplicationIO.GetTestDefinitionPath(Settings.Location);
+            string pathName = TestDefinitionIO.CreatePathName(tdPath, td);
+            string fileName = TestDefinitionIO.CreateFileName(td);
             Console.WriteLine("Creating file: {0}", fileName);
 
             if (ContinueFileCreation(pathName))

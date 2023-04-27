@@ -107,12 +107,7 @@ namespace DbDataComparer.UI
                 OnTestDefinitionSaveRequested(saveEventArgs);
 
                 if (saveEventArgs.SuccessfullySaved)
-                {
                     this.QueryTestDefinition();
-
-                    var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Created" };
-                    OnTestDefinitionStatusUpdated(statusEventArgs);
-                }
             }
 
             catch (Exception ex)
