@@ -21,7 +21,8 @@ namespace DbDataComparer.UI
         private TestDefinition WorkingTestDefinition = null;
 
         private const int CompareOptionsTabPageIndex = 0;
-        private const int TestsTabPageIndex = 1;
+        private const int notificationsTabPageIndex = 1;
+        private const int TestsTabPageIndex = 2;
 
 
         public TestDefinitionModifyControl()

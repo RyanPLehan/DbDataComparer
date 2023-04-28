@@ -42,6 +42,7 @@
             saveButtonContextMenuStrip = new ContextMenuStrip(components);
             saveToFileToolStripMenuItem = new ToolStripMenuItem();
             saveForComparisonToolStripMenuItem = new ToolStripMenuItem();
+            notificationsTabPage = new TabPage();
             tdTabControl.SuspendLayout();
             compareOptionsTabPage.SuspendLayout();
             buttonTableLayoutPanel.SuspendLayout();
@@ -51,6 +52,7 @@
             // tdTabControl
             // 
             tdTabControl.Controls.Add(compareOptionsTabPage);
+            tdTabControl.Controls.Add(notificationsTabPage);
             tdTabControl.Controls.Add(testsTabPage);
             tdTabControl.Location = new Point(10, 10);
             tdTabControl.Name = "tdTabControl";
@@ -176,6 +178,15 @@
             saveForComparisonToolStripMenuItem.Size = new Size(182, 22);
             saveForComparisonToolStripMenuItem.Text = "Save for comparison";
             // 
+            // notificationsTabPage
+            // 
+            notificationsTabPage.Location = new Point(4, 24);
+            notificationsTabPage.Name = "notificationsTabPage";
+            notificationsTabPage.Size = new Size(546, 387);
+            notificationsTabPage.TabIndex = 2;
+            notificationsTabPage.Text = "Notifications";
+            notificationsTabPage.UseVisualStyleBackColor = true;
+            // 
             // TestDefinitionModifyControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -212,5 +223,6 @@
         private ContextMenuStrip saveButtonContextMenuStrip;
         private ToolStripMenuItem saveToFileToolStripMenuItem;
         private ToolStripMenuItem saveForComparisonToolStripMenuItem;
+        private TabPage notificationsTabPage;
     }
 }
