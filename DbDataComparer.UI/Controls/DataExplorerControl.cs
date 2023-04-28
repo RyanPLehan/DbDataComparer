@@ -5,11 +5,15 @@ using System.Windows.Forms;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
+using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
     public partial class DataExplorerControl : UserControl
     {
+        public event EventHandler<DataExplorerDataSourceChangedEventArgs> DataExplorerDataSourceChanged;
+
+
         public class DataExplorerResult
         {
             public string ConnectionString { get; set; }
@@ -21,6 +25,16 @@ namespace DbDataComparer.UI
         {
             InitializeComponent();
         }
+
+        #region Event Raising Methods
+        private void OnDataExplorerDataSourceChanged(DataExplorerDataSourceChangedEventArgs e)
+        {
+            EventHandler<DataExplorerDataSourceChangedEventArgs> handler = DataExplorerDataSourceChanged;
+            if (handler != null)
+                handler(this, e);
+        }
+        #endregion
+
 
         public DataExplorerResult GetDataExplorerResult()
         {
@@ -58,6 +72,9 @@ namespace DbDataComparer.UI
         {
             Reset();
             this.dbObjectGroupBox.Enabled = !String.IsNullOrWhiteSpace(this.dataSourceTextBox.Text);
+
+            var eventArgs = new DataExplorerDataSourceChangedEventArgs() { DataSource = this.dataSourceTextBox.Text };
+            OnDataExplorerDataSourceChanged(eventArgs);
         }
 
 

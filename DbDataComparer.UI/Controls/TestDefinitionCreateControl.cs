@@ -24,6 +24,20 @@ namespace DbDataComparer.UI
             InitializeComponent();
         }
 
+        #region Event Handler Routines for Data Explorer operations
+        private void DataExplorerDataSourceChanged(object sender, DataExplorerDataSourceChangedEventArgs e)
+        {
+            try
+            {
+                Control deControl = this.tdTabControl.TabPages["targetTabPage"].Controls["targetDataExplorerControl"];
+                TextBox tbControl = GetDataExplorerDataSourceTextBox(deControl);
+                if (tbControl != null)
+                    tbControl.Text = e.DataSource;
+            }
+            catch
+            { }
+        }
+        #endregion
 
         private TestDefinitionBuilderOptions CreateTestDefinitionBuilderOptions()
         {
@@ -63,6 +77,27 @@ namespace DbDataComparer.UI
         }
 
 
+        private TextBox GetDataExplorerDataSourceTextBox(Control control)
+        {
+            TextBox ret = null;
+
+            if (!(control is DataExplorerControl))
+                return ret;
+
+            try
+            {
+                Control panelControl = control.Controls["dataSourceTableLayoutPanel"];
+                Control tbControl = panelControl.Controls["dataSourceTextBox"];
+                ret = ((TextBox)tbControl);
+            }
+            catch
+            { }
+
+            return ret;
+        }
+
+
+
         private void ValidateOptions(TestDefinitionBuilderOptions options)
         {
             if (String.IsNullOrWhiteSpace(options.Name))
@@ -88,6 +123,17 @@ namespace DbDataComparer.UI
             control.Reset();
         }
 
+
+        private void TestDefinitionCreateControl_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                Control deControl = this.tdTabControl.TabPages["sourceTabPage"].Controls["sourceDataExplorerControl"];
+                ((DataExplorerControl)deControl).DataExplorerDataSourceChanged += DataExplorerDataSourceChanged;
+            }
+            catch
+            { }
+        }
 
         private async void tdCreateButton_Click(object sender, EventArgs e)
         {

@@ -152,6 +152,7 @@
             Controls.Add(tdTabControl);
             Name = "TestDefinitionCreateControl";
             Size = new Size(435, 316);
+            Load += TestDefinitionCreateControl_Load;
             tdTabControl.ResumeLayout(false);
             sourceTabPage.ResumeLayout(false);
             targetTabPage.ResumeLayout(false);
