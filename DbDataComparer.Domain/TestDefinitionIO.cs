@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using DbDataComparer.Domain.Configuration;
 using DbDataComparer.Domain.Formatters;
@@ -78,6 +81,11 @@ namespace DbDataComparer.Domain
                     await sw.WriteLineAsync(NSJson.Serialize(testDefinition));
                 }
             }
+
+            FileInfo fInfo = new FileInfo(pathName);
+            FileSecurity fSecurity = fInfo.GetAccessControl();
+            fSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
+            fInfo.SetAccessControl(fSecurity);
         }
 
 
