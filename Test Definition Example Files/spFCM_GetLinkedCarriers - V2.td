@@ -7,6 +7,7 @@
     "ResultSetData": true
   },
   "NotificationOptions": {
+    "AlwaysSendOverallResults": false,
     "NotifyOnFailure": false,
     "Email": ""
   },
