@@ -6,6 +6,10 @@
     "ResultSetMetaData": true,
     "ResultSetData": true
   },
+  "NotificationOptions": {
+    "NotifyOnFailure": false,
+    "Email": ""
+  },
   "Source": {
     "ConnectionString": "Data Source=devAccting;Initial Catalog=AcctWF;Integrated Security=True;Pooling=True;Trust Server Certificate=True;Application Name=DbDataComparer",
     "Text": "dbo.spFCM_GetLinkedCarriers",
@@ -102,7 +106,7 @@
           "Value": 1006
         }
       ]
-	},
+    },
     {
       "Name": "Sample Stored Procedure Test 5 (1007 vs 1008)",
       "SourceTestValues": [
@@ -117,6 +121,6 @@
           "Value": 1007
         }
       ]
-    }	
+    }
   ]
 }

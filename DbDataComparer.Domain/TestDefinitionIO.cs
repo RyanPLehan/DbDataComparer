@@ -118,8 +118,24 @@ namespace DbDataComparer.Domain
         {
             string[] tokens = connectionString.Split(';');
 
-            // Find first occurance of one of the searchTerms
-            return tokens.FirstOrDefault(x => searchTerms.Contains(x.Trim(), StringComparer.OrdinalIgnoreCase));
+            foreach(string token in tokens)
+            {
+                // need to split by 2nd delimiter to get true item to search by
+                string[] keyValue = token.Split('=');
+
+                if (keyValue.Length == 2)
+                {
+                    foreach (string term in searchTerms)
+                    {
+                        if (keyValue[0].Trim().Equals(term, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return keyValue[1].Trim();
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

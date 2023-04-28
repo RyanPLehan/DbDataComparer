@@ -16,6 +16,11 @@ namespace DbDataComparer.Domain.Models
         public CompareOptions CompareOptions { get; set; } = new CompareOptions();
 
         /// <summary>
+        /// Options to notify if there is a failure
+        /// </summary>
+        public NotificationOptions NotificationOptions { get; set; } = new NotificationOptions();
+
+        /// <summary>
         /// Source command defintion
         /// </summary>
         public ExecutionDefinition Source { get; set; }

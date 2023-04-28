@@ -6,5 +6,6 @@ namespace DbDataComparer.Domain.Configuration
     {
         public LocationSettings Location { get; set; }
         public DatabaseSettings Database { get; set; }
+        public NotificationSettings Notification { get; set; }
     }
 }

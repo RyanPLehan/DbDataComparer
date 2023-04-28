@@ -6,6 +6,10 @@
     "ResultSetMetaData": true,
     "ResultSetData": true
   },
+  "NotificationOptions": {
+    "NotifyOnFailure": false,
+    "Email": ""
+  },
   "Source": {
     "ConnectionString": "Data Source=devAccting;Initial Catalog=AcctWF;Integrated Security=True;Pooling=True;Trust Server Certificate=True;Application Name=DbDataComparer",
     "Text": "lm.vw_LoadTypes",

@@ -21,6 +21,8 @@ namespace DbDataComparer.Domain.Configuration
                             new DatabaseSettings(),
                 Location = configuration.GetSection("Location").Get<LocationSettings>() ??
                             new LocationSettings(),
+                Notification = configuration.GetSection("Notification").Get<NotificationSettings>() ??
+                            new NotificationSettings(),
             };
 
             return settings;
