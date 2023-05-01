@@ -10,16 +10,20 @@ using DbDataComparer.Domain.Enums;
 using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
+using DbDataComparer.Domain.Interfaces;
 
 namespace DbDataComparer.Comparer
 {
     public class Program
     {
         private static ConfigurationSettings Settings;
+
         private static string ProcessDateTime { get; set; }
         private static string ResultsPath { get; set; }
         private static string ResultsPathName { get; set; }
         private static string ErrorsPath { get; set; }
+
+        private static IEmailNotifier EmailNotifier;
 
         public static void Main(string[] args)
         {
@@ -66,12 +70,16 @@ namespace DbDataComparer.Comparer
         {
             ProcessDateTime = DateTime.Now.ToString("yyy-MM-dd HH-mm-ss");
             string resultsFileName = String.Format("Results [{0}].txt", ProcessDateTime);
+
             ResultsPath = ApplicationIO.GetComparisonResultPath(Settings.Location);
             ErrorsPath = ApplicationIO.GetComparisonErrorPath(Settings.Location);
             ResultsPathName = Path.Combine(ResultsPath, resultsFileName);
+
+            EmailNotifier = new TestDefinitionNotifier(Settings.Notification);
             await ProcessDirectory(ApplicationIO.GetTestDefinitionPath(Settings.Location));
+            await EmailNotifier.SendNotification("Data Comparer - Comparison Result(s)");
         }
-        
+
 
         private static async Task ProcessDirectory(string directory)
         {
@@ -118,6 +126,10 @@ namespace DbDataComparer.Comparer
 
                     if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
                         await WriteDetailResults(errorPathName, testDefinition, comparisonResults);
+
+                    if (EmailNotifier.IsNotificationEnabled(testDefinition, comparisonResults))
+                        EmailNotifier.AddNotification(testDefinition, comparisonResults);
+
                 }
                 catch (Exception ex)
                 {

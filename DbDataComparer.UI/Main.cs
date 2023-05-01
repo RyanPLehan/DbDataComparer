@@ -39,6 +39,7 @@ namespace DbDataComparer.UI
                 if (control is TestDefinitionUserControl)
                 {
                     TestDefinitionUserControl c = (TestDefinitionUserControl)control;
+                    c.ConfigurationQueryRequested += this.ConfigurationQueryRequested;
                     c.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
                     c.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
                     c.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
@@ -83,6 +84,12 @@ namespace DbDataComparer.UI
 
 
         #region Event Handler Routines for Test Definition operations
+        private void ConfigurationQueryRequested(object sender, ConfigurationQueryRequestedEventArgs e)
+        {
+            e.ConfigurationSettings = this.Settings;
+        }
+
+
         private void TestDefinitionLoadRequested(object sender, TestDefinitionLoadRequestedEventArgs e)
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
@@ -172,18 +179,21 @@ namespace DbDataComparer.UI
             this.SetTestDefinitionEventHandlers(this.Controls);
 
             /*
+            this.testDefinitionCreateControl.ConfigurationQueryRequested += this.ConfigurationQueryRequested;
             this.testDefinitionCreateControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
             this.testDefinitionCreateControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
             this.testDefinitionCreateControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
             this.testDefinitionCreateControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
             this.testDefinitionCreateControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
 
+            this.testDefinitionModifyControl.ConfigurationQueryRequested += this.ConfigurationQueryRequested;
             this.testDefinitionModifyControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
             this.testDefinitionModifyControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
             this.testDefinitionModifyControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;
             this.testDefinitionModifyControl.TestDefinitionSetRequested += this.TestDefinitionSetRequested;
             this.testDefinitionModifyControl.TestDefinitionStatusUpdated += this.TestDefinitionStatusUpdated;
 
+            this.testDefinitionCompareControl.ConfigurationQueryRequested += this.ConfigurationQueryRequested;
             this.testDefinitionCompareControl.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
             this.testDefinitionCompareControl.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
             this.testDefinitionCompareControl.TestDefinitionSaveRequested += this.TestDefinitionSaveRequested;

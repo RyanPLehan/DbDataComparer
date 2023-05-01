@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DbDataComparer.Domain.Configuration;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.UI.Models;
 
@@ -11,6 +12,7 @@ namespace DbDataComparer.UI
 {
     public class TestDefinitionUserControl : UserControl
     {
+        public event EventHandler<ConfigurationQueryRequestedEventArgs> ConfigurationQueryRequested;
         public event EventHandler<TestDefinitionLoadRequestedEventArgs> TestDefinitionLoadRequested;
         public event EventHandler<TestDefinitionQueryRequestedEventArgs> TestDefinitionQueryRequested;
         public event EventHandler<TestDefinitionSaveRequestedEventArgs> TestDefinitionSaveRequested;
@@ -19,12 +21,22 @@ namespace DbDataComparer.UI
 
         protected string PathName { get; set; }
         protected TestDefinition TestDefinition { get; set; }
+        protected ConfigurationSettings ConfigurationSettings { get; set; }
 
 
         #region General routines
         public virtual void Activate()
         {
+            this.QueryConfiguration();
             this.QueryTestDefinition();
+        }
+
+        protected virtual void QueryConfiguration()
+        {
+            var eventArgs = new ConfigurationQueryRequestedEventArgs();
+            OnConfigurationQueryRequested(eventArgs);
+
+            this.ConfigurationSettings = eventArgs.ConfigurationSettings;
         }
 
         protected virtual void QueryTestDefinition()
@@ -44,6 +56,14 @@ namespace DbDataComparer.UI
         #endregion
 
         #region Event Raising Methods
+        protected virtual void OnConfigurationQueryRequested(ConfigurationQueryRequestedEventArgs e)
+        {
+            EventHandler<ConfigurationQueryRequestedEventArgs> handler = ConfigurationQueryRequested;
+            if (handler != null)
+                handler(this, e);
+        }
+
+
         protected virtual void OnTestDefinitionLoadRequested(TestDefinitionLoadRequestedEventArgs e)
         {
             EventHandler<TestDefinitionLoadRequestedEventArgs> handler = TestDefinitionLoadRequested;

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Enums;
+using DbDataComparer.Domain.Interfaces;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
 using DbDataComparer.UI.Models;
@@ -51,6 +52,8 @@ namespace DbDataComparer.UI
 
             try
             {
+                IEmailNotifier emailNotifier = new TestDefinitionNotifier(this.ConfigurationSettings.Notification);
+
                 var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Executing Tests" };
                 OnTestDefinitionStatusUpdated(statusEventArgs);
                 ITestExecutioner testExecutioner = new TestExecutioner(new SqlDatabase());
@@ -66,6 +69,13 @@ namespace DbDataComparer.UI
 
                 if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
                     await WriteDetailResults(this.TestDefinition, comparisonResults);
+
+                if (emailNotifier.IsNotificationEnabled(this.TestDefinition, comparisonResults))
+                {
+                    statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Emailing Results" };
+                    emailNotifier.AddNotification(this.TestDefinition, comparisonResults);
+                    emailNotifier.SendNotification("Data ComparerUI - Manual Comparison");
+                }
 
                 statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Comparison Completed" };
                 OnTestDefinitionStatusUpdated(statusEventArgs);
@@ -91,6 +101,7 @@ namespace DbDataComparer.UI
 
                 ms.Position = 0;
                 StreamReader sr = new StreamReader(ms);
+
                 Control control = this.tdTabControl.TabPages["overallResultsTabPage"].Controls["overallResultsTextBox"];
                 ((TextBox)control).Text = sr.ReadToEnd();
             }
@@ -106,9 +117,11 @@ namespace DbDataComparer.UI
 
                 ms.Position = 0;
                 StreamReader sr = new StreamReader(ms);
+
                 Control control = this.tdTabControl.TabPages["errorsTabPage"].Controls["errorsTextBox"];
                 ((TextBox)control).Text = sr.ReadToEnd();
             }
         }
+
     }
 }
