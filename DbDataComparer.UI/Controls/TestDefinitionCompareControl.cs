@@ -36,7 +36,11 @@ namespace DbDataComparer.UI
             OnTestDefinitionLoadRequested(loadEventArgs);
 
             if (loadEventArgs.SuccessfullyLoaded)
+            {
+                WriteOverallResults(null);
+                WriteDetailResults(null);
                 this.QueryTestDefinition();
+            }
         }
 
         private async void tdCompareButton_Click(object sender, EventArgs e)
@@ -65,10 +69,10 @@ namespace DbDataComparer.UI
 
                 statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Formatting Results" };
                 OnTestDefinitionStatusUpdated(statusEventArgs);
-                await WriteOverallResults(this.TestDefinition, comparisonResults);
+                WriteOverallResults(await CreateOverallResults(this.TestDefinition, comparisonResults));
 
                 if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
-                    await WriteDetailResults(this.TestDefinition, comparisonResults);
+                    WriteDetailResults(await CreateDetailResults(this.TestDefinition, comparisonResults));
 
                 if (emailNotifier.IsNotificationEnabled(this.TestDefinition, comparisonResults))
                 {
@@ -91,8 +95,10 @@ namespace DbDataComparer.UI
         }
 
 
-        private async Task WriteOverallResults(TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
+        private async Task<string> CreateOverallResults(TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
         {
+            string ret = null;
+
             using (MemoryStream ms = new MemoryStream())
             {
                 StreamWriter sw = new StreamWriter(ms);
@@ -102,13 +108,16 @@ namespace DbDataComparer.UI
                 ms.Position = 0;
                 StreamReader sr = new StreamReader(ms);
 
-                Control control = this.tdTabControl.TabPages["overallResultsTabPage"].Controls["overallResultsTextBox"];
-                ((TextBox)control).Text = sr.ReadToEnd();
+                ret = sr.ReadToEnd();
             }
+
+            return ret;
         }
 
-        private async Task WriteDetailResults(TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
+        private async Task<string> CreateDetailResults(TestDefinition testDefinition, IEnumerable<ComparisonResult> comparisonResults)
         {
+            string ret = null;
+
             using (MemoryStream ms = new MemoryStream())
             {
                 StreamWriter sw = new StreamWriter(ms);
@@ -118,9 +127,22 @@ namespace DbDataComparer.UI
                 ms.Position = 0;
                 StreamReader sr = new StreamReader(ms);
 
-                Control control = this.tdTabControl.TabPages["errorsTabPage"].Controls["errorsTextBox"];
-                ((TextBox)control).Text = sr.ReadToEnd();
+                ret = sr.ReadToEnd();
             }
+
+            return ret;
+        }
+
+        private void WriteOverallResults(string text)
+        {
+            Control control = this.tdTabControl.TabPages["overallResultsTabPage"].Controls["overallResultsTextBox"];
+            ((TextBox)control).Text = text;
+        }
+
+        private void WriteDetailResults(string text)
+        {
+            Control control = this.tdTabControl.TabPages["errorsTabPage"].Controls["errorsTextBox"];
+            ((TextBox)control).Text = text;
         }
 
     }

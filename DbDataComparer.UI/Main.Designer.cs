@@ -141,9 +141,9 @@
             // testDefinitionCompareControl
             // 
             testDefinitionCompareControl.BorderStyle = BorderStyle.FixedSingle;
-            testDefinitionCompareControl.Location = new Point(47, 44);
+            testDefinitionCompareControl.Location = new Point(5, 5);
             testDefinitionCompareControl.Name = "testDefinitionCompareControl";
-            testDefinitionCompareControl.Size = new Size(505, 404);
+            testDefinitionCompareControl.Size = new Size(590, 490);
             testDefinitionCompareControl.TabIndex = 0;
             // 
             // createPanel

@@ -257,7 +257,11 @@ namespace DbDataComparer.UI
 
             if (item == this.saveToFileToolStripMenuItem)
             {
-                var saveEventArgs = new TestDefinitionSaveRequestedEventArgs() { TestDefinition = this.WorkingTestDefinition };
+                var saveEventArgs = new TestDefinitionSaveRequestedEventArgs()
+                {
+                    TestDefinition = this.WorkingTestDefinition,
+                    ForceOverwrite = true,
+                };
                 OnTestDefinitionSaveRequested(saveEventArgs);
 
                 if (saveEventArgs.SuccessfullySaved)
