@@ -41,6 +41,9 @@ namespace DbDataComparer.UI
                 WriteDetailResults(null);
                 this.QueryTestDefinition();
             }
+
+            // Make sure first tab is selected
+            this.tdTabControl.TabPages[0].Focus();
         }
 
         private async void tdCompareButton_Click(object sender, EventArgs e)
@@ -50,6 +53,10 @@ namespace DbDataComparer.UI
                 RTLAwareMessageBox.ShowMessage("Test Definition", "No Test Definition Loaded");
                 return;
             }
+
+
+            // Make sure first tab is selected
+            this.tdTabControl.TabPages[0].Focus();
 
             Cursor currentCursor = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
