@@ -49,7 +49,7 @@
             tdTabControl.Location = new Point(3, 3);
             tdTabControl.Name = "tdTabControl";
             tdTabControl.SelectedIndex = 0;
-            tdTabControl.Size = new Size(569, 432);
+            tdTabControl.Size = new Size(734, 438);
             tdTabControl.TabIndex = 2;
             // 
             // overallResultsTabPage
@@ -58,7 +58,7 @@
             overallResultsTabPage.Location = new Point(4, 24);
             overallResultsTabPage.Name = "overallResultsTabPage";
             overallResultsTabPage.Padding = new Padding(3);
-            overallResultsTabPage.Size = new Size(561, 404);
+            overallResultsTabPage.Size = new Size(726, 410);
             overallResultsTabPage.TabIndex = 0;
             overallResultsTabPage.Text = "Overall Results";
             overallResultsTabPage.UseVisualStyleBackColor = true;
@@ -69,7 +69,7 @@
             overallResultsTextBox.Multiline = true;
             overallResultsTextBox.Name = "overallResultsTextBox";
             overallResultsTextBox.ScrollBars = ScrollBars.Both;
-            overallResultsTextBox.Size = new Size(554, 397);
+            overallResultsTextBox.Size = new Size(720, 405);
             overallResultsTextBox.TabIndex = 0;
             overallResultsTextBox.WordWrap = false;
             // 
@@ -79,7 +79,7 @@
             ErrorsTabPage.Location = new Point(4, 24);
             ErrorsTabPage.Name = "ErrorsTabPage";
             ErrorsTabPage.Padding = new Padding(3);
-            ErrorsTabPage.Size = new Size(561, 404);
+            ErrorsTabPage.Size = new Size(726, 410);
             ErrorsTabPage.TabIndex = 1;
             ErrorsTabPage.Text = "Errors";
             ErrorsTabPage.UseVisualStyleBackColor = true;
@@ -90,7 +90,7 @@
             errorsTextBox.Multiline = true;
             errorsTextBox.Name = "errorsTextBox";
             errorsTextBox.ScrollBars = ScrollBars.Both;
-            errorsTextBox.Size = new Size(554, 397);
+            errorsTextBox.Size = new Size(720, 405);
             errorsTextBox.TabIndex = 0;
             errorsTextBox.WordWrap = false;
             // 
@@ -112,7 +112,7 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Controls.Add(tdLoadButton, 0, 0);
             tableLayoutPanel1.Controls.Add(tdCompareButton, 1, 0);
-            tableLayoutPanel1.Location = new Point(380, 441);
+            tableLayoutPanel1.Location = new Point(548, 444);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
@@ -137,7 +137,7 @@
             Controls.Add(tableLayoutPanel1);
             Controls.Add(tdTabControl);
             Name = "TestDefinitionCompareControl";
-            Size = new Size(575, 475);
+            Size = new Size(740, 475);
             tdTabControl.ResumeLayout(false);
             overallResultsTabPage.ResumeLayout(false);
             overallResultsTabPage.PerformLayout();

@@ -12,6 +12,7 @@ using DbDataComparer.Domain.Enums;
 using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
+using DbDataComparer.UI.Controls;
 using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
@@ -66,6 +67,7 @@ namespace DbDataComparer.UI
 
             LoadTestDefintionCompareOptions();
             LoadTestDefintionNotificationOptions();
+            LoadTests();
         }
 
         private void LoadTestDefintionCompareOptions()
@@ -97,6 +99,30 @@ namespace DbDataComparer.UI
             SetTextBox(control, this.WorkingTestDefinition.NotificationOptions.Email);
         }
 
+        private void LoadTests()
+        {
+            Control tvControl = this.tdTabControl.TabPages["testsTabPage"].Controls["tableViewTestsControl"];
+            Control spControl = this.tdTabControl.TabPages["testsTabPage"].Controls["storedProcedureTestsControl"];
+
+            if (tvControl != null)
+                tvControl.Visible = false;
+
+            if (spControl != null)
+                spControl.Visible = false;
+
+            if (this.WorkingTestDefinition.TableViewTests != null && tvControl != null)
+            {
+                tvControl.Visible = true;
+                ((TableViewTestsControl)tvControl).SetTests(this.WorkingTestDefinition.TableViewTests);
+            }
+
+            if (this.WorkingTestDefinition.StoredProcedureTests != null && spControl != null)
+            {
+                spControl.Visible = true;
+                //                ((StoredProcedureTestsControl)spControl).SetTests(this.WorkingTestDefinition.StoredProcedureTests);
+            }
+        }
+
 
         private void SetCheckBox(Control control, bool value)
         {
@@ -121,6 +147,7 @@ namespace DbDataComparer.UI
 
             SaveTestDefintionCompareOptions();
             SaveTestDefintionNotificationOptions();
+            SaveTests();
         }
 
         private void SaveTestDefintionCompareOptions()
@@ -156,6 +183,29 @@ namespace DbDataComparer.UI
                 this.WorkingTestDefinition.NotificationOptions.Email += EMAIL_DOMAIN;
         }
 
+        private void SaveTests()
+        {
+            Control tvControl = this.tdTabControl.TabPages["testsTabPage"].Controls["tableViewTestsControl"];
+            Control spControl = this.tdTabControl.TabPages["testsTabPage"].Controls["storedProcedureTestsControl"];
+
+            if (tvControl != null)
+                tvControl.Visible = false;
+
+            if (spControl != null)
+                spControl.Visible = false;
+
+            if (this.WorkingTestDefinition.TableViewTests != null && tvControl != null)
+            {
+                this.WorkingTestDefinition.TableViewTests = ((TableViewTestsControl)tvControl).GetTests();
+            }
+
+            if (this.WorkingTestDefinition.StoredProcedureTests != null && spControl != null)
+            {
+                //this.WorkingTestDefinition.TableViewTests = StoredProcedureTestsControl)spControl).GetTests();
+            }
+        }
+
+
 
         private void Validate()
         {
@@ -164,7 +214,7 @@ namespace DbDataComparer.UI
 
         private void ValidateTestDefintionNotificationOptions()
         {
-            
+
             Control compareControl = this.tdTabControl.TabPages["notificationsTabPage"].Controls["everyCompareCheckBox"];
             Control failureControl = this.tdTabControl.TabPages["notificationsTabPage"].Controls["failureCheckBox"];
             Control emailControl = this.tdTabControl.TabPages["notificationsTabPage"].Controls["emailTextBox"];
@@ -212,6 +262,9 @@ namespace DbDataComparer.UI
 
             if (loadEventArgs.SuccessfullyLoaded)
                 this.QueryTestDefinition();
+
+            // Make sure first tab is selected
+            this.tdTabControl.TabPages[0].Focus();
         }
 
         private async void tdSaveButton_Click(object sender, EventArgs e)
@@ -239,7 +292,7 @@ namespace DbDataComparer.UI
                 }
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 RTLAwareMessageBox.ShowError("Save", ex);
             }

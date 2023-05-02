@@ -113,7 +113,7 @@
             // 
             testDefinitionCreateControl.Anchor = AnchorStyles.None;
             testDefinitionCreateControl.BorderStyle = BorderStyle.FixedSingle;
-            testDefinitionCreateControl.Location = new Point(74, 82);
+            testDefinitionCreateControl.Location = new Point(149, 77);
             testDefinitionCreateControl.Name = "testDefinitionCreateControl";
             testDefinitionCreateControl.Size = new Size(442, 315);
             testDefinitionCreateControl.TabIndex = 2;
@@ -121,9 +121,9 @@
             // mainStatusBar
             // 
             mainStatusBar.Items.AddRange(new ToolStripItem[] { mainStatusTDStatusDescLabel, mainStatusTDStatusLabel });
-            mainStatusBar.Location = new Point(0, 548);
+            mainStatusBar.Location = new Point(0, 527);
             mainStatusBar.Name = "mainStatusBar";
-            mainStatusBar.Size = new Size(804, 22);
+            mainStatusBar.Size = new Size(926, 22);
             mainStatusBar.TabIndex = 3;
             // 
             // mainStatusTDStatusDescLabel
@@ -140,19 +140,18 @@
             // 
             // testDefinitionCompareControl
             // 
-            testDefinitionCompareControl.BorderStyle = BorderStyle.FixedSingle;
             testDefinitionCompareControl.Location = new Point(5, 5);
             testDefinitionCompareControl.Name = "testDefinitionCompareControl";
-            testDefinitionCompareControl.Size = new Size(590, 490);
+            testDefinitionCompareControl.Size = new Size(740, 480);
             testDefinitionCompareControl.TabIndex = 0;
             // 
             // createPanel
             // 
             createPanel.BorderStyle = BorderStyle.FixedSingle;
             createPanel.Controls.Add(testDefinitionCreateControl);
-            createPanel.Location = new Point(185, 25);
+            createPanel.Location = new Point(170, 25);
             createPanel.Name = "createPanel";
-            createPanel.Size = new Size(600, 500);
+            createPanel.Size = new Size(750, 490);
             createPanel.TabIndex = 2;
             createPanel.VisibleChanged += Panel_VisibleChanged;
             // 
@@ -160,9 +159,9 @@
             // 
             comparePanel.BorderStyle = BorderStyle.FixedSingle;
             comparePanel.Controls.Add(testDefinitionCompareControl);
-            comparePanel.Location = new Point(185, 25);
+            comparePanel.Location = new Point(170, 25);
             comparePanel.Name = "comparePanel";
-            comparePanel.Size = new Size(600, 500);
+            comparePanel.Size = new Size(750, 490);
             comparePanel.TabIndex = 3;
             comparePanel.VisibleChanged += Panel_VisibleChanged;
             // 
@@ -170,31 +169,30 @@
             // 
             modifyPanel.BorderStyle = BorderStyle.FixedSingle;
             modifyPanel.Controls.Add(testDefinitionModifyControl);
-            modifyPanel.Location = new Point(185, 25);
+            modifyPanel.Location = new Point(170, 25);
             modifyPanel.Name = "modifyPanel";
-            modifyPanel.Size = new Size(600, 500);
+            modifyPanel.Size = new Size(750, 490);
             modifyPanel.TabIndex = 4;
             modifyPanel.VisibleChanged += Panel_VisibleChanged;
             // 
             // testDefinitionModifyControl
             // 
-            testDefinitionModifyControl.BorderStyle = BorderStyle.FixedSingle;
             testDefinitionModifyControl.Location = new Point(5, 5);
             testDefinitionModifyControl.Name = "testDefinitionModifyControl";
-            testDefinitionModifyControl.Size = new Size(590, 490);
+            testDefinitionModifyControl.Size = new Size(745, 476);
             testDefinitionModifyControl.TabIndex = 0;
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(804, 570);
+            ClientSize = new Size(926, 549);
             Controls.Add(modifyPanel);
-            Controls.Add(comparePanel);
             Controls.Add(createPanel);
             Controls.Add(mainStatusBar);
             Controls.Add(testDefinitionLabel);
             Controls.Add(mainTableLayoutPanel);
+            Controls.Add(comparePanel);
             Name = "Main";
             Text = "Database Data Comparer";
             Load += Main_Load;

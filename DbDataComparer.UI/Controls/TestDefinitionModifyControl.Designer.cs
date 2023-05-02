@@ -36,20 +36,23 @@
             parameterReturnCheckBox = new CheckBox();
             parameterOutputCheckBox = new CheckBox();
             notificationsTabPage = new TabPage();
+            emailDomainLable = new Label();
+            emailTextBox = new TextBox();
+            emailLabel = new Label();
+            failureCheckBox = new CheckBox();
+            everyCompareCheckBox = new CheckBox();
+            testsTabPage = new TabPage();
+            tableViewTestsControl = new Controls.TableViewTestsControl();
             tdSaveButton = new Button();
             buttonTableLayoutPanel = new TableLayoutPanel();
             tdLoadButton = new Button();
             saveButtonContextMenuStrip = new ContextMenuStrip(components);
             saveToFileToolStripMenuItem = new ToolStripMenuItem();
             saveForComparisonToolStripMenuItem = new ToolStripMenuItem();
-            everyCompareCheckBox = new CheckBox();
-            failureCheckBox = new CheckBox();
-            emailLabel = new Label();
-            emailTextBox = new TextBox();
-            emailDomainLable = new Label();
             tdTabControl.SuspendLayout();
             compareOptionsTabPage.SuspendLayout();
             notificationsTabPage.SuspendLayout();
+            testsTabPage.SuspendLayout();
             buttonTableLayoutPanel.SuspendLayout();
             saveButtonContextMenuStrip.SuspendLayout();
             SuspendLayout();
@@ -58,10 +61,11 @@
             // 
             tdTabControl.Controls.Add(compareOptionsTabPage);
             tdTabControl.Controls.Add(notificationsTabPage);
+            tdTabControl.Controls.Add(testsTabPage);
             tdTabControl.Location = new Point(10, 10);
             tdTabControl.Name = "tdTabControl";
             tdTabControl.SelectedIndex = 0;
-            tdTabControl.Size = new Size(554, 415);
+            tdTabControl.Size = new Size(728, 428);
             tdTabControl.TabIndex = 2;
             // 
             // compareOptionsTabPage
@@ -73,7 +77,7 @@
             compareOptionsTabPage.Location = new Point(4, 24);
             compareOptionsTabPage.Name = "compareOptionsTabPage";
             compareOptionsTabPage.Padding = new Padding(3);
-            compareOptionsTabPage.Size = new Size(546, 387);
+            compareOptionsTabPage.Size = new Size(720, 400);
             compareOptionsTabPage.TabIndex = 0;
             compareOptionsTabPage.Text = "Compare Options";
             compareOptionsTabPage.UseVisualStyleBackColor = true;
@@ -127,10 +131,72 @@
             notificationsTabPage.Controls.Add(everyCompareCheckBox);
             notificationsTabPage.Location = new Point(4, 24);
             notificationsTabPage.Name = "notificationsTabPage";
-            notificationsTabPage.Size = new Size(546, 387);
+            notificationsTabPage.Size = new Size(720, 400);
             notificationsTabPage.TabIndex = 2;
             notificationsTabPage.Text = "Notifications";
             notificationsTabPage.UseVisualStyleBackColor = true;
+            // 
+            // emailDomainLable
+            // 
+            emailDomainLable.AutoSize = true;
+            emailDomainLable.Location = new Point(360, 133);
+            emailDomainLable.Name = "emailDomainLable";
+            emailDomainLable.Size = new Size(59, 15);
+            emailDomainLable.TabIndex = 4;
+            emailDomainLable.Text = "@tql.com";
+            // 
+            // emailTextBox
+            // 
+            emailTextBox.Location = new Point(20, 130);
+            emailTextBox.Name = "emailTextBox";
+            emailTextBox.Size = new Size(334, 23);
+            emailTextBox.TabIndex = 3;
+            // 
+            // emailLabel
+            // 
+            emailLabel.AutoSize = true;
+            emailLabel.Location = new Point(20, 110);
+            emailLabel.Name = "emailLabel";
+            emailLabel.Size = new Size(81, 15);
+            emailLabel.TabIndex = 2;
+            emailLabel.Text = "Email Address";
+            // 
+            // failureCheckBox
+            // 
+            failureCheckBox.AutoSize = true;
+            failureCheckBox.Location = new Point(20, 70);
+            failureCheckBox.Name = "failureCheckBox";
+            failureCheckBox.Size = new Size(112, 19);
+            failureCheckBox.TabIndex = 1;
+            failureCheckBox.Text = "Notify on failure";
+            failureCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // everyCompareCheckBox
+            // 
+            everyCompareCheckBox.AutoSize = true;
+            everyCompareCheckBox.Location = new Point(20, 30);
+            everyCompareCheckBox.Name = "everyCompareCheckBox";
+            everyCompareCheckBox.Size = new Size(157, 19);
+            everyCompareCheckBox.TabIndex = 0;
+            everyCompareCheckBox.Text = "Notify on every compare";
+            everyCompareCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // testsTabPage
+            // 
+            testsTabPage.Controls.Add(tableViewTestsControl);
+            testsTabPage.Location = new Point(4, 24);
+            testsTabPage.Name = "testsTabPage";
+            testsTabPage.Size = new Size(720, 400);
+            testsTabPage.TabIndex = 3;
+            testsTabPage.Text = "Tests";
+            testsTabPage.UseVisualStyleBackColor = true;
+            // 
+            // tableViewTestsControl
+            // 
+            tableViewTestsControl.Location = new Point(3, 3);
+            tableViewTestsControl.Name = "tableViewTestsControl";
+            tableViewTestsControl.Size = new Size(710, 390);
+            tableViewTestsControl.TabIndex = 0;
             // 
             // tdSaveButton
             // 
@@ -150,7 +216,7 @@
             buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             buttonTableLayoutPanel.Controls.Add(tdLoadButton, 0, 0);
             buttonTableLayoutPanel.Controls.Add(tdSaveButton, 1, 0);
-            buttonTableLayoutPanel.Location = new Point(380, 441);
+            buttonTableLayoutPanel.Location = new Point(546, 440);
             buttonTableLayoutPanel.Name = "buttonTableLayoutPanel";
             buttonTableLayoutPanel.RowCount = 1;
             buttonTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
@@ -186,66 +252,21 @@
             saveForComparisonToolStripMenuItem.Size = new Size(182, 22);
             saveForComparisonToolStripMenuItem.Text = "Save for comparison";
             // 
-            // everyCompareCheckBox
-            // 
-            everyCompareCheckBox.AutoSize = true;
-            everyCompareCheckBox.Location = new Point(20, 30);
-            everyCompareCheckBox.Name = "everyCompareCheckBox";
-            everyCompareCheckBox.Size = new Size(157, 19);
-            everyCompareCheckBox.TabIndex = 0;
-            everyCompareCheckBox.Text = "Notify on every compare";
-            everyCompareCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // failureCheckBox
-            // 
-            failureCheckBox.AutoSize = true;
-            failureCheckBox.Location = new Point(20, 70);
-            failureCheckBox.Name = "failureCheckBox";
-            failureCheckBox.Size = new Size(112, 19);
-            failureCheckBox.TabIndex = 1;
-            failureCheckBox.Text = "Notify on failure";
-            failureCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // emailLabel
-            // 
-            emailLabel.AutoSize = true;
-            emailLabel.Location = new Point(20, 110);
-            emailLabel.Name = "emailLabel";
-            emailLabel.Size = new Size(81, 15);
-            emailLabel.TabIndex = 2;
-            emailLabel.Text = "Email Address";
-            // 
-            // emailTextBox
-            // 
-            emailTextBox.Location = new Point(20, 130);
-            emailTextBox.Name = "emailTextBox";
-            emailTextBox.Size = new Size(334, 23);
-            emailTextBox.TabIndex = 3;
-            // 
-            // emailDomainLable
-            // 
-            emailDomainLable.AutoSize = true;
-            emailDomainLable.Location = new Point(360, 133);
-            emailDomainLable.Name = "emailDomainLable";
-            emailDomainLable.Size = new Size(59, 15);
-            emailDomainLable.TabIndex = 4;
-            emailDomainLable.Text = "@tql.com";
-            // 
             // TestDefinitionModifyControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BorderStyle = BorderStyle.FixedSingle;
             Controls.Add(buttonTableLayoutPanel);
             Controls.Add(tdTabControl);
             Name = "TestDefinitionModifyControl";
-            Size = new Size(575, 475);
+            Size = new Size(742, 477);
             Load += TestDefinitionModifyControl_Load;
             tdTabControl.ResumeLayout(false);
             compareOptionsTabPage.ResumeLayout(false);
             compareOptionsTabPage.PerformLayout();
             notificationsTabPage.ResumeLayout(false);
             notificationsTabPage.PerformLayout();
+            testsTabPage.ResumeLayout(false);
             buttonTableLayoutPanel.ResumeLayout(false);
             saveButtonContextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
@@ -274,5 +295,7 @@
         private CheckBox failureCheckBox;
         private CheckBox everyCompareCheckBox;
         private Label emailDomainLable;
+        private TabPage testsTabPage;
+        private Controls.TableViewTestsControl tableViewTestsControl;
     }
 }
