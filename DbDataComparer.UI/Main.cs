@@ -36,9 +36,9 @@ namespace DbDataComparer.UI
                 if (control.HasChildren)
                     this.SetTestDefinitionEventHandlers(control.Controls);
 
-                if (control is TestDefinitionUserControl)
+                if (control is TestDefinitionControl)
                 {
-                    TestDefinitionUserControl c = (TestDefinitionUserControl)control;
+                    TestDefinitionControl c = (TestDefinitionControl)control;
                     c.ConfigurationQueryRequested += this.ConfigurationQueryRequested;
                     c.TestDefinitionLoadRequested += this.TestDefinitionLoadRequested;
                     c.TestDefinitionQueryRequested += this.TestDefinitionQueryRequested;
@@ -75,9 +75,9 @@ namespace DbDataComparer.UI
 
         private void ActivateUserControl(Control control)
         {
-            if (control is TestDefinitionUserControl)
+            if (control is TestDefinitionControl)
             {
-                ((TestDefinitionUserControl)control).Activate();
+                ((TestDefinitionControl)control).Activate();
             }
         }
         #endregion

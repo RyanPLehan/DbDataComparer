@@ -14,7 +14,7 @@ using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TestDefinitionCreateControl : TestDefinitionUserControl
+    public partial class TestDefinitionCreateControl : TestDefinitionControl
     {
         private const int SourceTabPageIndex = 0;
         private const int TargetTabPageIndex = 1;

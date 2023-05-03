@@ -2,13 +2,8 @@
 
 namespace DbDataComparer.Domain.Models
 {
-    public class TableViewTest
+    public class TableViewTest : Test
     {
-        /// <summary>
-        /// Test name
-        /// </summary>
-        public string Name { get; set; }
-
         /// <summary>
         /// List of Test values for Source command
         /// </summary>
@@ -18,7 +13,5 @@ namespace DbDataComparer.Domain.Models
         /// List of Test values for Target command
         /// </summary>
         public string TargetSql { get; set; }
-
-        public override string ToString() => this.Name;
     }
 }

@@ -116,7 +116,7 @@ namespace DbDataComparer.Domain
                 if (param.DataType == SqlDbType.Structured)
                     testValue.Values = CreateStructuredValues(param.UserDefinedType);
                 else
-                    testValue.Value = CreateSimpleValue(param.DataType);
+                    testValue.Value = CreateSampleValue(param.DataType);
 
                 testValues.Add(testValue);
             }
@@ -134,7 +134,7 @@ namespace DbDataComparer.Domain
             {
                 IDictionary<string, object> kvp = new Dictionary<string, object>();
                 foreach (UdtColumn col in udt.Columns)
-                    kvp.Add(col.Name, CreateSimpleValue(col.DataType));
+                    kvp.Add(col.Name, CreateSampleValue(col.DataType));
 
                 rows.Add(kvp);
             }
@@ -142,7 +142,7 @@ namespace DbDataComparer.Domain
         }
 
 
-        private object CreateSimpleValue(SqlDbType dataType)
+        private object CreateSampleValue(SqlDbType dataType)
         {
             object value = null;
 

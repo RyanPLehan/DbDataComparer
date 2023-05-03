@@ -10,7 +10,7 @@ using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
-    public class TestDefinitionUserControl : UserControl
+    public class TestDefinitionControl : UserControl
     {
         public event EventHandler<ConfigurationQueryRequestedEventArgs> ConfigurationQueryRequested;
         public event EventHandler<TestDefinitionLoadRequestedEventArgs> TestDefinitionLoadRequested;

@@ -39,7 +39,7 @@
             targetTabPage = new TabPage();
             testTargetTextBox = new TextBox();
             buttonTableLayoutPanel = new TableLayoutPanel();
-            addButton = new Button();
+            addUpdateButton = new Button();
             deleteButton = new Button();
             testGroupBox.SuspendLayout();
             testTabControl.SuspendLayout();
@@ -150,7 +150,7 @@
             buttonTableLayoutPanel.ColumnCount = 2;
             buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            buttonTableLayoutPanel.Controls.Add(addButton, 0, 0);
+            buttonTableLayoutPanel.Controls.Add(addUpdateButton, 0, 0);
             buttonTableLayoutPanel.Controls.Add(deleteButton, 1, 0);
             buttonTableLayoutPanel.Location = new Point(560, 347);
             buttonTableLayoutPanel.Name = "buttonTableLayoutPanel";
@@ -161,14 +161,14 @@
             // 
             // addButton
             // 
-            addButton.Anchor = AnchorStyles.None;
-            addButton.Location = new Point(5, 5);
-            addButton.Name = "addButton";
-            addButton.Size = new Size(60, 25);
-            addButton.TabIndex = 0;
-            addButton.Text = "Add";
-            addButton.UseVisualStyleBackColor = true;
-            addButton.Click += addButton_Click;
+            addUpdateButton.Anchor = AnchorStyles.None;
+            addUpdateButton.Location = new Point(5, 5);
+            addUpdateButton.Name = "addButton";
+            addUpdateButton.Size = new Size(60, 25);
+            addUpdateButton.TabIndex = 0;
+            addUpdateButton.Text = "Add";
+            addUpdateButton.UseVisualStyleBackColor = true;
+            addUpdateButton.Click += addUpdateButton_Click;
             // 
             // deleteButton
             // 
@@ -209,7 +209,7 @@
         private ComboBox testsComboBox;
         private GroupBox testGroupBox;
         private TableLayoutPanel buttonTableLayoutPanel;
-        private Button addButton;
+        private Button addUpdateButton;
         private Button deleteButton;
         private TabControl testTabControl;
         private TabPage sourceTabPage;

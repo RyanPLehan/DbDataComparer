@@ -16,7 +16,7 @@ using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TestDefinitionCompareControl : TestDefinitionUserControl
+    public partial class TestDefinitionCompareControl : TestDefinitionControl
     {
         private const int OverallResultsTabPageIndex = 0;
         private const int ErrorsTabPageIndex = 1;
@@ -43,7 +43,7 @@ namespace DbDataComparer.UI
             }
 
             // Make sure first tab is selected
-            this.tdTabControl.TabPages[0].Focus();
+            this.tdTabControl.SelectedIndex = OverallResultsTabPageIndex;
         }
 
         private async void tdCompareButton_Click(object sender, EventArgs e)

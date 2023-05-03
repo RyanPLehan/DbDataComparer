@@ -17,15 +17,15 @@ using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TestDefinitionModifyControl : TestDefinitionUserControl
+    public partial class TestDefinitionModifyControl : TestDefinitionControl
     {
         private TestDefinition WorkingTestDefinition = null;
 
         private const string EMAIL_DOMAIN = "@tql.com";
 
         private const int CompareOptionsTabPageIndex = 0;
-        private const int notificationsTabPageIndex = 1;
-        private const int testsTabPageIndex = 2;
+        private const int NotificationsTabPageIndex = 1;
+        private const int TestsTabPageIndex = 2;
 
         public TestDefinitionModifyControl()
         {
@@ -264,7 +264,7 @@ namespace DbDataComparer.UI
                 this.QueryTestDefinition();
 
             // Make sure first tab is selected
-            this.tdTabControl.TabPages[0].Focus();
+            this.tdTabControl.SelectedIndex = CompareOptionsTabPageIndex;
         }
 
         private async void tdSaveButton_Click(object sender, EventArgs e)

@@ -13,11 +13,20 @@ namespace DbDataComparer.UI.Controls
 {
     public partial class TableViewTestsControl : UserControl
     {
+        private enum AddUpdateActionEnum : int
+        {
+            Add,
+            Update,
+        }
+
         private const int NOT_SELECTED_INDEX = -1;
         private const int NEW_SELECTED_INDEX = 0;
 
+        private const int SourceTabPageIndex = 0;
+        private const int TargetTabPageIndex = 1;
+
         private IList<TableViewTest> Tests = new List<TableViewTest>();
-        private TableViewTest WorkingTest = new TableViewTest();
+        private TableViewTest WorkingTest;
 
         public TableViewTestsControl()
         {
@@ -36,16 +45,36 @@ namespace DbDataComparer.UI.Controls
             if (tests != null)
                 this.Tests = tests.ToList();
 
+            SetAddUpdateButton(AddUpdateActionEnum.Add);
             LoadTests();
         }
 
+        private void SetAddUpdateButton(AddUpdateActionEnum addUpdateAction)
+        {
+            Button button = this.addUpdateButton;
+            button.Tag = addUpdateAction;
+
+            switch (addUpdateAction)
+            {
+                case AddUpdateActionEnum.Add:
+                    button.Text = "Add";
+                    break;
+
+                case AddUpdateActionEnum.Update:
+                    button.Text = "Update";
+                    break;
+            }
+        }
 
         private void LoadTests()
         {
+            this.addUpdateButton.Enabled = false;
+            this.deleteButton.Enabled = false;
+
             LoadTestsComboBox();
             this.testsComboBox.SelectedIndex = NOT_SELECTED_INDEX;
 
-            this.WorkingTest = new TableViewTest();
+            CreateWorkingTest();
             LoadTest();
         }
 
@@ -77,6 +106,12 @@ namespace DbDataComparer.UI.Controls
         }
 
 
+        private void CreateWorkingTest()
+        {
+            this.WorkingTest = new TableViewTest();
+        }
+
+
         private void LoadTest()
         {
             Control control;
@@ -92,11 +127,11 @@ namespace DbDataComparer.UI.Controls
             ((TextBox)control).Text = this.WorkingTest.TargetSql;
 
             // Set focus to first tab page
-            this.testTabControl.TabPages[0].Focus();
+            this.testTabControl.SelectedIndex = SourceTabPageIndex;
         }
 
 
-        private void SetWorkingTest()
+        private void SaveTest()
         {
             Control control;
 
@@ -115,13 +150,21 @@ namespace DbDataComparer.UI.Controls
 
         private void ValidateTest()
         {
-            if (String.IsNullOrWhiteSpace(this.WorkingTest.Name))
+            Control control;
+
+            if (String.IsNullOrWhiteSpace(this.testNameTextBox.Text))
                 throw new Exception("Missing Test Name");
 
-            if (String.IsNullOrWhiteSpace(this.WorkingTest.SourceSql))
+
+            // Source Sql
+            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
+            if (String.IsNullOrWhiteSpace(((TextBox)control).Text))
                 throw new Exception("Missing Source SQL");
 
-            if (String.IsNullOrWhiteSpace(this.WorkingTest.TargetSql))
+
+            // Target Sql
+            control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
+            if (String.IsNullOrWhiteSpace(((TextBox)control).Text))
                 throw new Exception("Missing Target SQL");
         }
         #endregion
@@ -129,19 +172,26 @@ namespace DbDataComparer.UI.Controls
 
         private void testsComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int selectedIndex = this.testsComboBox.SelectedIndex;
+            this.addUpdateButton.Enabled = true;
+            this.deleteButton.Enabled = false;
 
+            int selectedIndex = this.testsComboBox.SelectedIndex;
             switch (selectedIndex)
             {
                 case NOT_SELECTED_INDEX:
+                    this.addUpdateButton.Enabled = false;
+                    SetAddUpdateButton(AddUpdateActionEnum.Add);
                     break;
 
                 case NEW_SELECTED_INDEX:
-                    this.WorkingTest = new TableViewTest();
+                    SetAddUpdateButton(AddUpdateActionEnum.Add);
+                    CreateWorkingTest();
                     LoadTest();
                     break;
 
                 default:
+                    this.deleteButton.Enabled = true;
+                    SetAddUpdateButton(AddUpdateActionEnum.Update);
                     object item = this.testsComboBox.Items[selectedIndex];
                     this.WorkingTest = (TableViewTest)item;
                     LoadTest();
@@ -150,23 +200,27 @@ namespace DbDataComparer.UI.Controls
         }
 
 
-        private void addButton_Click(object sender, EventArgs e)
+        private void addUpdateButton_Click(object sender, EventArgs e)
         {
+            AddUpdateActionEnum addUpdateAction = (AddUpdateActionEnum)addUpdateButton.Tag;
+
             try
             {
-                // Check to see if test already exists in base list
-                if (!this.Tests.Any(x => x == this.WorkingTest))
-                {
-                    SetWorkingTest();
-                    ValidateTest();
+                ValidateTest();
+                SaveTest();
+
+                // Add to Tests list if not already in list
+                if (addUpdateAction == AddUpdateActionEnum.Add &&
+                    !this.Tests.Any(x => x == this.WorkingTest))
                     this.Tests.Add(this.WorkingTest);
-                    LoadTestsComboBox();
-                    FindInTestsComboBox(this.WorkingTest.Name);
-                }
+
+                LoadTestsComboBox();
+                FindInTestsComboBox(this.WorkingTest.Name);
             }
             catch (Exception ex)
             {
-                RTLAwareMessageBox.ShowError("Add Test", ex);
+                string title = String.Format("{0} Test", addUpdateAction.ToString());
+                RTLAwareMessageBox.ShowError(title, ex);
             }
         }
 
