@@ -12,7 +12,6 @@ using DbDataComparer.Domain.Enums;
 using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
-using DbDataComparer.UI.Controls;
 using DbDataComparer.UI.Models;
 
 namespace DbDataComparer.UI
@@ -113,13 +112,13 @@ namespace DbDataComparer.UI
             if (this.WorkingTestDefinition.TableViewTests != null && tvControl != null)
             {
                 tvControl.Visible = true;
-                ((TableViewTestsControl)tvControl).SetTests(this.WorkingTestDefinition.TableViewTests);
+                ((TableViewTestsControl)tvControl).LoadTestDefinition(this.WorkingTestDefinition);
             }
 
             if (this.WorkingTestDefinition.StoredProcedureTests != null && spControl != null)
             {
                 spControl.Visible = true;
-                //                ((StoredProcedureTestsControl)spControl).SetTests(this.WorkingTestDefinition.StoredProcedureTests);
+                ((StoredProcedureTestsControl)spControl).LoadTestDefinition(this.WorkingTestDefinition);
             }
         }
 
@@ -196,7 +195,7 @@ namespace DbDataComparer.UI
 
             if (this.WorkingTestDefinition.TableViewTests != null && tvControl != null)
             {
-                this.WorkingTestDefinition.TableViewTests = ((TableViewTestsControl)tvControl).GetTests();
+                this.WorkingTestDefinition.TableViewTests = ((TableViewTestsControl)tvControl).SaveTestDefinition().TableViewTests;
             }
 
             if (this.WorkingTestDefinition.StoredProcedureTests != null && spControl != null)

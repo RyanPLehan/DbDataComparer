@@ -42,7 +42,8 @@
             failureCheckBox = new CheckBox();
             everyCompareCheckBox = new CheckBox();
             testsTabPage = new TabPage();
-            tableViewTestsControl = new Controls.TableViewTestsControl();
+            tableViewTestsControl = new TableViewTestsControl();
+            storedProcedureTestsControl = new StoredProcedureTestsControl();
             tdSaveButton = new Button();
             buttonTableLayoutPanel = new TableLayoutPanel();
             tdLoadButton = new Button();
@@ -184,6 +185,7 @@
             // testsTabPage
             // 
             testsTabPage.Controls.Add(tableViewTestsControl);
+            testsTabPage.Controls.Add(storedProcedureTestsControl);
             testsTabPage.Location = new Point(4, 24);
             testsTabPage.Name = "testsTabPage";
             testsTabPage.Size = new Size(720, 400);
@@ -197,6 +199,13 @@
             tableViewTestsControl.Name = "tableViewTestsControl";
             tableViewTestsControl.Size = new Size(710, 390);
             tableViewTestsControl.TabIndex = 0;
+            // 
+            // storedProcedureTestsControl
+            // 
+            storedProcedureTestsControl.Location = new Point(3, 3);
+            storedProcedureTestsControl.Name = "storedProcedureTestsControl";
+            storedProcedureTestsControl.Size = new Size(710, 390);
+            storedProcedureTestsControl.TabIndex = 0;
             // 
             // tdSaveButton
             // 
@@ -296,6 +305,7 @@
         private CheckBox everyCompareCheckBox;
         private Label emailDomainLable;
         private TabPage testsTabPage;
-        private Controls.TableViewTestsControl tableViewTestsControl;
+        private TableViewTestsControl tableViewTestsControl;
+        private StoredProcedureTestsControl storedProcedureTestsControl;
     }
 }

@@ -106,7 +106,11 @@ namespace DbDataComparer.Domain
 
 
             dbTypeMapEntry
-            = new DbTypeMapEntry(typeof(double), DbType.Double, SqlDbType.Float);
+            = new DbTypeMapEntry(typeof(double), DbType.Double, SqlDbType.Float, true);
+            _DbTypeList.Add(dbTypeMapEntry);
+
+            dbTypeMapEntry
+            = new DbTypeMapEntry(typeof(double), DbType.Double, SqlDbType.Real, false);
             _DbTypeList.Add(dbTypeMapEntry);
 
             dbTypeMapEntry

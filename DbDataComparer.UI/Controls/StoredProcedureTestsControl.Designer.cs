@@ -1,6 +1,6 @@
 ﻿namespace DbDataComparer.UI
 {
-    partial class TableViewTestsControl
+    partial class StoredProcedureTestsControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -35,16 +35,14 @@
             testNameLabel = new Label();
             testTabControl = new TabControl();
             sourceTabPage = new TabPage();
-            testSourceTextBox = new TextBox();
+            sourceSprocParametersControl = new SprocParametersControl();
             targetTabPage = new TabPage();
-            testTargetTextBox = new TextBox();
             buttonTableLayoutPanel = new TableLayoutPanel();
             addUpdateButton = new Button();
             deleteButton = new Button();
             testGroupBox.SuspendLayout();
             testTabControl.SuspendLayout();
             sourceTabPage.SuspendLayout();
-            targetTabPage.SuspendLayout();
             buttonTableLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -102,48 +100,36 @@
             testTabControl.Location = new Point(5, 63);
             testTabControl.Name = "testTabControl";
             testTabControl.SelectedIndex = 0;
-            testTabControl.Size = new Size(672, 251);
+            testTabControl.Size = new Size(672, 256);
             testTabControl.TabIndex = 0;
             // 
             // sourceTabPage
             // 
-            sourceTabPage.Controls.Add(testSourceTextBox);
+            sourceTabPage.Controls.Add(sourceSprocParametersControl);
             sourceTabPage.Location = new Point(4, 24);
             sourceTabPage.Name = "sourceTabPage";
             sourceTabPage.Padding = new Padding(3);
-            sourceTabPage.Size = new Size(664, 223);
+            sourceTabPage.Size = new Size(664, 228);
             sourceTabPage.TabIndex = 0;
             sourceTabPage.Text = "Source";
             sourceTabPage.UseVisualStyleBackColor = true;
             // 
-            // testSourceTextBox
+            // sourceSprocParametersControl
             // 
-            testSourceTextBox.Location = new Point(5, 5);
-            testSourceTextBox.Multiline = true;
-            testSourceTextBox.Name = "testSourceTextBox";
-            testSourceTextBox.ScrollBars = ScrollBars.Vertical;
-            testSourceTextBox.Size = new Size(653, 212);
-            testSourceTextBox.TabIndex = 0;
+            sourceSprocParametersControl.Location = new Point(-4, 0);
+            sourceSprocParametersControl.Name = "sourceSprocParametersControl";
+            sourceSprocParametersControl.Size = new Size(668, 232);
+            sourceSprocParametersControl.TabIndex = 0;
             // 
             // targetTabPage
             // 
-            targetTabPage.Controls.Add(testTargetTextBox);
             targetTabPage.Location = new Point(4, 24);
             targetTabPage.Name = "targetTabPage";
             targetTabPage.Padding = new Padding(3);
-            targetTabPage.Size = new Size(664, 223);
+            targetTabPage.Size = new Size(664, 228);
             targetTabPage.TabIndex = 1;
             targetTabPage.Text = "Target";
             targetTabPage.UseVisualStyleBackColor = true;
-            // 
-            // testTargetTextBox
-            // 
-            testTargetTextBox.Location = new Point(5, 5);
-            testTargetTextBox.Multiline = true;
-            testTargetTextBox.Name = "testTargetTextBox";
-            testTargetTextBox.ScrollBars = ScrollBars.Vertical;
-            testTargetTextBox.Size = new Size(653, 212);
-            testTargetTextBox.TabIndex = 1;
             // 
             // buttonTableLayoutPanel
             // 
@@ -181,7 +167,7 @@
             deleteButton.UseVisualStyleBackColor = true;
             deleteButton.Click += deleteButton_Click;
             // 
-            // TableViewTestsControl
+            // StoredProcedureTestsControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -189,15 +175,12 @@
             Controls.Add(testGroupBox);
             Controls.Add(testsComboBox);
             Controls.Add(testNamesLabel);
-            Name = "TableViewTestsControl";
+            Name = "StoredProcedureTestsControl";
             Size = new Size(705, 385);
             testGroupBox.ResumeLayout(false);
             testGroupBox.PerformLayout();
             testTabControl.ResumeLayout(false);
             sourceTabPage.ResumeLayout(false);
-            sourceTabPage.PerformLayout();
-            targetTabPage.ResumeLayout(false);
-            targetTabPage.PerformLayout();
             buttonTableLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -213,10 +196,9 @@
         private Button deleteButton;
         private TabControl testTabControl;
         private TabPage sourceTabPage;
-        private TextBox testSourceTextBox;
         private TabPage targetTabPage;
-        private TextBox testTargetTextBox;
         private TextBox testNameTextBox;
         private Label testNameLabel;
+        private SprocParametersControl sourceSprocParametersControl;
     }
 }

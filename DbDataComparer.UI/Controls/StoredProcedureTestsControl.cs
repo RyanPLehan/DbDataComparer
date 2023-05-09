@@ -11,7 +11,7 @@ using DbDataComparer.Domain.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TableViewTestsControl : UserControl
+    public partial class StoredProcedureTestsControl : UserControl
     {
         private enum AddUpdateActionEnum : int
         {
@@ -26,10 +26,10 @@ namespace DbDataComparer.UI
         private const int TargetTabPageIndex = 1;
 
         private TestDefinition TestDefinition;
-        private IList<TableViewTest> Tests;
-        private TableViewTest WorkingTest;
+        private IList<StoredProcedureTest> Tests;
+        private StoredProcedureTest WorkingTest;
 
-        public TableViewTestsControl()
+        public StoredProcedureTestsControl()
         {
             InitializeComponent();
         }
@@ -40,10 +40,10 @@ namespace DbDataComparer.UI
             this.TestDefinition = testDefinition ??
                 throw new ArgumentNullException(nameof(testDefinition));
 
-            if (testDefinition.TableViewTests != null)
-                this.Tests = testDefinition.TableViewTests.ToList();
+            if (testDefinition.StoredProcedureTests != null)
+                this.Tests = testDefinition.StoredProcedureTests.ToList();
             else
-                this.Tests = new List<TableViewTest>();
+                this.Tests = new List<StoredProcedureTest>();
 
             SetAddUpdateButton(AddUpdateActionEnum.Add);
             LoadTests();
@@ -51,7 +51,7 @@ namespace DbDataComparer.UI
 
         public TestDefinition SaveTestDefinition()
         {
-            this.TestDefinition.TableViewTests = this.Tests.ToArray();
+            this.TestDefinition.StoredProcedureTests = this.Tests.ToArray();
             return this.TestDefinition;
         }
 
@@ -91,7 +91,7 @@ namespace DbDataComparer.UI
             this.testsComboBox.Items.Clear();
 
             this.testsComboBox.Items.Add("<< New Test >>");
-            foreach (TableViewTest test in this.Tests.OrderBy(x => x.Name))
+            foreach (StoredProcedureTest test in this.Tests.OrderBy(x => x.Name))
                 this.testsComboBox.Items.Add(test);
         }
 
@@ -115,7 +115,7 @@ namespace DbDataComparer.UI
 
         private void CreateWorkingTest()
         {
-            this.WorkingTest = new TableViewTest();
+            this.WorkingTest = new StoredProcedureTest();
         }
 
 
@@ -125,13 +125,14 @@ namespace DbDataComparer.UI
 
             this.testNameTextBox.Text = this.WorkingTest.Name;
 
-            // Source Sql
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
-            ((TextBox)control).Text = this.WorkingTest.SourceSql;
+            // Source
+            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceSprocParametersControl"];
+            ((SprocParametersControl)control).SetParameters(this.TestDefinition.Source.Parameters);
+
 
             // Target Sql
             control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
-            ((TextBox)control).Text = this.WorkingTest.TargetSql;
+            //((TextBox)control).Text = this.WorkingTest.TargetSql;
 
             // Set focus to first tab page
             this.testTabControl.SelectedIndex = SourceTabPageIndex;
@@ -146,11 +147,11 @@ namespace DbDataComparer.UI
 
             // Source Sql
             control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
-            this.WorkingTest.SourceSql = ((TextBox)control).Text?.Trim();
+            //this.WorkingTest.SourceSql = ((TextBox)control).Text?.Trim();
 
             // Target Sql
             control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
-            this.WorkingTest.TargetSql = ((TextBox)control).Text?.Trim();
+            //this.WorkingTest.TargetSql = ((TextBox)control).Text?.Trim();
 
         }
 
@@ -200,7 +201,7 @@ namespace DbDataComparer.UI
                     this.deleteButton.Enabled = true;
                     SetAddUpdateButton(AddUpdateActionEnum.Update);
                     object item = this.testsComboBox.Items[selectedIndex];
-                    this.WorkingTest = (TableViewTest)item;
+                    this.WorkingTest = (StoredProcedureTest)item;
                     LoadTest();
                     break;
             }
@@ -251,5 +252,6 @@ namespace DbDataComparer.UI
                     break;
             }
         }
+
     }
 }
