@@ -65,7 +65,6 @@
             testsComboBox.Name = "testsComboBox";
             testsComboBox.Size = new Size(496, 23);
             testsComboBox.TabIndex = 1;
-            testsComboBox.SelectedIndexChanged += testsComboBox_SelectedIndexChanged;
             // 
             // testGroupBox
             // 
@@ -74,7 +73,7 @@
             testGroupBox.Controls.Add(testTabControl);
             testGroupBox.Location = new Point(13, 57);
             testGroupBox.Name = "testGroupBox";
-            testGroupBox.Size = new Size(683, 325);
+            testGroupBox.Size = new Size(683, 335);
             testGroupBox.TabIndex = 3;
             testGroupBox.TabStop = false;
             testGroupBox.Text = "Test";
@@ -102,7 +101,7 @@
             testTabControl.Location = new Point(5, 63);
             testTabControl.Name = "testTabControl";
             testTabControl.SelectedIndex = 0;
-            testTabControl.Size = new Size(672, 251);
+            testTabControl.Size = new Size(672, 266);
             testTabControl.TabIndex = 0;
             // 
             // sourceTabPage
@@ -111,7 +110,7 @@
             sourceTabPage.Location = new Point(4, 24);
             sourceTabPage.Name = "sourceTabPage";
             sourceTabPage.Padding = new Padding(3);
-            sourceTabPage.Size = new Size(664, 223);
+            sourceTabPage.Size = new Size(664, 238);
             sourceTabPage.TabIndex = 0;
             sourceTabPage.Text = "Source";
             sourceTabPage.UseVisualStyleBackColor = true;
@@ -122,7 +121,7 @@
             testSourceTextBox.Multiline = true;
             testSourceTextBox.Name = "testSourceTextBox";
             testSourceTextBox.ScrollBars = ScrollBars.Vertical;
-            testSourceTextBox.Size = new Size(653, 212);
+            testSourceTextBox.Size = new Size(653, 227);
             testSourceTextBox.TabIndex = 0;
             // 
             // targetTabPage
@@ -131,7 +130,7 @@
             targetTabPage.Location = new Point(4, 24);
             targetTabPage.Name = "targetTabPage";
             targetTabPage.Padding = new Padding(3);
-            targetTabPage.Size = new Size(664, 223);
+            targetTabPage.Size = new Size(664, 238);
             targetTabPage.TabIndex = 1;
             targetTabPage.Text = "Target";
             targetTabPage.UseVisualStyleBackColor = true;
@@ -142,7 +141,7 @@
             testTargetTextBox.Multiline = true;
             testTargetTextBox.Name = "testTargetTextBox";
             testTargetTextBox.ScrollBars = ScrollBars.Vertical;
-            testTargetTextBox.Size = new Size(653, 212);
+            testTargetTextBox.Size = new Size(653, 227);
             testTargetTextBox.TabIndex = 1;
             // 
             // buttonTableLayoutPanel
@@ -168,7 +167,6 @@
             addUpdateButton.TabIndex = 0;
             addUpdateButton.Text = "Add";
             addUpdateButton.UseVisualStyleBackColor = true;
-            addUpdateButton.Click += addUpdateButton_Click;
             // 
             // deleteButton
             // 
@@ -179,7 +177,6 @@
             deleteButton.TabIndex = 1;
             deleteButton.Text = "Delete";
             deleteButton.UseVisualStyleBackColor = true;
-            deleteButton.Click += deleteButton_Click;
             // 
             // TableViewTestsControl
             // 
@@ -190,7 +187,7 @@
             Controls.Add(testsComboBox);
             Controls.Add(testNamesLabel);
             Name = "TableViewTestsControl";
-            Size = new Size(705, 385);
+            Size = new Size(705, 400);
             testGroupBox.ResumeLayout(false);
             testGroupBox.PerformLayout();
             testTabControl.ResumeLayout(false);

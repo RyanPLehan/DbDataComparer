@@ -247,6 +247,7 @@ namespace DbDataComparer.UI
         #endregion
 
 
+        #region Control Event handlers
         private void TestDefinitionModifyControl_Load(object sender, EventArgs e)
         {
             saveButtonContextMenuStrip.ItemClicked += saveButtonContextMenuStrip_ItemClicked;
@@ -260,10 +261,11 @@ namespace DbDataComparer.UI
             OnTestDefinitionLoadRequested(loadEventArgs);
 
             if (loadEventArgs.SuccessfullyLoaded)
+            {
+                // Make sure first tab is selected
+                this.tdTabControl.SelectedIndex = CompareOptionsTabPageIndex;
                 this.QueryTestDefinition();
-
-            // Make sure first tab is selected
-            this.tdTabControl.SelectedIndex = CompareOptionsTabPageIndex;
+            }
         }
 
         private async void tdSaveButton_Click(object sender, EventArgs e)
@@ -320,5 +322,6 @@ namespace DbDataComparer.UI
                     this.QueryTestDefinition();
             }
         }
+        #endregion
     }
 }

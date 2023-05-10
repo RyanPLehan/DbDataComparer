@@ -37,13 +37,13 @@ namespace DbDataComparer.UI
 
             if (loadEventArgs.SuccessfullyLoaded)
             {
+                // Make sure first tab is selected
+                this.tdTabControl.SelectedIndex = OverallResultsTabPageIndex;
+
                 WriteOverallResults(null);
                 WriteDetailResults(null);
                 this.QueryTestDefinition();
             }
-
-            // Make sure first tab is selected
-            this.tdTabControl.SelectedIndex = OverallResultsTabPageIndex;
         }
 
         private async void tdCompareButton_Click(object sender, EventArgs e)

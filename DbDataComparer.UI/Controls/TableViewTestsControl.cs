@@ -32,7 +32,13 @@ namespace DbDataComparer.UI
         public TableViewTestsControl()
         {
             InitializeComponent();
+
+            // Manually set Event Handlers
+            this.addUpdateButton.Click += addUpdateButton_Click;
+            this.deleteButton.Click += deleteButton_Click;
+            this.testsComboBox.SelectedIndexChanged += testsComboBox_SelectedIndexChanged;
         }
+
 
         #region General Routines
         public void LoadTestDefinition(TestDefinition testDefinition)
@@ -79,10 +85,7 @@ namespace DbDataComparer.UI
             this.deleteButton.Enabled = false;
 
             LoadTestsComboBox();
-            this.testsComboBox.SelectedIndex = NOT_SELECTED_INDEX;
-
-            CreateWorkingTest();
-            LoadTest();
+            this.testsComboBox.SelectedIndex = (this.testsComboBox.Items.Count > 1 ? NEW_SELECTED_INDEX + 1 : NEW_SELECTED_INDEX);
         }
 
 
@@ -93,6 +96,9 @@ namespace DbDataComparer.UI
             this.testsComboBox.Items.Add("<< New Test >>");
             foreach (TableViewTest test in this.Tests.OrderBy(x => x.Name))
                 this.testsComboBox.Items.Add(test);
+
+            // Set index
+            this.testsComboBox.SelectedIndex = NOT_SELECTED_INDEX;
         }
 
 
@@ -125,6 +131,9 @@ namespace DbDataComparer.UI
 
             this.testNameTextBox.Text = this.WorkingTest.Name;
 
+            // Set focus to first tab page
+            this.testTabControl.SelectedIndex = SourceTabPageIndex;
+
             // Source Sql
             control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
             ((TextBox)control).Text = this.WorkingTest.SourceSql;
@@ -132,9 +141,6 @@ namespace DbDataComparer.UI
             // Target Sql
             control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
             ((TextBox)control).Text = this.WorkingTest.TargetSql;
-
-            // Set focus to first tab page
-            this.testTabControl.SelectedIndex = SourceTabPageIndex;
         }
 
 
