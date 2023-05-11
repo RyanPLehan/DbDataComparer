@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DbDataComparer.Domain;
+using DbDataComparer.Domain.Extensions;
 using DbDataComparer.Domain.Models;
 
 namespace DbDataComparer.UI
@@ -108,7 +110,6 @@ namespace DbDataComparer.UI
                 dataGridView.AllowUserToAddRows = false;
                 dataGridView.CellClick += dataGrid_CellClick;
                 dataGridView.CellContentClick += dataGrid_CellContentClick;
-                dataGridView.CellValueChanged += dataGrid_CellValueChanged;
             }
 
             control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
@@ -119,7 +120,6 @@ namespace DbDataComparer.UI
                 dataGridView.AllowUserToAddRows = false;
                 dataGridView.CellClick += dataGrid_CellClick;
                 dataGridView.CellContentClick += dataGrid_CellContentClick;
-                dataGridView.CellValueChanged += dataGrid_CellValueChanged;
             }
         }
 
@@ -279,7 +279,10 @@ namespace DbDataComparer.UI
             cell.Value = parameter.DataTypeDescription;
             cell.Tag = parameter.DataType;                              // Use Tag to store Enum value
         }
+        #endregion
 
+
+        #region Grid Load/Save Routines
         private void LoadDataGridValues(DataGridView dataGridView, IEnumerable<ParameterTestValue> testValues)
         {
             DataGridViewRow row;
@@ -304,22 +307,15 @@ namespace DbDataComparer.UI
                 if (row.Index == DATA_GRID_HEADER_ROW_INDEX)
                     continue;
 
-                // Parameter Value
+                // Determine which field (Value or Values) to populate based upon data type stored in the tag field
+                cell = row.Cells[DATA_GRID_PARAM_TYPE_COL_INDEX];
+                SqlDbType sqlDbType = (SqlDbType)cell.Tag;
+
                 cell = row.Cells[DATA_GRID_PARAM_VALUE_COL_INDEX];
-                switch (cell)
-                {
-                    case DataGridViewButtonCell b:
-                        ((ParameterStructure)b.Tag).Values = null;
-                        break;
-
-                    case DataGridViewComboBoxCell c:
-                        c.Value = null;
-                        break;
-
-                    case DataGridViewTextBoxCell t:
-                        t.Value = null;
-                        break;
-                }
+                if (sqlDbType == SqlDbType.Structured)
+                    ((ParameterStructure)cell.Tag).Values = null;
+                else
+                    cell.Value = null;
 
                 // Null Check box
                 cell = row.Cells[DATA_GRID_PARAM_NULL_COL_INDEX];
@@ -356,8 +352,13 @@ namespace DbDataComparer.UI
             DataGridViewCell cell;
             bool isNull = false;
 
+            // Determine which field (Value or Values) to populate based upon data type stored in the tag field
+            cell = row.Cells[DATA_GRID_PARAM_TYPE_COL_INDEX];
+            SqlDbType sqlDbType = (SqlDbType)cell.Tag;
+
+
             cell = row.Cells[DATA_GRID_PARAM_VALUE_COL_INDEX];
-            if (cell is DataGridViewButtonCell)
+            if (sqlDbType == SqlDbType.Structured)
             {
                 ((ParameterStructure)cell.Tag).Values = testValue.Values;
                 isNull = testValue.Values == null;
@@ -370,6 +371,118 @@ namespace DbDataComparer.UI
 
             cell = row.Cells[DATA_GRID_PARAM_NULL_COL_INDEX];
             cell.Value = isNull;
+        }
+
+
+        private IEnumerable<ParameterTestValue> SaveDataGridValues(DataGridView dataGridView)
+        {
+            List<ParameterTestValue> testValues = new List<ParameterTestValue>();
+
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                if (row.Index == DATA_GRID_HEADER_ROW_INDEX)
+                    continue;
+
+                var testValue = GetDataGridRowValue(row);
+                testValues.AddIfNotNull(testValue);
+            }
+
+            return testValues;
+        }
+
+        private ParameterTestValue GetDataGridRowValue(DataGridViewRow row)
+        {
+            DataGridViewCell cell;
+            ParameterTestValue testValue = new ParameterTestValue()
+            {
+                Value = null,
+                Values = null,
+            };
+
+            cell = row.Cells[DATA_GRID_PARAM_NAME_COL_INDEX];
+            testValue.ParameterName = cell.Value.ToString();
+
+            // 
+            cell = row.Cells[DATA_GRID_PARAM_NULL_COL_INDEX];
+            if (Convert.ToBoolean(cell.Value))
+                return testValue;
+
+
+            // Determine which field (Value or Values) to populate based upon data type stored in the tag field
+            cell = row.Cells[DATA_GRID_PARAM_TYPE_COL_INDEX];
+            SqlDbType sqlDbType = (SqlDbType)cell.Tag;
+
+
+            cell = row.Cells[DATA_GRID_PARAM_VALUE_COL_INDEX];
+            if (sqlDbType == SqlDbType.Structured)
+            {
+                ParameterStructure parameterStructure = (ParameterStructure)cell.Tag;
+                testValue.Values = parameterStructure.Values;
+            }
+            else
+            {
+                Type type = DatabaseTypeConverter.ToNetType(sqlDbType);
+                testValue.Value = Convert.ChangeType(cell.Value, type);
+            }
+
+            return testValue;
+        }
+
+        private void ValidateDataGridValues(DataGridView dataGridView)
+        {
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                if (row.Index == DATA_GRID_HEADER_ROW_INDEX)
+                    continue;
+
+                ValidateDataGridRowValue(row);
+            }
+        }
+
+        private void ValidateDataGridRowValue(DataGridViewRow row)
+        {
+            DataGridViewCell cell;
+            object value = null;
+            string paramName;
+
+            // If Null has been checked, the it is ok
+            cell = row.Cells[DATA_GRID_PARAM_NULL_COL_INDEX];
+            if (Convert.ToBoolean(cell.Value))
+                return;
+
+            cell = row.Cells[DATA_GRID_PARAM_NAME_COL_INDEX];
+            paramName = cell.Value.ToString();
+
+
+            // Determine which field (Value or Values) to valiidate based upon data type stored in the tag field
+            cell = row.Cells[DATA_GRID_PARAM_TYPE_COL_INDEX];
+            SqlDbType sqlDbType = (SqlDbType)cell.Tag;
+
+            // Get data
+            cell = row.Cells[DATA_GRID_PARAM_VALUE_COL_INDEX];
+            if (sqlDbType == SqlDbType.Structured)
+                value = ((ParameterStructure)cell.Tag).Values;
+            else
+                value = cell.Value;
+
+
+            // Check if user entered value
+            if (value == null || String.IsNullOrWhiteSpace(value.ToString()))
+                throw new Exception(String.Format("Missing value for parameter: {0}", paramName));
+
+            // Attempt to conversion
+            if (sqlDbType != SqlDbType.Structured)
+            {
+                try
+                {
+                    Type type = DatabaseTypeConverter.ToNetType(sqlDbType);
+                    value = Convert.ChangeType(cell.Value, type);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(String.Format("Unable to convert value to '{0}' for parameter: {1}", sqlDbType.ToString(), paramName));
+                }
+            }
         }
         #endregion
 
@@ -453,14 +566,13 @@ namespace DbDataComparer.UI
 
             this.WorkingTest.Name = this.testNameTextBox.Text?.Trim();
 
-            // Source Sql
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
-            //this.WorkingTest.SourceSql = ((TextBox)control).Text?.Trim();
+            // Source
+            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
+            this.WorkingTest.SourceTestValues = SaveDataGridValues((DataGridView)control);
 
             // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
-            //this.WorkingTest.TargetSql = ((TextBox)control).Text?.Trim();
-
+            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
+            this.WorkingTest.TargetTestValues = SaveDataGridValues((DataGridView)control);
         }
 
 
@@ -472,20 +584,15 @@ namespace DbDataComparer.UI
                 throw new Exception("Missing Test Name");
 
 
-            // Source Sql
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
-            if (String.IsNullOrWhiteSpace(((TextBox)control).Text))
-                throw new Exception("Missing Source SQL");
-
+            // Source
+            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
+            ValidateDataGridValues((DataGridView)control);
 
             // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
-            if (String.IsNullOrWhiteSpace(((TextBox)control).Text))
-                throw new Exception("Missing Target SQL");
+            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
+            ValidateDataGridValues((DataGridView)control);
         }
         #endregion
-
-
 
 
         #region Control Event Handlers
@@ -565,18 +672,6 @@ namespace DbDataComparer.UI
 
 
         private void dataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            DataGridView dataGridView = (DataGridView)sender ??
-                throw new ArgumentNullException(nameof(sender));
-
-            // Make sure user did not click on header row
-            if (e.RowIndex == DATA_GRID_HEADER_ROW_INDEX)
-                return;
-
-        }
-
-
-        private void dataGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView dataGridView = (DataGridView)sender ??
                 throw new ArgumentNullException(nameof(sender));
