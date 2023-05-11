@@ -41,6 +41,7 @@ namespace DbDataComparer.UI
         {
             base.QueryTestDefinition();
             SetWorkingTestDefinition(this.TestDefinition);
+            InitializeTestControls();
             this.LoadTestDefinitionValues();
         }
 
@@ -55,6 +56,43 @@ namespace DbDataComparer.UI
                 return null;
             else
                 return NSJson.Deserialize<TestDefinition>(NSJson.Serialize(testDefinition));
+        }
+
+        private void InitializeTestControls()
+        {
+            Control tvControl = GetTableViewTestsControl();
+            Control spControl = GetStoredProcedureTestsControl();
+
+            if (tvControl != null)
+                tvControl.Visible = false;
+
+            if (spControl != null)
+                spControl.Visible = false;
+        }
+
+        private TestsControl GetTestsControl()
+        {
+            TestsControl control = null;
+
+            if (this.WorkingTestDefinition.TableViewTests != null)
+                control = GetTableViewTestsControl();
+
+            if (this.WorkingTestDefinition.StoredProcedureTests != null)
+                control = GetStoredProcedureTestsControl();
+
+            return control;
+        }
+
+        private TableViewTestsControl GetTableViewTestsControl()
+        {
+            Control control = this.tdTabControl.TabPages["testsTabPage"].Controls["tableViewTestsControl"];
+            return (TableViewTestsControl)control;
+        }
+
+        private StoredProcedureTestsControl GetStoredProcedureTestsControl()
+        {
+            Control control = this.tdTabControl.TabPages["testsTabPage"].Controls["storedProcedureTestsControl"];
+            return (StoredProcedureTestsControl)control;
         }
 
 
@@ -100,26 +138,9 @@ namespace DbDataComparer.UI
 
         private void LoadTests()
         {
-            Control tvControl = this.tdTabControl.TabPages["testsTabPage"].Controls["tableViewTestsControl"];
-            Control spControl = this.tdTabControl.TabPages["testsTabPage"].Controls["storedProcedureTestsControl"];
-
-            if (tvControl != null)
-                tvControl.Visible = false;
-
-            if (spControl != null)
-                spControl.Visible = false;
-
-            if (this.WorkingTestDefinition.TableViewTests != null && tvControl != null)
-            {
-                tvControl.Visible = true;
-                ((TableViewTestsControl)tvControl).LoadTestDefinition(this.WorkingTestDefinition);
-            }
-
-            if (this.WorkingTestDefinition.StoredProcedureTests != null && spControl != null)
-            {
-                spControl.Visible = true;
-                ((StoredProcedureTestsControl)spControl).LoadTestDefinition(this.WorkingTestDefinition);
-            }
+            TestsControl control = GetTestsControl();
+            control.Visible = true;
+            control.LoadTestDefinition(this.WorkingTestDefinition);
         }
 
 
@@ -184,29 +205,18 @@ namespace DbDataComparer.UI
 
         private void SaveTests()
         {
-            Control tvControl = this.tdTabControl.TabPages["testsTabPage"].Controls["tableViewTestsControl"];
-            Control spControl = this.tdTabControl.TabPages["testsTabPage"].Controls["storedProcedureTestsControl"];
-
-            if (tvControl != null)
-                tvControl.Visible = false;
-
-            if (spControl != null)
-                spControl.Visible = false;
-
-            if (this.WorkingTestDefinition.TableViewTests != null && tvControl != null)
+            if (this.WorkingTestDefinition.TableViewTests != null)
             {
-                this.WorkingTestDefinition.TableViewTests = 
-                    ((TableViewTestsControl)tvControl).SaveTestDefinition().TableViewTests;
+                TableViewTestsControl control = GetTableViewTestsControl();
+                this.WorkingTestDefinition.TableViewTests = control.SaveTestDefinition().TableViewTests;
             }
 
-            if (this.WorkingTestDefinition.StoredProcedureTests != null && spControl != null)
+            if (this.WorkingTestDefinition.StoredProcedureTests != null)
             {
-                this.WorkingTestDefinition.StoredProcedureTests = 
-                    ((StoredProcedureTestsControl)spControl).SaveTestDefinition().StoredProcedureTests;
+                StoredProcedureTestsControl control = GetStoredProcedureTestsControl();
+                this.WorkingTestDefinition.StoredProcedureTests = control.SaveTestDefinition().StoredProcedureTests;
             }
         }
-
-
 
         private void Validate()
         {

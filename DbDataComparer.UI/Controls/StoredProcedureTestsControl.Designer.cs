@@ -143,7 +143,7 @@
             targetDataGrid.Location = new Point(5, 5);
             targetDataGrid.Name = "targetDataGrid";
             targetDataGrid.ScrollBars = ScrollBars.Vertical;
-            targetDataGrid.Size = new Size(653, 232);
+            targetDataGrid.Size = new Size(653, 235);
             targetDataGrid.TabIndex = 0;
             // 
             // buttonTableLayoutPanel

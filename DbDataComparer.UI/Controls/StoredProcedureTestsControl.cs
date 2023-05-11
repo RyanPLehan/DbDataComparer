@@ -14,7 +14,7 @@ using DbDataComparer.Domain.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class StoredProcedureTestsControl : UserControl
+    public partial class StoredProcedureTestsControl : TestsControl
     {
         private class ParameterStructure
         {
@@ -22,25 +22,12 @@ namespace DbDataComparer.UI
             public IEnumerable<IDictionary<string, object>> Values;
         }
 
-        private enum AddUpdateActionEnum : int
-        {
-            Add,
-            Update,
-        }
-
-        private const int NOT_SELECTED_INDEX = -1;
-        private const int NEW_SELECTED_INDEX = 0;
-
-        private const int SourceTabPageIndex = 0;
-        private const int TargetTabPageIndex = 1;
-
         private const int DATA_GRID_HEADER_ROW_INDEX = -1;
         private const int DATA_GRID_PARAM_NAME_COL_INDEX = 0;
         private const int DATA_GRID_PARAM_VALUE_COL_INDEX = 1;
         private const int DATA_GRID_PARAM_NULL_COL_INDEX = 2;
         private const int DATA_GRID_PARAM_TYPE_COL_INDEX = 3;
 
-        private TestDefinition TestDefinition;
         private IList<StoredProcedureTest> Tests;
         private StoredProcedureTest WorkingTest;
 
@@ -56,7 +43,7 @@ namespace DbDataComparer.UI
         }
 
 
-        public void LoadTestDefinition(TestDefinition testDefinition)
+        public override void LoadTestDefinition(TestDefinition testDefinition)
         {
             this.TestDefinition = testDefinition ??
                 throw new ArgumentNullException(nameof(testDefinition));
@@ -66,62 +53,47 @@ namespace DbDataComparer.UI
             else
                 this.Tests = new List<StoredProcedureTest>();
 
-            SetAddUpdateButton(AddUpdateActionEnum.Add);
+            SetAddUpdateButton(AddUpdateActionEnum.Add, this.addUpdateButton);
             LoadDataGridMetaData();
             LoadTests();
         }
 
-        public TestDefinition SaveTestDefinition()
+        public override TestDefinition SaveTestDefinition()
         {
             this.TestDefinition.StoredProcedureTests = this.Tests.ToArray();
             return this.TestDefinition;
         }
 
 
-        private void SetAddUpdateButton(AddUpdateActionEnum addUpdateAction)
-        {
-            Button button = this.addUpdateButton;
-            button.Tag = addUpdateAction;
-
-            switch (addUpdateAction)
-            {
-                case AddUpdateActionEnum.Add:
-                    button.Text = "Add";
-                    break;
-
-                case AddUpdateActionEnum.Update:
-                    button.Text = "Update";
-                    break;
-            }
-        }
-
-
         #region Data Grid Initialization Routines
         private void InitializeDataGrids()
         {
-            Control control;
-            DataGridView dataGridView;
-
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
-            if (control != null)
-            {
-                dataGridView = (DataGridView)control;
-                CreateDataGridColumns(dataGridView);
-                dataGridView.AllowUserToAddRows = false;
-                dataGridView.CellClick += dataGrid_CellClick;
-                dataGridView.CellContentClick += dataGrid_CellContentClick;
-            }
-
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
-            if (control != null)
-            {
-                dataGridView = (DataGridView)control;
-                CreateDataGridColumns(dataGridView);
-                dataGridView.AllowUserToAddRows = false;
-                dataGridView.CellClick += dataGrid_CellClick;
-                dataGridView.CellContentClick += dataGrid_CellContentClick;
-            }
+            InitializeDataGrid(GetSourceDataGrid());
+            InitializeDataGrid(GetTargetDataGrid());
         }
+
+        private void InitializeDataGrid(DataGridView dataGridView)
+        {
+            CreateDataGridColumns(dataGridView);
+            dataGridView.AllowUserToAddRows = false;
+            dataGridView.CellClick += dataGrid_CellClick;
+            dataGridView.CellContentClick += dataGrid_CellContentClick;
+        }
+
+        private DataGridView GetSourceDataGrid()
+        {
+            Control control;
+            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
+            return (DataGridView)control;
+        }
+
+        private DataGridView GetTargetDataGrid()
+        {
+            Control control;
+            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
+            return (DataGridView)control;
+        }
+
 
         private void CreateDataGridColumns(DataGridView dataGridView)
         {
@@ -208,15 +180,8 @@ namespace DbDataComparer.UI
 
         private void LoadDataGridMetaData()
         {
-            Control control;
-
-            // Source
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
-            LoadDataGridMetaData((DataGridView)control, this.TestDefinition.Source);
-
-            // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
-            LoadDataGridMetaData((DataGridView)control, this.TestDefinition.Target);
+            LoadDataGridMetaData(GetSourceDataGrid(), this.TestDefinition.Source);
+            LoadDataGridMetaData(GetTargetDataGrid(), this.TestDefinition.Target);
         }
 
 
@@ -280,7 +245,6 @@ namespace DbDataComparer.UI
             cell.Tag = parameter.DataType;                              // Use Tag to store Enum value
         }
         #endregion
-
 
         #region Grid Load/Save Routines
         private void LoadDataGridValues(DataGridView dataGridView, IEnumerable<ParameterTestValue> testValues)
@@ -487,45 +451,14 @@ namespace DbDataComparer.UI
         #endregion
 
 
-
         #region Load Routines
         private void LoadTests()
         {
             this.addUpdateButton.Enabled = false;
             this.deleteButton.Enabled = false;
 
-            LoadTestsComboBox();
+            LoadComboBox<StoredProcedureTest>(this.testsComboBox, this.Tests);
             this.testsComboBox.SelectedIndex = (this.testsComboBox.Items.Count > 1 ? NEW_SELECTED_INDEX + 1 : NEW_SELECTED_INDEX);
-        }
-
-
-        private void LoadTestsComboBox()
-        {
-            this.testsComboBox.Items.Clear();
-
-            this.testsComboBox.Items.Add("<< New Test >>");
-            foreach (StoredProcedureTest test in this.Tests.OrderBy(x => x.Name))
-                this.testsComboBox.Items.Add(test);
-
-            // Set index
-            this.testsComboBox.SelectedIndex = NOT_SELECTED_INDEX;
-        }
-
-
-        private void FindInTestsComboBox(string testName)
-        {
-            int selectedIndex = NOT_SELECTED_INDEX;
-
-            for (int i = 1; i < this.testsComboBox.Items.Count; i++)
-            {
-                if (this.testsComboBox.Items[i].ToString().Equals(testName))
-                {
-                    selectedIndex = i;
-                    break;
-                }
-            }
-
-            this.testsComboBox.SelectedIndex = selectedIndex;
         }
 
 
@@ -548,14 +481,8 @@ namespace DbDataComparer.UI
             // Set focus to first tab page
             this.testTabControl.SelectedIndex = SourceTabPageIndex;
 
-            // Source
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
-            LoadDataGridValues((DataGridView)control, this.WorkingTest.SourceTestValues);
-
-
-            // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
-            LoadDataGridValues((DataGridView)control, this.WorkingTest.TargetTestValues);
+            LoadDataGridValues(GetSourceDataGrid(), this.WorkingTest.SourceTestValues);
+            LoadDataGridValues(GetTargetDataGrid(), this.WorkingTest.TargetTestValues);
         }
         #endregion
 
@@ -565,14 +492,8 @@ namespace DbDataComparer.UI
             Control control;
 
             this.WorkingTest.Name = this.testNameTextBox.Text?.Trim();
-
-            // Source
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
-            this.WorkingTest.SourceTestValues = SaveDataGridValues((DataGridView)control);
-
-            // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
-            this.WorkingTest.TargetTestValues = SaveDataGridValues((DataGridView)control);
+            this.WorkingTest.SourceTestValues = SaveDataGridValues(GetSourceDataGrid());
+            this.WorkingTest.TargetTestValues = SaveDataGridValues(GetTargetDataGrid());
         }
 
 
@@ -583,14 +504,8 @@ namespace DbDataComparer.UI
             if (String.IsNullOrWhiteSpace(this.testNameTextBox.Text))
                 throw new Exception("Missing Test Name");
 
-
-            // Source
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["sourceDataGrid"];
-            ValidateDataGridValues((DataGridView)control);
-
-            // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["targetDataGrid"];
-            ValidateDataGridValues((DataGridView)control);
+            ValidateDataGridValues(GetSourceDataGrid());
+            ValidateDataGridValues(GetTargetDataGrid());
         }
         #endregion
 
@@ -601,24 +516,27 @@ namespace DbDataComparer.UI
             this.addUpdateButton.Enabled = true;
             this.deleteButton.Enabled = false;
 
-            int selectedIndex = this.testsComboBox.SelectedIndex;
+            ComboBox comboBox = (ComboBox)sender ??
+                throw new ArgumentNullException(nameof(sender));
+
+            int selectedIndex = comboBox.SelectedIndex;
             switch (selectedIndex)
             {
                 case NOT_SELECTED_INDEX:
                     this.addUpdateButton.Enabled = false;
-                    SetAddUpdateButton(AddUpdateActionEnum.Add);
+                    SetAddUpdateButton(AddUpdateActionEnum.Add, this.addUpdateButton);
                     break;
 
                 case NEW_SELECTED_INDEX:
-                    SetAddUpdateButton(AddUpdateActionEnum.Add);
+                    SetAddUpdateButton(AddUpdateActionEnum.Add, this.addUpdateButton);
                     CreateWorkingTest();
                     LoadTest();
                     break;
 
                 default:
                     this.deleteButton.Enabled = true;
-                    SetAddUpdateButton(AddUpdateActionEnum.Update);
-                    object item = this.testsComboBox.Items[selectedIndex];
+                    SetAddUpdateButton(AddUpdateActionEnum.Update, this.addUpdateButton);
+                    object item = comboBox.Items[selectedIndex];
                     this.WorkingTest = (StoredProcedureTest)item;
                     LoadTest();
                     break;
@@ -639,8 +557,8 @@ namespace DbDataComparer.UI
                     !this.Tests.Any(x => x == this.WorkingTest))
                     this.Tests.Add(this.WorkingTest);
 
-                LoadTestsComboBox();
-                FindInTestsComboBox(this.WorkingTest.Name);
+                LoadComboBox<StoredProcedureTest>(this.testsComboBox, this.Tests);
+                FindInComboBox(testsComboBox, this.WorkingTest.Name);
             }
             catch (Exception ex)
             {

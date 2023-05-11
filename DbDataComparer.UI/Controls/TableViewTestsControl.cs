@@ -11,21 +11,8 @@ using DbDataComparer.Domain.Models;
 
 namespace DbDataComparer.UI
 {
-    public partial class TableViewTestsControl : UserControl
+    public partial class TableViewTestsControl : TestsControl
     {
-        private enum AddUpdateActionEnum : int
-        {
-            Add,
-            Update,
-        }
-
-        private const int NOT_SELECTED_INDEX = -1;
-        private const int NEW_SELECTED_INDEX = 0;
-
-        private const int SourceTabPageIndex = 0;
-        private const int TargetTabPageIndex = 1;
-
-        private TestDefinition TestDefinition;
         private IList<TableViewTest> Tests;
         private TableViewTest WorkingTest;
 
@@ -41,7 +28,7 @@ namespace DbDataComparer.UI
 
 
         #region General Routines
-        public void LoadTestDefinition(TestDefinition testDefinition)
+        public override void LoadTestDefinition(TestDefinition testDefinition)
         {
             this.TestDefinition = testDefinition ??
                 throw new ArgumentNullException(nameof(testDefinition));
@@ -51,77 +38,44 @@ namespace DbDataComparer.UI
             else
                 this.Tests = new List<TableViewTest>();
 
-            SetAddUpdateButton(AddUpdateActionEnum.Add);
+            SetAddUpdateButton(AddUpdateActionEnum.Add, this.addUpdateButton);
             LoadTests();
         }
 
-        public TestDefinition SaveTestDefinition()
+        public override TestDefinition SaveTestDefinition()
         {
             this.TestDefinition.TableViewTests = this.Tests.ToArray();
             return this.TestDefinition;
         }
 
 
-        private void SetAddUpdateButton(AddUpdateActionEnum addUpdateAction)
-        {
-            Button button = this.addUpdateButton;
-            button.Tag = addUpdateAction;
-
-            switch (addUpdateAction)
-            {
-                case AddUpdateActionEnum.Add:
-                    button.Text = "Add";
-                    break;
-
-                case AddUpdateActionEnum.Update:
-                    button.Text = "Update";
-                    break;
-            }
-        }
-
         private void LoadTests()
         {
             this.addUpdateButton.Enabled = false;
             this.deleteButton.Enabled = false;
 
-            LoadTestsComboBox();
+            LoadComboBox<TableViewTest>(this.testsComboBox, this.Tests);
             this.testsComboBox.SelectedIndex = (this.testsComboBox.Items.Count > 1 ? NEW_SELECTED_INDEX + 1 : NEW_SELECTED_INDEX);
-        }
-
-
-        private void LoadTestsComboBox()
-        {
-            this.testsComboBox.Items.Clear();
-
-            this.testsComboBox.Items.Add("<< New Test >>");
-            foreach (TableViewTest test in this.Tests.OrderBy(x => x.Name))
-                this.testsComboBox.Items.Add(test);
-
-            // Set index
-            this.testsComboBox.SelectedIndex = NOT_SELECTED_INDEX;
-        }
-
-
-        private void FindInTestsComboBox(string testName)
-        {
-            int selectedIndex = NOT_SELECTED_INDEX;
-
-            for (int i = 1; i < this.testsComboBox.Items.Count; i++)
-            {
-                if (this.testsComboBox.Items[i].ToString().Equals(testName))
-                {
-                    selectedIndex = i;
-                    break;
-                }
-            }
-
-            this.testsComboBox.SelectedIndex = selectedIndex;
         }
 
 
         private void CreateWorkingTest()
         {
             this.WorkingTest = new TableViewTest();
+        }
+
+        private TextBox GetSourceTextBox()
+        {
+            Control control;
+            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
+            return (TextBox)control;
+        }
+
+        private TextBox GetTargetTextBox()
+        {
+            Control control;
+            control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
+            return (TextBox)control;
         }
 
 
@@ -134,13 +88,9 @@ namespace DbDataComparer.UI
             // Set focus to first tab page
             this.testTabControl.SelectedIndex = SourceTabPageIndex;
 
-            // Source Sql
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
-            ((TextBox)control).Text = this.WorkingTest.SourceSql;
-
-            // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
-            ((TextBox)control).Text = this.WorkingTest.TargetSql;
+            // SQL
+            GetSourceTextBox().Text = this.WorkingTest.SourceSql;
+            GetTargetTextBox().Text = this.WorkingTest.TargetSql;
         }
 
 
@@ -150,13 +100,9 @@ namespace DbDataComparer.UI
 
             this.WorkingTest.Name = this.testNameTextBox.Text?.Trim();
 
-            // Source Sql
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
-            this.WorkingTest.SourceSql = ((TextBox)control).Text?.Trim();
-
-            // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
-            this.WorkingTest.TargetSql = ((TextBox)control).Text?.Trim();
+            // SQL
+            this.WorkingTest.SourceSql = GetSourceTextBox().Text?.Trim();
+            this.WorkingTest.TargetSql = GetTargetTextBox().Text?.Trim();
 
         }
 
@@ -168,16 +114,11 @@ namespace DbDataComparer.UI
             if (String.IsNullOrWhiteSpace(this.testNameTextBox.Text))
                 throw new Exception("Missing Test Name");
 
-
-            // Source Sql
-            control = this.testTabControl.TabPages["sourceTabPage"].Controls["testSourceTextBox"];
-            if (String.IsNullOrWhiteSpace(((TextBox)control).Text))
+            // Sql
+            if (String.IsNullOrWhiteSpace(GetSourceTextBox().Text))
                 throw new Exception("Missing Source SQL");
 
-
-            // Target Sql
-            control = this.testTabControl.TabPages["targetTabPage"].Controls["testTargetTextBox"];
-            if (String.IsNullOrWhiteSpace(((TextBox)control).Text))
+            if (String.IsNullOrWhiteSpace(GetTargetTextBox().Text))
                 throw new Exception("Missing Target SQL");
         }
         #endregion
@@ -188,24 +129,27 @@ namespace DbDataComparer.UI
             this.addUpdateButton.Enabled = true;
             this.deleteButton.Enabled = false;
 
-            int selectedIndex = this.testsComboBox.SelectedIndex;
+            ComboBox comboBox = (ComboBox)sender ??
+                throw new ArgumentNullException(nameof(sender));
+
+            int selectedIndex = comboBox.SelectedIndex;
             switch (selectedIndex)
             {
                 case NOT_SELECTED_INDEX:
                     this.addUpdateButton.Enabled = false;
-                    SetAddUpdateButton(AddUpdateActionEnum.Add);
+                    SetAddUpdateButton(AddUpdateActionEnum.Add, this.addUpdateButton);
                     break;
 
                 case NEW_SELECTED_INDEX:
-                    SetAddUpdateButton(AddUpdateActionEnum.Add);
+                    SetAddUpdateButton(AddUpdateActionEnum.Add, this.addUpdateButton);
                     CreateWorkingTest();
                     LoadTest();
                     break;
 
                 default:
                     this.deleteButton.Enabled = true;
-                    SetAddUpdateButton(AddUpdateActionEnum.Update);
-                    object item = this.testsComboBox.Items[selectedIndex];
+                    SetAddUpdateButton(AddUpdateActionEnum.Update, this.addUpdateButton);
+                    object item = comboBox.Items[selectedIndex];
                     this.WorkingTest = (TableViewTest)item;
                     LoadTest();
                     break;
@@ -227,8 +171,8 @@ namespace DbDataComparer.UI
                     !this.Tests.Any(x => x == this.WorkingTest))
                     this.Tests.Add(this.WorkingTest);
 
-                LoadTestsComboBox();
-                FindInTestsComboBox(this.WorkingTest.Name);
+                LoadComboBox<TableViewTest>(this.testsComboBox, this.Tests);
+                FindInComboBox(testsComboBox, this.WorkingTest.Name);
             }
             catch (Exception ex)
             {

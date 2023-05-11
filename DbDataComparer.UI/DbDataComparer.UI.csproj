@@ -24,6 +24,9 @@
     <Compile Update="Controls\StoredProcedureTestsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Controls\TestsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="Controls\TestDefinitionModifyControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
