@@ -195,12 +195,14 @@ namespace DbDataComparer.UI
 
             if (this.WorkingTestDefinition.TableViewTests != null && tvControl != null)
             {
-                this.WorkingTestDefinition.TableViewTests = ((TableViewTestsControl)tvControl).SaveTestDefinition().TableViewTests;
+                this.WorkingTestDefinition.TableViewTests = 
+                    ((TableViewTestsControl)tvControl).SaveTestDefinition().TableViewTests;
             }
 
             if (this.WorkingTestDefinition.StoredProcedureTests != null && spControl != null)
             {
-                //this.WorkingTestDefinition.TableViewTests = StoredProcedureTestsControl)spControl).GetTests();
+                this.WorkingTestDefinition.StoredProcedureTests = 
+                    ((StoredProcedureTestsControl)spControl).SaveTestDefinition().StoredProcedureTests;
             }
         }
 

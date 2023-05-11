@@ -684,12 +684,28 @@ namespace DbDataComparer.UI
 
         private void dataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            DataGridViewCell cell;
+
             DataGridView dataGridView = (DataGridView)sender ??
                 throw new ArgumentNullException(nameof(sender));
 
             // Make sure user did not click on header row
             if (e.RowIndex == DATA_GRID_HEADER_ROW_INDEX)
                 return;
+
+            // Make sure user checked only in the Parameter Value cell
+            if (e.ColumnIndex != DATA_GRID_PARAM_VALUE_COL_INDEX)
+                return;
+
+
+            cell = dataGridView[DATA_GRID_PARAM_TYPE_COL_INDEX, e.RowIndex];
+            SqlDbType sqlDbType = (SqlDbType)cell.Tag;
+
+            // Check to see if user clicked on button by checking type
+            if (sqlDbType == SqlDbType.Structured)
+            {
+                MessageBox.Show("Not functional at the moment", "Edit Items");
+            }
 
             // Check if user clicked on Null Value checkbox
             /*

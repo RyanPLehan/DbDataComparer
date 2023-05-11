@@ -81,7 +81,8 @@ namespace DbDataComparer.UI
                     ((DataGridViewButtonCell)control).Value = "Click to Edit Items";
                     ((DataGridViewButtonCell)control).Style = new DataGridViewCellStyle() 
                     { 
-                        BackColor = Button.DefaultBackColor,
+                        //BackColor = Button.DefaultBackColor,
+                        BackColor = Color.LightCoral,
                         Alignment = DataGridViewContentAlignment.MiddleCenter,
                     };
                     break;
