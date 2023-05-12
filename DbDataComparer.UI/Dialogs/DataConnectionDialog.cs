@@ -13,10 +13,10 @@ namespace DbDataComparer.UI
 {
     public partial class DataConnectionDialog : Form
     {
-        private string DataConnectionDialog_TestResults = "Test results";
-        private string DataConnectionDialog_TestConnectionSucceeded = "Test connection succeeded.";
-        private string DataConnectionDialog_CannotModifyState = "The data connection dialog state cannot be programmatically modified when the dialog is visible.";
-        private string DataConnectionDialog_ShowDialogNotSupported = "You cannot use the Form.ShowDialog() method to show the data connection dialog.  Use DataConnectionDialog.Show() instead.";
+        private string Dialog_TestResults = "Test results";
+        private string Dialog_TestConnectionSucceeded = "Test connection succeeded.";
+        private string Dialog_CannotModifyState = "The data connection dialog state cannot be programmatically modified when the dialog is visible.";
+        private string Dialog_ShowDialogNotSupported = "You cannot use the Form.ShowDialog() method to show the data connection dialog.  Use DataConnectionDialog.Show() instead.";
 
         private bool ShowingDialog = false;
         private bool IsSuccessfulTest = false;
@@ -64,7 +64,7 @@ namespace DbDataComparer.UI
             set
             {
                 if (ShowingDialog)
-                    throw new InvalidOperationException(DataConnectionDialog_CannotModifyState);
+                    throw new InvalidOperationException(Dialog_CannotModifyState);
 
                 Debug.Assert(!String.IsNullOrWhiteSpace(value));
                 if (!String.IsNullOrWhiteSpace(value))
@@ -79,7 +79,7 @@ namespace DbDataComparer.UI
         protected override void OnLoad(EventArgs e)
         {
             if (!ShowingDialog)
-                throw new NotSupportedException(DataConnectionDialog_ShowDialogNotSupported);
+                throw new NotSupportedException(Dialog_ShowDialogNotSupported);
 
             ConfigureGlobalControlChange(this.Controls);
             ControlChanged(this, EventArgs.Empty);
@@ -196,7 +196,7 @@ namespace DbDataComparer.UI
             catch (Exception ex)
             {
                 Cursor.Current = currentCursor;
-                RTLAwareMessageBox.ShowError(DataConnectionDialog_TestResults, ex);
+                RTLAwareMessageBox.ShowError(Dialog_TestResults, ex);
             }
         }
 
@@ -227,7 +227,7 @@ namespace DbDataComparer.UI
             catch (Exception ex)
             {
                 Cursor.Current = currentCursor;
-                RTLAwareMessageBox.ShowError(DataConnectionDialog_TestResults, ex);
+                RTLAwareMessageBox.ShowError(Dialog_TestResults, ex);
             }
         }
 
@@ -244,13 +244,13 @@ namespace DbDataComparer.UI
                 this.IsSuccessfulTest = true;
 
                 Cursor.Current = currentCursor;
-                RTLAwareMessageBox.ShowMessage(DataConnectionDialog_TestResults, DataConnectionDialog_TestConnectionSucceeded);
+                RTLAwareMessageBox.ShowMessage(Dialog_TestResults, Dialog_TestConnectionSucceeded);
             }
             catch (Exception ex)
             {
                 this.IsSuccessfulTest = false;
                 Cursor.Current = currentCursor;
-                RTLAwareMessageBox.ShowError(DataConnectionDialog_TestResults, ex);
+                RTLAwareMessageBox.ShowError(Dialog_TestResults, ex);
             }
             finally
             {

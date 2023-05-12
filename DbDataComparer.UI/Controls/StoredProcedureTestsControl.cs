@@ -204,7 +204,7 @@ namespace DbDataComparer.UI
                 SetDataGridRowMetaData(row, param);
 
                 // Set Cell Type
-                dataGridView[DATA_GRID_PARAM_VALUE_COL_INDEX, rowIndex] = TypeToDataGridCellConverter.ToControl(param.DataType);
+                dataGridView[DATA_GRID_PARAM_VALUE_COL_INDEX, rowIndex] = TypeToDataGridControlConverter.ToCell(param.DataType);
 
                 // If database type is structure, then use Button Cell's tag property to hold structure definition and test values
                 if (param.DataType == SqlDbType.Structured)
@@ -622,7 +622,19 @@ namespace DbDataComparer.UI
             // Check to see if user clicked on button by checking type
             if (sqlDbType == SqlDbType.Structured)
             {
-                MessageBox.Show("Not functional at the moment", "Edit Items");
+                // MessageBox.Show("Not functional at the moment", "Edit Items");
+                cell = dataGridView[DATA_GRID_PARAM_VALUE_COL_INDEX, e.RowIndex];
+                ParameterStructure paramStruc = (ParameterStructure)cell.Tag;
+
+                if (paramStruc != null)
+                {
+                    var dialog = new ParamValueEditorDialog(paramStruc.Columns);
+                    dialog.TestValues = paramStruc.Values;
+
+                    var result = ParamValueEditorDialog.Show(dialog, this);
+                    if (result == DialogResult.OK)
+                        paramStruc.Values = dialog.TestValues;
+                }
             }
 
             // Check if user clicked on Null Value checkbox
