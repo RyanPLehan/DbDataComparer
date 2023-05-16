@@ -23,6 +23,7 @@ namespace DbDataComparer.UI
                 throw new ArgumentNullException(nameof(settings));
 
             InitializeComponent();
+            SetTestDefinition(null, null);
         }
 
 
@@ -65,6 +66,15 @@ namespace DbDataComparer.UI
             this.Text = "Database Data Comparer";
             if (!String.IsNullOrWhiteSpace(td?.Name))
                 this.Text += "  -  " + td.Name;
+
+            SetButtonConfiguration();
+        }
+
+        private void SetButtonConfiguration()
+        {
+            bool enable = (this.TestDefinition != null);
+            this.testDefinitionModifyButton.Enabled = enable;
+            this.testDefinitionCompareButton.Enabled = enable;
         }
 
         private void SetStatus(string status)
@@ -79,6 +89,16 @@ namespace DbDataComparer.UI
             {
                 ((TestDefinitionControl)control).Activate();
             }
+        }
+
+        private bool IsTestDefinitionLoaded(bool showMessage = true)
+        {
+            bool isLoaded = (this.TestDefinition != null);
+
+            if (!isLoaded & showMessage)
+                RTLAwareMessageBox.ShowMessage("Test Definition", "No Test Definition Loaded");
+
+            return isLoaded;
         }
         #endregion
 
@@ -215,14 +235,27 @@ namespace DbDataComparer.UI
 
         private void testDefinitionCompareButton_Click(object sender, EventArgs e)
         {
-            HideTestDefinitionControls();
-            this.comparePanel.Visible = true;
+            if (this.IsTestDefinitionLoaded())
+            {
+                HideTestDefinitionControls();
+                this.comparePanel.Visible = true;
+            }
         }
 
-        private void TestDefinitionModifyButton_Click(object sender, EventArgs e)
+        private void testDefinitionModifyButton_Click(object sender, EventArgs e)
         {
-            HideTestDefinitionControls();
-            this.modifyPanel.Visible = true;
+            if (this.IsTestDefinitionLoaded())
+            {
+                HideTestDefinitionControls();
+                this.modifyPanel.Visible = true;
+            }
+        }
+
+
+        private void testDefinitionLoadButton_Click(object sender, EventArgs e)
+        {
+            var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
+            TestDefinitionLoadRequested(sender, loadEventArgs);
         }
         #endregion
 

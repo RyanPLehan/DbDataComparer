@@ -42,11 +42,14 @@
             comparePanel = new Panel();
             modifyPanel = new Panel();
             testDefinitionModifyControl = new TestDefinitionModifyControl();
+            buttonTableLayoutPanel = new TableLayoutPanel();
+            testDefinitionLoadButton = new Button();
             mainTableLayoutPanel.SuspendLayout();
             mainStatusBar.SuspendLayout();
             createPanel.SuspendLayout();
             comparePanel.SuspendLayout();
             modifyPanel.SuspendLayout();
+            buttonTableLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
             // mainTableLayoutPanel
@@ -86,7 +89,7 @@
             testDefinitionModifyButton.TabIndex = 1;
             testDefinitionModifyButton.Text = "Modifiy";
             testDefinitionModifyButton.UseVisualStyleBackColor = true;
-            testDefinitionModifyButton.Click += TestDefinitionModifyButton_Click;
+            testDefinitionModifyButton.Click += testDefinitionModifyButton_Click;
             // 
             // testDefinitionCompareButton
             // 
@@ -121,7 +124,7 @@
             // mainStatusBar
             // 
             mainStatusBar.Items.AddRange(new ToolStripItem[] { mainStatusTDStatusDescLabel, mainStatusTDStatusLabel });
-            mainStatusBar.Location = new Point(0, 527);
+            mainStatusBar.Location = new Point(0, 569);
             mainStatusBar.Name = "mainStatusBar";
             mainStatusBar.Size = new Size(926, 22);
             mainStatusBar.TabIndex = 3;
@@ -182,11 +185,36 @@
             testDefinitionModifyControl.Size = new Size(745, 476);
             testDefinitionModifyControl.TabIndex = 0;
             // 
+            // tableLayoutPanel1
+            // 
+            buttonTableLayoutPanel.ColumnCount = 2;
+            buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            buttonTableLayoutPanel.Controls.Add(testDefinitionLoadButton, 1, 0);
+            buttonTableLayoutPanel.Location = new Point(734, 535);
+            buttonTableLayoutPanel.Name = "tableLayoutPanel1";
+            buttonTableLayoutPanel.RowCount = 1;
+            buttonTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            buttonTableLayoutPanel.Size = new Size(192, 31);
+            buttonTableLayoutPanel.TabIndex = 5;
+            // 
+            // tdLoadButton
+            // 
+            testDefinitionLoadButton.Anchor = AnchorStyles.None;
+            testDefinitionLoadButton.Location = new Point(104, 3);
+            testDefinitionLoadButton.Name = "tdLoadButton";
+            testDefinitionLoadButton.Size = new Size(80, 25);
+            testDefinitionLoadButton.TabIndex = 0;
+            testDefinitionLoadButton.Text = "Load";
+            testDefinitionLoadButton.UseVisualStyleBackColor = true;
+            testDefinitionLoadButton.Click += testDefinitionLoadButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(926, 549);
+            ClientSize = new Size(926, 591);
+            Controls.Add(buttonTableLayoutPanel);
             Controls.Add(modifyPanel);
             Controls.Add(createPanel);
             Controls.Add(mainStatusBar);
@@ -202,6 +230,7 @@
             createPanel.ResumeLayout(false);
             comparePanel.ResumeLayout(false);
             modifyPanel.ResumeLayout(false);
+            buttonTableLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -222,5 +251,7 @@
         private Panel createPanel;
         private Panel comparePanel;
         private Panel modifyPanel;
+        private TableLayoutPanel buttonTableLayoutPanel;
+        private Button testDefinitionLoadButton;
     }
 }

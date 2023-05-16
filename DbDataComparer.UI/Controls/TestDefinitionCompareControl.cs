@@ -28,77 +28,59 @@ namespace DbDataComparer.UI
         }
 
 
-
-        private async void tdLoadButton_Click(object sender, EventArgs e)
+        public override async void Activate()
         {
-            // Raise event to load Test Definition for testing
-            var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
-            OnTestDefinitionLoadRequested(loadEventArgs);
-
-            if (loadEventArgs.SuccessfullyLoaded)
-            {
-                // Make sure first tab is selected
-                this.tdTabControl.SelectedIndex = OverallResultsTabPageIndex;
-
-                WriteOverallResults(null);
-                WriteDetailResults(null);
-                this.QueryTestDefinition();
-            }
-        }
-
-        private async void tdCompareButton_Click(object sender, EventArgs e)
-        {
-            if (this.TestDefinition == null)
-            {
-                RTLAwareMessageBox.ShowMessage("Test Definition", "No Test Definition Loaded");
-                return;
-            }
-
+            base.Activate();
 
             // Make sure first tab is selected
-            this.tdTabControl.TabPages[0].Focus();
+            this.tdTabControl.SelectedIndex = OverallResultsTabPageIndex;
 
-            Cursor currentCursor = Cursor.Current;
-            Cursor.Current = Cursors.WaitCursor;
+            // Clear out any previous values
+            WriteOverallResults(null);
+            WriteDetailResults(null);
 
             try
             {
-                IEmailNotifier emailNotifier = new TestDefinitionNotifier(this.ConfigurationSettings.Notification);
-
-                var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Executing Tests" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-                ITestExecutioner testExecutioner = new TestExecutioner(new SqlDatabase());
-                IEnumerable<TestExecutionResult> testResults = await testExecutioner.Execute(this.TestDefinition);
-
-                statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Comparing Results" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-                IEnumerable<ComparisonResult> comparisonResults = TestDefinitionComparer.Compare(this.TestDefinition, testResults);
-
-                statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Formatting Results" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-                WriteOverallResults(await CreateOverallResults(this.TestDefinition, comparisonResults));
-
-                if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
-                    WriteDetailResults(await CreateDetailResults(this.TestDefinition, comparisonResults));
-
-                if (emailNotifier.IsNotificationEnabled(this.TestDefinition, comparisonResults))
-                {
-                    statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Emailing Results" };
-                    emailNotifier.AddNotification(this.TestDefinition, comparisonResults);
-                    emailNotifier.SendNotification("Data ComparerUI - Manual Comparison");
-                }
-
-                statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Comparison Completed" };
-                OnTestDefinitionStatusUpdated(statusEventArgs);
-
-                Cursor.Current = currentCursor;
+                Application.UseWaitCursor = true;
+                await ExecuteComparison();
+                Application.UseWaitCursor = false;
             }
-
             catch (Exception ex)
             {
-                Cursor.Current = currentCursor;
+                Application.UseWaitCursor = false;
                 RTLAwareMessageBox.ShowError("Comparison", ex);
+            }            
+        }
+
+        private async Task ExecuteComparison()
+        {
+            IEmailNotifier emailNotifier = new TestDefinitionNotifier(this.ConfigurationSettings.Notification);
+
+            var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Executing Tests" };
+            OnTestDefinitionStatusUpdated(statusEventArgs);
+            ITestExecutioner testExecutioner = new TestExecutioner(new SqlDatabase());
+            IEnumerable<TestExecutionResult> testResults = await testExecutioner.Execute(this.TestDefinition);
+
+            statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Comparing Results" };
+            OnTestDefinitionStatusUpdated(statusEventArgs);
+            IEnumerable<ComparisonResult> comparisonResults = TestDefinitionComparer.Compare(this.TestDefinition, testResults);
+
+            statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Formatting Results" };
+            OnTestDefinitionStatusUpdated(statusEventArgs);
+            WriteOverallResults(await CreateOverallResults(this.TestDefinition, comparisonResults));
+
+            if (TestDefinitionComparer.IsAny(comparisonResults, ComparisonResultTypeEnum.Failed))
+                WriteDetailResults(await CreateDetailResults(this.TestDefinition, comparisonResults));
+
+            if (emailNotifier.IsNotificationEnabled(this.TestDefinition, comparisonResults))
+            {
+                statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Emailing Results" };
+                emailNotifier.AddNotification(this.TestDefinition, comparisonResults);
+                emailNotifier.SendNotification("Data ComparerUI - Manual Comparison");
             }
+
+            statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Comparison Completed" };
+            OnTestDefinitionStatusUpdated(statusEventArgs);
         }
 
 

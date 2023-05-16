@@ -42,7 +42,7 @@ namespace DbDataComparer.UI
         private TestDefinitionBuilderOptions CreateTestDefinitionBuilderOptions()
         {
             TestDefinitionBuilderOptions options = new TestDefinitionBuilderOptions();
-            options.Name = this.tdNameTextBox.Text;
+            options.Name = this.nameTextBox.Text;
 
             // Source
             Control control = this.tdTabControl.TabPages["sourceTabPage"].Controls["sourceDataExplorerControl"];
@@ -124,6 +124,21 @@ namespace DbDataComparer.UI
         }
 
 
+        private async Task ExecuteCreation()
+        {
+            var options = CreateTestDefinitionBuilderOptions();
+            ValidateOptions(options);
+            var builder = new TestDefinitionBuilder(new SqlDatabase());
+            var testDefinition = await builder.Build(options);
+
+            // Raise event for successful Test Definition Createion
+            var saveEventArgs = new TestDefinitionSaveRequestedEventArgs() { TestDefinition = testDefinition };
+            OnTestDefinitionSaveRequested(saveEventArgs);
+
+            if (saveEventArgs.SuccessfullySaved)
+                this.QueryTestDefinition();
+        }
+
         private void TestDefinitionCreateControl_Load(object sender, EventArgs e)
         {
             try
@@ -135,30 +150,18 @@ namespace DbDataComparer.UI
             { }
         }
 
-        private async void tdCreateButton_Click(object sender, EventArgs e)
+        private async void createButton_Click(object sender, EventArgs e)
         {
-            Cursor currentCursor = Cursor.Current;
-            Cursor.Current = Cursors.WaitCursor;
-
             try
             {
-                var options = CreateTestDefinitionBuilderOptions();
-                ValidateOptions(options);
-                var builder = new TestDefinitionBuilder(new SqlDatabase());
-                var testDefinition = await builder.Build(options);
-                Cursor.Current = currentCursor;
-
-                // Raise event for successful Test Definition Createion
-                var saveEventArgs = new TestDefinitionSaveRequestedEventArgs() { TestDefinition = testDefinition };
-                OnTestDefinitionSaveRequested(saveEventArgs);
-
-                if (saveEventArgs.SuccessfullySaved)
-                    this.QueryTestDefinition();
+                Application.UseWaitCursor = true;
+                await ExecuteCreation();
+                Application.UseWaitCursor = false;
             }
 
             catch (Exception ex)
             {
-                Cursor.Current = currentCursor;
+                Application.UseWaitCursor = false;
                 RTLAwareMessageBox.ShowError("Test Definition Creation", ex);
 
                 var statusEventArgs = new TestDefinitionStatusUpdatedEventArgs() { Status = "Creation Failed" };
@@ -166,10 +169,10 @@ namespace DbDataComparer.UI
             }
         }
 
-        private void tdCancelButton_Click(object sender, EventArgs e)
+        private void cancelButton_Click(object sender, EventArgs e)
         {
             // Reset all fields
-            this.tdNameTextBox.Text = null;
+            this.nameTextBox.Text = null;
             Control control = this.tdTabControl.TabPages["sourceTabPage"].Controls["sourceDataExplorerControl"];
             this.ResetDataExplorer((DataExplorerControl)control);
 

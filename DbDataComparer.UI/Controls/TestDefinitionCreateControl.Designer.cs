@@ -33,15 +33,15 @@
             sourceDataExplorerControl = new DataExplorerControl();
             targetTabPage = new TabPage();
             targetDataExplorerControl = new DataExplorerControl();
-            tdCancelButton = new Button();
-            tableLayoutPanel1 = new TableLayoutPanel();
-            tdCreateButton = new Button();
-            tdNameLabel = new Label();
-            tdNameTextBox = new TextBox();
+            cancelButton = new Button();
+            buttonTableLayoutPanel = new TableLayoutPanel();
+            createButton = new Button();
+            nameLabel = new Label();
+            nameTextBox = new TextBox();
             tdTabControl.SuspendLayout();
             sourceTabPage.SuspendLayout();
             targetTabPage.SuspendLayout();
-            tableLayoutPanel1.SuspendLayout();
+            buttonTableLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
             // tdTabControl
@@ -92,63 +92,63 @@
             // 
             // tdCancelButton
             // 
-            tdCancelButton.Anchor = AnchorStyles.None;
-            tdCancelButton.Location = new Point(104, 3);
-            tdCancelButton.Name = "tdCancelButton";
-            tdCancelButton.Size = new Size(80, 25);
-            tdCancelButton.TabIndex = 2;
-            tdCancelButton.Text = "Cancel";
-            tdCancelButton.UseVisualStyleBackColor = true;
-            tdCancelButton.Click += tdCancelButton_Click;
+            cancelButton.Anchor = AnchorStyles.None;
+            cancelButton.Location = new Point(104, 3);
+            cancelButton.Name = "tdCancelButton";
+            cancelButton.Size = new Size(80, 25);
+            cancelButton.TabIndex = 2;
+            cancelButton.Text = "Cancel";
+            cancelButton.UseVisualStyleBackColor = true;
+            cancelButton.Click += cancelButton_Click;
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.ColumnCount = 2;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Controls.Add(tdCreateButton, 0, 0);
-            tableLayoutPanel1.Controls.Add(tdCancelButton, 1, 0);
-            tableLayoutPanel1.Location = new Point(237, 279);
-            tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 1;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(192, 31);
-            tableLayoutPanel1.TabIndex = 3;
+            buttonTableLayoutPanel.ColumnCount = 2;
+            buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            buttonTableLayoutPanel.Controls.Add(createButton, 0, 0);
+            buttonTableLayoutPanel.Controls.Add(cancelButton, 1, 0);
+            buttonTableLayoutPanel.Location = new Point(237, 279);
+            buttonTableLayoutPanel.Name = "tableLayoutPanel1";
+            buttonTableLayoutPanel.RowCount = 1;
+            buttonTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            buttonTableLayoutPanel.Size = new Size(192, 31);
+            buttonTableLayoutPanel.TabIndex = 3;
             // 
             // tdCreateButton
             // 
-            tdCreateButton.Anchor = AnchorStyles.None;
-            tdCreateButton.Location = new Point(8, 3);
-            tdCreateButton.Name = "tdCreateButton";
-            tdCreateButton.Size = new Size(80, 25);
-            tdCreateButton.TabIndex = 2;
-            tdCreateButton.Text = "Create";
-            tdCreateButton.UseVisualStyleBackColor = true;
-            tdCreateButton.Click += tdCreateButton_Click;
+            createButton.Anchor = AnchorStyles.None;
+            createButton.Location = new Point(8, 3);
+            createButton.Name = "tdCreateButton";
+            createButton.Size = new Size(80, 25);
+            createButton.TabIndex = 2;
+            createButton.Text = "Create";
+            createButton.UseVisualStyleBackColor = true;
+            createButton.Click += createButton_Click;
             // 
             // tdNameLabel
             // 
-            tdNameLabel.AutoSize = true;
-            tdNameLabel.Location = new Point(3, 6);
-            tdNameLabel.Name = "tdNameLabel";
-            tdNameLabel.Size = new Size(39, 15);
-            tdNameLabel.TabIndex = 0;
-            tdNameLabel.Text = "Name";
+            nameLabel.AutoSize = true;
+            nameLabel.Location = new Point(3, 6);
+            nameLabel.Name = "tdNameLabel";
+            nameLabel.Size = new Size(39, 15);
+            nameLabel.TabIndex = 0;
+            nameLabel.Text = "Name";
             // 
             // tdNameTextBox
             // 
-            tdNameTextBox.Location = new Point(7, 24);
-            tdNameTextBox.Name = "tdNameTextBox";
-            tdNameTextBox.Size = new Size(422, 23);
-            tdNameTextBox.TabIndex = 1;
+            nameTextBox.Location = new Point(7, 24);
+            nameTextBox.Name = "tdNameTextBox";
+            nameTextBox.Size = new Size(422, 23);
+            nameTextBox.TabIndex = 1;
             // 
             // TestDefinitionCreateControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(tdNameTextBox);
-            Controls.Add(tdNameLabel);
-            Controls.Add(tableLayoutPanel1);
+            Controls.Add(nameTextBox);
+            Controls.Add(nameLabel);
+            Controls.Add(buttonTableLayoutPanel);
             Controls.Add(tdTabControl);
             Name = "TestDefinitionCreateControl";
             Size = new Size(435, 316);
@@ -156,7 +156,7 @@
             tdTabControl.ResumeLayout(false);
             sourceTabPage.ResumeLayout(false);
             targetTabPage.ResumeLayout(false);
-            tableLayoutPanel1.ResumeLayout(false);
+            buttonTableLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -168,10 +168,10 @@
         private TabPage targetTabPage;
         private DataExplorerControl sourceDataExplorerControl;
         private DataExplorerControl targetDataExplorerControl;
-        private Button tdCancelButton;
-        private TableLayoutPanel tableLayoutPanel1;
-        private Button tdCreateButton;
-        private Label tdNameLabel;
-        private TextBox tdNameTextBox;
+        private Button cancelButton;
+        private TableLayoutPanel buttonTableLayoutPanel;
+        private Button createButton;
+        private Label nameLabel;
+        private TextBox nameTextBox;
     }
 }
