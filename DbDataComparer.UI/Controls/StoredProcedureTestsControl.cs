@@ -589,6 +589,12 @@ namespace DbDataComparer.UI
         }
 
 
+        private void copySourceToTarget_Click(object sender, EventArgs e)
+        {
+            var testValues = SaveDataGridValues(GetSourceDataGrid());
+            LoadDataGridValues(GetTargetDataGrid(), testValues);
+        }
+
         private void dataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView dataGridView = (DataGridView)sender ??

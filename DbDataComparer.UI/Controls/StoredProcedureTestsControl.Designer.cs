@@ -41,6 +41,7 @@
             buttonTableLayoutPanel = new TableLayoutPanel();
             addUpdateButton = new Button();
             deleteButton = new Button();
+            copySourceToTarget = new Button();
             testGroupBox.SuspendLayout();
             testTabControl.SuspendLayout();
             sourceTabPage.SuspendLayout();
@@ -70,6 +71,7 @@
             // 
             // testGroupBox
             // 
+            testGroupBox.Controls.Add(copySourceToTarget);
             testGroupBox.Controls.Add(testNameTextBox);
             testGroupBox.Controls.Add(testNameLabel);
             testGroupBox.Controls.Add(testTabControl);
@@ -180,6 +182,16 @@
             deleteButton.Text = "Delete";
             deleteButton.UseVisualStyleBackColor = true;
             // 
+            // copySourceToTarget
+            // 
+            copySourceToTarget.Location = new Point(537, 29);
+            copySourceToTarget.Name = "copySourceToTarget";
+            copySourceToTarget.Size = new Size(136, 30);
+            copySourceToTarget.TabIndex = 6;
+            copySourceToTarget.Text = "Copy Source To Target";
+            copySourceToTarget.UseVisualStyleBackColor = true;
+            copySourceToTarget.Click += copySourceToTarget_Click;
+            // 
             // StoredProcedureTestsControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -217,5 +229,6 @@
         private Label testNameLabel;
         private DataGridView sourceDataGrid;
         private DataGridView targetDataGrid;
+        private Button copySourceToTarget;
     }
 }
