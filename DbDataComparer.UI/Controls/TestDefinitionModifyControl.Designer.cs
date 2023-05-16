@@ -36,7 +36,7 @@
             parameterReturnCheckBox = new CheckBox();
             parameterOutputCheckBox = new CheckBox();
             notificationsTabPage = new TabPage();
-            emailDomainLable = new Label();
+            emailDomainLabel = new Label();
             emailTextBox = new TextBox();
             emailLabel = new Label();
             failureCheckBox = new CheckBox();
@@ -44,18 +44,14 @@
             testsTabPage = new TabPage();
             tableViewTestsControl = new TableViewTestsControl();
             storedProcedureTestsControl = new StoredProcedureTestsControl();
-            tdSaveButton = new Button();
+            saveButton = new Button();
             buttonTableLayoutPanel = new TableLayoutPanel();
-            tdLoadButton = new Button();
-            saveButtonContextMenuStrip = new ContextMenuStrip(components);
-            saveToFileToolStripMenuItem = new ToolStripMenuItem();
-            saveForComparisonToolStripMenuItem = new ToolStripMenuItem();
+            cancelButton = new Button();
             tdTabControl.SuspendLayout();
             compareOptionsTabPage.SuspendLayout();
             notificationsTabPage.SuspendLayout();
             testsTabPage.SuspendLayout();
             buttonTableLayoutPanel.SuspendLayout();
-            saveButtonContextMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // tdTabControl
@@ -125,7 +121,7 @@
             // 
             // notificationsTabPage
             // 
-            notificationsTabPage.Controls.Add(emailDomainLable);
+            notificationsTabPage.Controls.Add(emailDomainLabel);
             notificationsTabPage.Controls.Add(emailTextBox);
             notificationsTabPage.Controls.Add(emailLabel);
             notificationsTabPage.Controls.Add(failureCheckBox);
@@ -137,14 +133,14 @@
             notificationsTabPage.Text = "Notifications";
             notificationsTabPage.UseVisualStyleBackColor = true;
             // 
-            // emailDomainLable
+            // emailDomainLabel
             // 
-            emailDomainLable.AutoSize = true;
-            emailDomainLable.Location = new Point(360, 133);
-            emailDomainLable.Name = "emailDomainLable";
-            emailDomainLable.Size = new Size(59, 15);
-            emailDomainLable.TabIndex = 4;
-            emailDomainLable.Text = "@tql.com";
+            emailDomainLabel.AutoSize = true;
+            emailDomainLabel.Location = new Point(360, 133);
+            emailDomainLabel.Name = "emailDomainLable";
+            emailDomainLabel.Size = new Size(59, 15);
+            emailDomainLabel.TabIndex = 4;
+            emailDomainLabel.Text = "@tql.com";
             // 
             // emailTextBox
             // 
@@ -207,24 +203,24 @@
             storedProcedureTestsControl.Size = new Size(710, 390);
             storedProcedureTestsControl.TabIndex = 0;
             // 
-            // tdSaveButton
+            // saveButton
             // 
-            tdSaveButton.Anchor = AnchorStyles.None;
-            tdSaveButton.Location = new Point(104, 3);
-            tdSaveButton.Name = "tdSaveButton";
-            tdSaveButton.Size = new Size(80, 25);
-            tdSaveButton.TabIndex = 2;
-            tdSaveButton.Text = "Save";
-            tdSaveButton.UseVisualStyleBackColor = true;
-            tdSaveButton.Click += tdSaveButton_Click;
+            saveButton.Anchor = AnchorStyles.None;
+            saveButton.Location = new Point(8, 3);
+            saveButton.Name = "saveButton";
+            saveButton.Size = new Size(80, 25);
+            saveButton.TabIndex = 0;
+            saveButton.Text = "Save";
+            saveButton.UseVisualStyleBackColor = true;
+            saveButton.Click += saveButton_Click;
             // 
             // buttonTableLayoutPanel
             // 
             buttonTableLayoutPanel.ColumnCount = 2;
             buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             buttonTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            buttonTableLayoutPanel.Controls.Add(tdLoadButton, 0, 0);
-            buttonTableLayoutPanel.Controls.Add(tdSaveButton, 1, 0);
+            buttonTableLayoutPanel.Controls.Add(cancelButton, 1, 0);
+            buttonTableLayoutPanel.Controls.Add(saveButton, 0, 0);
             buttonTableLayoutPanel.Location = new Point(546, 440);
             buttonTableLayoutPanel.Name = "buttonTableLayoutPanel";
             buttonTableLayoutPanel.RowCount = 1;
@@ -232,34 +228,16 @@
             buttonTableLayoutPanel.Size = new Size(192, 31);
             buttonTableLayoutPanel.TabIndex = 3;
             // 
-            // tdLoadButton
+            // cancelButton
             // 
-            tdLoadButton.Anchor = AnchorStyles.None;
-            tdLoadButton.Location = new Point(8, 3);
-            tdLoadButton.Name = "tdLoadButton";
-            tdLoadButton.Size = new Size(80, 25);
-            tdLoadButton.TabIndex = 2;
-            tdLoadButton.Text = "Load";
-            tdLoadButton.UseVisualStyleBackColor = true;
-            tdLoadButton.Click += tdLoadButton_Click;
-            // 
-            // saveButtonContextMenuStrip
-            // 
-            saveButtonContextMenuStrip.Items.AddRange(new ToolStripItem[] { saveToFileToolStripMenuItem, saveForComparisonToolStripMenuItem });
-            saveButtonContextMenuStrip.Name = "saveButtonContextMenuStrip";
-            saveButtonContextMenuStrip.Size = new Size(183, 48);
-            // 
-            // saveToFileToolStripMenuItem
-            // 
-            saveToFileToolStripMenuItem.Name = "saveToFileToolStripMenuItem";
-            saveToFileToolStripMenuItem.Size = new Size(182, 22);
-            saveToFileToolStripMenuItem.Text = "Save to file...";
-            // 
-            // saveForComparisonToolStripMenuItem
-            // 
-            saveForComparisonToolStripMenuItem.Name = "saveForComparisonToolStripMenuItem";
-            saveForComparisonToolStripMenuItem.Size = new Size(182, 22);
-            saveForComparisonToolStripMenuItem.Text = "Save for comparison";
+            cancelButton.Anchor = AnchorStyles.None;
+            cancelButton.Location = new Point(104, 3);
+            cancelButton.Name = "cancelButton";
+            cancelButton.Size = new Size(80, 25);
+            cancelButton.TabIndex = 1;
+            cancelButton.Text = "Cancel";
+            cancelButton.UseVisualStyleBackColor = true;
+            cancelButton.Click += cancelButton_Click;
             // 
             // TestDefinitionModifyControl
             // 
@@ -269,7 +247,6 @@
             Controls.Add(tdTabControl);
             Name = "TestDefinitionModifyControl";
             Size = new Size(742, 477);
-            Load += TestDefinitionModifyControl_Load;
             tdTabControl.ResumeLayout(false);
             compareOptionsTabPage.ResumeLayout(false);
             compareOptionsTabPage.PerformLayout();
@@ -277,7 +254,6 @@
             notificationsTabPage.PerformLayout();
             testsTabPage.ResumeLayout(false);
             buttonTableLayoutPanel.ResumeLayout(false);
-            saveButtonContextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -285,9 +261,9 @@
 
         private TabControl tdTabControl;
         private TabPage overallResultsTabPage;
-        private Button tdSaveButton;
+        private Button saveButton;
         private TableLayoutPanel buttonTableLayoutPanel;
-        private Button tdLoadButton;
+        private Button cancelButton;
         private TabPage compareOptionsTabPage;
         private TextBox overallResultsTextBox;
         private TextBox errorsTextBox;
@@ -295,15 +271,12 @@
         private CheckBox resultSetMetaDataCheckBox;
         private CheckBox parameterReturnCheckBox;
         private CheckBox parameterOutputCheckBox;
-        private ContextMenuStrip saveButtonContextMenuStrip;
-        private ToolStripMenuItem saveToFileToolStripMenuItem;
-        private ToolStripMenuItem saveForComparisonToolStripMenuItem;
         private TabPage notificationsTabPage;
         private TextBox emailTextBox;
         private Label emailLabel;
         private CheckBox failureCheckBox;
         private CheckBox everyCompareCheckBox;
-        private Label emailDomainLable;
+        private Label emailDomainLabel;
         private TabPage testsTabPage;
         private TableViewTestsControl tableViewTestsControl;
         private StoredProcedureTestsControl storedProcedureTestsControl;

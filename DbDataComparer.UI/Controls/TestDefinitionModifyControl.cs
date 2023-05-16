@@ -260,27 +260,13 @@ namespace DbDataComparer.UI
 
 
         #region Control Event handlers
-        private void TestDefinitionModifyControl_Load(object sender, EventArgs e)
+        private async void cancelButton_Click(object sender, EventArgs e)
         {
-            saveButtonContextMenuStrip.ItemClicked += saveButtonContextMenuStrip_ItemClicked;
+            this.tdTabControl.SelectedIndex = CompareOptionsTabPageIndex;
+            this.QueryTestDefinition();
         }
 
-
-        private async void tdLoadButton_Click(object sender, EventArgs e)
-        {
-            // Raise event to load Test Definition for testing
-            var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
-            OnTestDefinitionLoadRequested(loadEventArgs);
-
-            if (loadEventArgs.SuccessfullyLoaded)
-            {
-                // Make sure first tab is selected
-                this.tdTabControl.SelectedIndex = CompareOptionsTabPageIndex;
-                this.QueryTestDefinition();
-            }
-        }
-
-        private async void tdSaveButton_Click(object sender, EventArgs e)
+        private async void saveButton_Click(object sender, EventArgs e)
         {
             if (this.WorkingTestDefinition == null)
             {
@@ -293,36 +279,6 @@ namespace DbDataComparer.UI
                 Validate();
                 SaveTestDefinitionValues();
 
-                // Overlay saveButtonContextMenuStrip to give user a choice of save options
-                Point screenPoint = tdSaveButton.PointToScreen(new Point(tdSaveButton.Left, tdSaveButton.Bottom));
-                if (screenPoint.Y + saveButtonContextMenuStrip.Size.Height > Screen.PrimaryScreen.WorkingArea.Height)
-                {
-                    saveButtonContextMenuStrip.Show(tdSaveButton, new Point(0, -saveButtonContextMenuStrip.Size.Height));
-                }
-                else
-                {
-                    saveButtonContextMenuStrip.Show(tdSaveButton, new Point(0, tdSaveButton.Height));
-                }
-            }
-
-            catch (Exception ex)
-            {
-                RTLAwareMessageBox.ShowError("Save", ex);
-            }
-        }
-
-
-        private async void saveButtonContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            ToolStripItem item = e.ClickedItem;
-
-            if (item == this.saveForComparisonToolStripMenuItem)
-            {
-                this.SetTestDefinition(this.WorkingTestDefinition);
-            }
-
-            if (item == this.saveToFileToolStripMenuItem)
-            {
                 var saveEventArgs = new TestDefinitionSaveRequestedEventArgs()
                 {
                     TestDefinition = this.WorkingTestDefinition,
@@ -332,6 +288,11 @@ namespace DbDataComparer.UI
 
                 if (saveEventArgs.SuccessfullySaved)
                     this.QueryTestDefinition();
+           }
+
+            catch (Exception ex)
+            {
+                RTLAwareMessageBox.ShowError("Save", ex);
             }
         }
         #endregion

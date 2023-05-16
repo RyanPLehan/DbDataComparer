@@ -117,7 +117,8 @@ namespace DbDataComparer.UI
 
             DataGridView dgv = (DataGridView)sender;
             DataGridViewRow row = dgv.Rows[e.RowIndex];
-            row.HeaderCell.Value = e.RowIndex + 1;
+            if (!row.IsNewRow)
+                row.HeaderCell.Value = String.Format("{0}",e.RowIndex + 1);
         }
 
         #region Data Grid Initialization Routines
@@ -148,6 +149,7 @@ namespace DbDataComparer.UI
             dgvColumn.HeaderCell.Style = new DataGridViewCellStyle()
             {
                 // Font = new Font(Font, FontStyle.Bold | FontStyle.Underline),
+                Font = new Font(Font, FontStyle.Bold),
                 Alignment = DataGridViewContentAlignment.MiddleCenter
             };
 
@@ -208,7 +210,8 @@ namespace DbDataComparer.UI
 
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                if (row.Index == DATA_GRID_HEADER_ROW_INDEX)
+                if (row.Index == DATA_GRID_HEADER_ROW_INDEX ||
+                    row.IsNewRow)
                     continue;
 
                 var rowValues = GetDataGridRowValues(row);
@@ -236,7 +239,8 @@ namespace DbDataComparer.UI
         {
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                if (row.Index == DATA_GRID_HEADER_ROW_INDEX)
+                if (row.Index == DATA_GRID_HEADER_ROW_INDEX || 
+                    row.IsNewRow)
                     continue;
 
                 ValidateDataGridRowValues(row);
