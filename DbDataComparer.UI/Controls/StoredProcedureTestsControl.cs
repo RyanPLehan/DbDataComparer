@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Extensions;
+using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 
 namespace DbDataComparer.UI
@@ -451,6 +452,32 @@ namespace DbDataComparer.UI
         #endregion
 
 
+        #region Copy Routines
+        private IEnumerable<ParameterTestValue> CopyTestValues(IEnumerable<ParameterTestValue> sourceTestValues, IEnumerable<ParameterTestValue> targetTestValues)
+        {
+            // Clone target test values so that any update to Reference types are not reflected back to the original
+            IEnumerable<ParameterTestValue> testValues = NSJson.Deserialize<IEnumerable<ParameterTestValue>>(NSJson.Serialize(targetTestValues));
+
+            // Iterate through source test values and only update based upon matching parameter names
+            foreach(ParameterTestValue srcTV in sourceTestValues)
+            {
+                ParameterTestValue tv = testValues.Where(x => x.ParameterName.Equals(srcTV.ParameterName, StringComparison.OrdinalIgnoreCase))
+                                                  .FirstOrDefault();
+                if (tv != null)
+                {
+                    tv.Value = srcTV.Value;
+
+                    if (srcTV.Values != null)
+                    {
+                        tv.Values = NSJson.Deserialize<IEnumerable<IDictionary<string, object>>>(NSJson.Serialize(srcTV.Values));
+                    }
+                }
+            }
+
+            return testValues;
+        }
+        #endregion
+
         #region Load Routines
         private void LoadTests()
         {
@@ -591,8 +618,9 @@ namespace DbDataComparer.UI
 
         private void copySourceToTarget_Click(object sender, EventArgs e)
         {
-            var testValues = SaveDataGridValues(GetSourceDataGrid());
-            LoadDataGridValues(GetTargetDataGrid(), testValues);
+            var srcTestValues = SaveDataGridValues(GetSourceDataGrid());
+            var tgtTestValues = CopyTestValues(srcTestValues, this.WorkingTest.TargetTestValues);
+            LoadDataGridValues(GetTargetDataGrid(), tgtTestValues);
         }
 
         private void dataGrid_CellClick(object sender, DataGridViewCellEventArgs e)
