@@ -15,6 +15,7 @@ namespace DbDataComparer.UI
 
         private string PathName { get; set; }
         private TestDefinition TestDefinition { get; set; }
+        private TestDefinitionControl ActiveTestDefinitionControl { get; set; } = null;
 
 
         public Main(ConfigurationSettings settings)
@@ -88,6 +89,7 @@ namespace DbDataComparer.UI
             if (control is TestDefinitionControl)
             {
                 ((TestDefinitionControl)control).Activate();
+                this.ActiveTestDefinitionControl = (TestDefinitionControl)control;
             }
         }
 
@@ -256,6 +258,11 @@ namespace DbDataComparer.UI
         {
             var loadEventArgs = new TestDefinitionLoadRequestedEventArgs();
             TestDefinitionLoadRequested(sender, loadEventArgs);
+
+            if (loadEventArgs.SuccessfullyLoaded &&
+                this.ActiveTestDefinitionControl != null)
+                ActivateUserControl(this.ActiveTestDefinitionControl);
+
         }
         #endregion
 
