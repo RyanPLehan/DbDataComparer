@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -30,17 +31,25 @@ namespace DbDataComparer.UI
 
         public override async void Activate()
         {
+            StringBuilder sb = new StringBuilder();
             base.Activate();
 
             // Make sure first tab is selected
             this.tdTabControl.SelectedIndex = OverallResultsTabPageIndex;
 
             // Clear out any previous values
-            WriteOverallResults(null);
+            WriteOverallResults(null, false);
             WriteDetailResults(null);
+
+            sb.AppendFormat("Comparison started at {0:MM/dd/yyyy HH:mm:ss.fff}", DateTime.Now);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            WriteOverallResults(sb.ToString());
 
             try
             {
+
                 Application.UseWaitCursor = true;
                 await ExecuteComparison();
                 Application.UseWaitCursor = false;
@@ -49,7 +58,14 @@ namespace DbDataComparer.UI
             {
                 Application.UseWaitCursor = false;
                 RTLAwareMessageBox.ShowError("Comparison", ex);
-            }            
+            }
+
+            sb.Clear();
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendFormat("Comparison finished at {0:MM/dd/yyyy HH:mm:ss.fff}", DateTime.Now);
+
+            WriteOverallResults(sb.ToString());
         }
 
         private async Task ExecuteComparison()
@@ -122,10 +138,14 @@ namespace DbDataComparer.UI
             return ret;
         }
 
-        private void WriteOverallResults(string text)
+        private void WriteOverallResults(string text, bool append = true)
         {
             Control control = this.tdTabControl.TabPages["overallResultsTabPage"].Controls["overallResultsTextBox"];
-            ((TextBox)control).Text = text;
+
+            if (append)
+                ((TextBox)control).Text = ((TextBox)control).Text + text;
+            else
+                ((TextBox)control).Text = text;
         }
 
         private void WriteDetailResults(string text)
