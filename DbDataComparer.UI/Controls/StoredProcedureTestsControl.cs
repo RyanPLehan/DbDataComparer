@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
@@ -233,6 +234,9 @@ namespace DbDataComparer.UI
             cell.Value = parameter.Name;
 
             cell = row.Cells[DATA_GRID_PARAM_VALUE_COL_INDEX];          // ParameterValue
+            if (parameter.DataType != SqlDbType.Structured &&
+                parameter.DataType != SqlDbType.Udt)
+                cell.ValueType = DatabaseTypeConverter.ToNetType(parameter.DataType);
 
             cell = row.Cells[DATA_GRID_PARAM_NULL_COL_INDEX];           // ParameterNull
             if (!parameter.IsNullable)
