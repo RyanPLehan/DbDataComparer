@@ -183,7 +183,13 @@ namespace DbDataComparer.UI
             {
                 cell = FindDataGridCell(row, kvp.Key);
                 if (cell != null)
-                    cell.Value = kvp.Value;
+                {
+                    SqlDbType sqlDbType = (SqlDbType)cell.OwningColumn.Tag;
+                    if (sqlDbType == SqlDbType.Bit)
+                        cell.Value = (kvp.Value == null ? false : Convert.ToBoolean(kvp.Value));
+                    else
+                        cell.Value = kvp.Value;
+                }
             }
         }
 
@@ -228,8 +234,15 @@ namespace DbDataComparer.UI
             foreach (DataGridViewCell cell in row.Cells)
             {
                 SqlDbType sqlDbType = (SqlDbType)cell.OwningColumn.Tag;
-                Type type = DatabaseTypeConverter.ToNetType(sqlDbType);
-                rowValues.Add(cell.OwningColumn.Name, Convert.ChangeType(cell.Value, type));
+                if (sqlDbType == SqlDbType.Bit)
+                {
+                    rowValues.Add(cell.OwningColumn.Name, Convert.ToBoolean(cell.Value) ? 1 : 0);
+                }
+                else
+                {
+                    Type type = DatabaseTypeConverter.ToNetType(sqlDbType);
+                    rowValues.Add(cell.OwningColumn.Name, Convert.ChangeType(cell.Value, type));
+                }
             }
 
             return rowValues;

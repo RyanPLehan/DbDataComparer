@@ -16,9 +16,16 @@ namespace DbDataComparer.UI
             switch (sqlDbType)
             {
                 case SqlDbType.Bit:
-                    control = new DataGridViewComboBoxCell();
-                    ((DataGridViewComboBoxCell)control).Tag = true;
-                    ((DataGridViewComboBoxCell)control).Items.AddRange(new bool[] { true, false });
+                    // control = new DataGridViewComboBoxCell();
+                    // ((DataGridViewComboBoxCell)control).Tag = true;
+                    // ((DataGridViewComboBoxCell)control).Items.AddRange(new bool[] { true, false });
+
+                    control = new DataGridViewCheckBoxCell();
+                    ((DataGridViewCheckBoxCell)control).Tag = false;
+                    ((DataGridViewCheckBoxCell)control).Style = new DataGridViewCellStyle() 
+                    { 
+                        Alignment = DataGridViewContentAlignment.MiddleCenter 
+                    };
                     break;
 
                 case SqlDbType.TinyInt:
@@ -105,10 +112,13 @@ namespace DbDataComparer.UI
 
             switch (sqlDbType)
             {
-                case SqlDbType.Bit:
-                    control = new DataGridViewComboBoxColumn();
-                    ((DataGridViewComboBoxColumn)control).Tag = true;
-                    ((DataGridViewComboBoxColumn)control).Items.AddRange(new bool[] { true, false });
+                case SqlDbType.Bit:                    
+                    //control = new DataGridViewComboBoxColumn();
+                    //((DataGridViewComboBoxColumn)control).Tag = true;
+                    //((DataGridViewComboBoxColumn)control).Items.AddRange(new bool[] { true, false });
+
+                    control = new DataGridViewCheckBoxColumn();
+                    ((DataGridViewCheckBoxColumn)control).Tag = false;
                     break;
 
                 case SqlDbType.TinyInt:

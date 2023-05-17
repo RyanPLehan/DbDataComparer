@@ -332,6 +332,11 @@ namespace DbDataComparer.UI
                 ((ParameterStructure)cell.Tag).Values = testValue.Values;
                 isNull = testValue.Values == null;
             }
+            else if (sqlDbType == SqlDbType.Bit)
+            {
+                cell.Value = (testValue.Value == null ? false : Convert.ToBoolean(testValue.Value));
+                isNull = testValue.Value == null;
+            }
             else
             {
                 cell.Value = testValue.Value;
@@ -387,6 +392,10 @@ namespace DbDataComparer.UI
             {
                 ParameterStructure parameterStructure = (ParameterStructure)cell.Tag;
                 testValue.Values = parameterStructure.Values;
+            }
+            else if (sqlDbType == SqlDbType.Bit)
+            {
+                testValue.Value = (Convert.ToBoolean(cell.Value) ? 1 : 0);
             }
             else
             {
