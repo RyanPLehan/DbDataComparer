@@ -164,12 +164,10 @@ namespace DbDataComparer.MSSql
             // Build Columns
             foreach(UdtColumn udtCol in udt.Columns)
             {
-                // Use SqlParameter as a way to convert from SqlDbType to DbType
-                SqlParameter param = new SqlParameter("name", udtCol.DataType);
                 DataColumn col = new DataColumn()
                 {
                     ColumnName = udtCol.Name,
-                    DataType = param.DbType.GetType()
+                    DataType = DatabaseTypeConverter.ToNetType(udtCol.DataType),
                 };
 
                 dt.Columns.Add(col);

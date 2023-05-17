@@ -49,7 +49,6 @@ namespace DbDataComparer.UI
 
             try
             {
-
                 Application.UseWaitCursor = true;
                 await ExecuteComparison();
                 Application.UseWaitCursor = false;
