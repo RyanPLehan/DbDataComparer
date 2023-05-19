@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             tdTabControl = new TabControl();
             compareOptionsTabPage = new TabPage();
             resultSetDataCheckBox = new CheckBox();
@@ -41,15 +40,35 @@
             emailLabel = new Label();
             failureCheckBox = new CheckBox();
             everyCompareCheckBox = new CheckBox();
+            databaseTabPage = new TabPage();
+            tgtGroupBox = new GroupBox();
+            tgtBuildButton = new Button();
+            tgtConnectionStringTextBox = new TextBox();
+            tgtConnectionStringLabel = new Label();
+            tgtExecutionTimeOutTextBox = new TextBox();
+            tgtExecutionTimeOutLabel = new Label();
+            srcGroupBox = new GroupBox();
+            srcBuildButton = new Button();
+            srcConnectionStringTextBox = new TextBox();
+            srcConnectionStringLabel = new Label();
+            srcExecutionTimeOutTextBox = new TextBox();
+            srcExecutionTimeOutLabel = new Label();
             testsTabPage = new TabPage();
             tableViewTestsControl = new TableViewTestsControl();
             storedProcedureTestsControl = new StoredProcedureTestsControl();
             saveButton = new Button();
             buttonTableLayoutPanel = new TableLayoutPanel();
             cancelButton = new Button();
+            srcDatabaseObjectLabel = new Label();
+            srcDatabaseObjectTextBox = new TextBox();
+            tgtDatabaseObjectTextBox = new TextBox();
+            tgtDatabaseObjectLabel = new Label();
             tdTabControl.SuspendLayout();
             compareOptionsTabPage.SuspendLayout();
             notificationsTabPage.SuspendLayout();
+            databaseTabPage.SuspendLayout();
+            tgtGroupBox.SuspendLayout();
+            srcGroupBox.SuspendLayout();
             testsTabPage.SuspendLayout();
             buttonTableLayoutPanel.SuspendLayout();
             SuspendLayout();
@@ -58,6 +77,7 @@
             // 
             tdTabControl.Controls.Add(compareOptionsTabPage);
             tdTabControl.Controls.Add(notificationsTabPage);
+            tdTabControl.Controls.Add(databaseTabPage);
             tdTabControl.Controls.Add(testsTabPage);
             tdTabControl.Location = new Point(10, 10);
             tdTabControl.Name = "tdTabControl";
@@ -137,7 +157,7 @@
             // 
             emailDomainLabel.AutoSize = true;
             emailDomainLabel.Location = new Point(360, 133);
-            emailDomainLabel.Name = "emailDomainLable";
+            emailDomainLabel.Name = "emailDomainLabel";
             emailDomainLabel.Size = new Size(59, 15);
             emailDomainLabel.TabIndex = 4;
             emailDomainLabel.Text = "@tql.com";
@@ -177,6 +197,133 @@
             everyCompareCheckBox.TabIndex = 0;
             everyCompareCheckBox.Text = "Notify on every compare";
             everyCompareCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // databaseTabPage
+            // 
+            databaseTabPage.Controls.Add(tgtGroupBox);
+            databaseTabPage.Controls.Add(srcGroupBox);
+            databaseTabPage.Location = new Point(4, 24);
+            databaseTabPage.Name = "databaseTabPage";
+            databaseTabPage.Size = new Size(720, 400);
+            databaseTabPage.TabIndex = 4;
+            databaseTabPage.Text = "Database";
+            databaseTabPage.UseVisualStyleBackColor = true;
+            // 
+            // tgtGroupBox
+            // 
+            tgtGroupBox.Controls.Add(tgtDatabaseObjectTextBox);
+            tgtGroupBox.Controls.Add(tgtDatabaseObjectLabel);
+            tgtGroupBox.Controls.Add(tgtBuildButton);
+            tgtGroupBox.Controls.Add(tgtConnectionStringTextBox);
+            tgtGroupBox.Controls.Add(tgtConnectionStringLabel);
+            tgtGroupBox.Controls.Add(tgtExecutionTimeOutTextBox);
+            tgtGroupBox.Controls.Add(tgtExecutionTimeOutLabel);
+            tgtGroupBox.Location = new Point(14, 207);
+            tgtGroupBox.Name = "tgtGroupBox";
+            tgtGroupBox.Size = new Size(693, 185);
+            tgtGroupBox.TabIndex = 1;
+            tgtGroupBox.TabStop = false;
+            tgtGroupBox.Text = "Target";
+            // 
+            // tgtBuildButton
+            // 
+            tgtBuildButton.Location = new Point(612, 143);
+            tgtBuildButton.Name = "tgtBuildButton";
+            tgtBuildButton.Size = new Size(77, 24);
+            tgtBuildButton.TabIndex = 6;
+            tgtBuildButton.Text = "Build";
+            tgtBuildButton.UseVisualStyleBackColor = true;
+            tgtBuildButton.Click += tgtBuildButton_Click;
+            // 
+            // tgtConnectionStringTextBox
+            // 
+            tgtConnectionStringTextBox.Location = new Point(20, 144);
+            tgtConnectionStringTextBox.Name = "tgtConnectionStringTextBox";
+            tgtConnectionStringTextBox.Size = new Size(580, 23);
+            tgtConnectionStringTextBox.TabIndex = 5;
+            // 
+            // tgtConnectionStringLabel
+            // 
+            tgtConnectionStringLabel.AutoSize = true;
+            tgtConnectionStringLabel.Location = new Point(18, 127);
+            tgtConnectionStringLabel.Name = "tgtConnectionStringLabel";
+            tgtConnectionStringLabel.Size = new Size(103, 15);
+            tgtConnectionStringLabel.TabIndex = 4;
+            tgtConnectionStringLabel.Text = "Connection String";
+            // 
+            // tgtExecutionTimeOutTextBox
+            // 
+            tgtExecutionTimeOutTextBox.Location = new Point(18, 91);
+            tgtExecutionTimeOutTextBox.Name = "tgtExecutionTimeOutTextBox";
+            tgtExecutionTimeOutTextBox.Size = new Size(49, 23);
+            tgtExecutionTimeOutTextBox.TabIndex = 3;
+            // 
+            // tgtExecutionTimeOutLabel
+            // 
+            tgtExecutionTimeOutLabel.AutoSize = true;
+            tgtExecutionTimeOutLabel.Location = new Point(18, 73);
+            tgtExecutionTimeOutLabel.Name = "tgtExecutionTimeOutLabel";
+            tgtExecutionTimeOutLabel.Size = new Size(163, 15);
+            tgtExecutionTimeOutLabel.TabIndex = 2;
+            tgtExecutionTimeOutLabel.Text = "Execution timeout in seconds";
+            // 
+            // srcGroupBox
+            // 
+            srcGroupBox.Controls.Add(srcDatabaseObjectTextBox);
+            srcGroupBox.Controls.Add(srcDatabaseObjectLabel);
+            srcGroupBox.Controls.Add(srcBuildButton);
+            srcGroupBox.Controls.Add(srcConnectionStringTextBox);
+            srcGroupBox.Controls.Add(srcConnectionStringLabel);
+            srcGroupBox.Controls.Add(srcExecutionTimeOutTextBox);
+            srcGroupBox.Controls.Add(srcExecutionTimeOutLabel);
+            srcGroupBox.Location = new Point(14, 16);
+            srcGroupBox.Name = "srcGroupBox";
+            srcGroupBox.Size = new Size(693, 185);
+            srcGroupBox.TabIndex = 0;
+            srcGroupBox.TabStop = false;
+            srcGroupBox.Text = "Source";
+            // 
+            // srcBuildButton
+            // 
+            srcBuildButton.Location = new Point(610, 141);
+            srcBuildButton.Name = "srcBuildButton";
+            srcBuildButton.Size = new Size(77, 24);
+            srcBuildButton.TabIndex = 6;
+            srcBuildButton.Text = "Build";
+            srcBuildButton.UseVisualStyleBackColor = true;
+            srcBuildButton.Click += srcBuildButton_Click;
+            // 
+            // srcConnectionStringTextBox
+            // 
+            srcConnectionStringTextBox.Location = new Point(18, 142);
+            srcConnectionStringTextBox.Name = "srcConnectionStringTextBox";
+            srcConnectionStringTextBox.Size = new Size(580, 23);
+            srcConnectionStringTextBox.TabIndex = 5;
+            // 
+            // srcConnectionStringLabel
+            // 
+            srcConnectionStringLabel.AutoSize = true;
+            srcConnectionStringLabel.Location = new Point(16, 125);
+            srcConnectionStringLabel.Name = "srcConnectionStringLabel";
+            srcConnectionStringLabel.Size = new Size(103, 15);
+            srcConnectionStringLabel.TabIndex = 4;
+            srcConnectionStringLabel.Text = "Connection String";
+            // 
+            // srcExecutionTimeOutTextBox
+            // 
+            srcExecutionTimeOutTextBox.Location = new Point(16, 90);
+            srcExecutionTimeOutTextBox.Name = "srcExecutionTimeOutTextBox";
+            srcExecutionTimeOutTextBox.Size = new Size(49, 23);
+            srcExecutionTimeOutTextBox.TabIndex = 3;
+            // 
+            // srcExecutionTimeOutLabel
+            // 
+            srcExecutionTimeOutLabel.AutoSize = true;
+            srcExecutionTimeOutLabel.Location = new Point(16, 72);
+            srcExecutionTimeOutLabel.Name = "srcExecutionTimeOutLabel";
+            srcExecutionTimeOutLabel.Size = new Size(163, 15);
+            srcExecutionTimeOutLabel.TabIndex = 2;
+            srcExecutionTimeOutLabel.Text = "Execution timeout in seconds";
             // 
             // testsTabPage
             // 
@@ -239,6 +386,40 @@
             cancelButton.UseVisualStyleBackColor = true;
             cancelButton.Click += cancelButton_Click;
             // 
+            // srcDatabaseObjectLabel
+            // 
+            srcDatabaseObjectLabel.AutoSize = true;
+            srcDatabaseObjectLabel.Location = new Point(18, 19);
+            srcDatabaseObjectLabel.Name = "srcDatabaseObjectLabel";
+            srcDatabaseObjectLabel.Size = new Size(93, 15);
+            srcDatabaseObjectLabel.TabIndex = 0;
+            srcDatabaseObjectLabel.Text = "Database Object";
+            // 
+            // srcDatabaseObjectTextBox
+            // 
+            srcDatabaseObjectTextBox.Enabled = false;
+            srcDatabaseObjectTextBox.Location = new Point(18, 37);
+            srcDatabaseObjectTextBox.Name = "srcDatabaseObjectTextBox";
+            srcDatabaseObjectTextBox.Size = new Size(420, 23);
+            srcDatabaseObjectTextBox.TabIndex = 1;
+            // 
+            // tgtDatabaseObjectTextBox
+            // 
+            tgtDatabaseObjectTextBox.Enabled = false;
+            tgtDatabaseObjectTextBox.Location = new Point(20, 37);
+            tgtDatabaseObjectTextBox.Name = "tgtDatabaseObjectTextBox";
+            tgtDatabaseObjectTextBox.Size = new Size(420, 23);
+            tgtDatabaseObjectTextBox.TabIndex = 1;
+            // 
+            // tgtDatabaseObjectLabel
+            // 
+            tgtDatabaseObjectLabel.AutoSize = true;
+            tgtDatabaseObjectLabel.Location = new Point(20, 19);
+            tgtDatabaseObjectLabel.Name = "tgtDatabaseObjectLabel";
+            tgtDatabaseObjectLabel.Size = new Size(93, 15);
+            tgtDatabaseObjectLabel.TabIndex = 0;
+            tgtDatabaseObjectLabel.Text = "Database Object";
+            // 
             // TestDefinitionModifyControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -252,6 +433,11 @@
             compareOptionsTabPage.PerformLayout();
             notificationsTabPage.ResumeLayout(false);
             notificationsTabPage.PerformLayout();
+            databaseTabPage.ResumeLayout(false);
+            tgtGroupBox.ResumeLayout(false);
+            tgtGroupBox.PerformLayout();
+            srcGroupBox.ResumeLayout(false);
+            srcGroupBox.PerformLayout();
             testsTabPage.ResumeLayout(false);
             buttonTableLayoutPanel.ResumeLayout(false);
             ResumeLayout(false);
@@ -280,5 +466,22 @@
         private TabPage testsTabPage;
         private TableViewTestsControl tableViewTestsControl;
         private StoredProcedureTestsControl storedProcedureTestsControl;
+        private TabPage databaseTabPage;
+        private GroupBox tgtGroupBox;
+        private GroupBox srcGroupBox;
+        private TextBox srcExecutionTimeOutTextBox;
+        private Label srcExecutionTimeOutLabel;
+        private Button srcBuildButton;
+        private TextBox srcConnectionStringTextBox;
+        private Label srcConnectionStringLabel;
+        private Button tgtBuildButton;
+        private TextBox tgtConnectionStringTextBox;
+        private Label tgtConnectionStringLabel;
+        private TextBox tgtExecutionTimeOutTextBox;
+        private Label tgtExecutionTimeOutLabel;
+        private TextBox srcDatabaseObjectTextBox;
+        private Label srcDatabaseObjectLabel;
+        private TextBox tgtDatabaseObjectTextBox;
+        private Label tgtDatabaseObjectLabel;
     }
 }
