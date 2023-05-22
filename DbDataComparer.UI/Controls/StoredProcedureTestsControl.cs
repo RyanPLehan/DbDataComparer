@@ -283,6 +283,8 @@ namespace DbDataComparer.UI
                 cell = row.Cells[DATA_GRID_PARAM_VALUE_COL_INDEX];
                 if (sqlDbType == SqlDbType.Structured)
                     ((ParameterStructure)cell.Tag).Values = null;
+                else if (sqlDbType == SqlDbType.Bit)
+                    cell.Value = false;
                 else
                     cell.Value = null;
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbDataComparer.Domain;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -34,6 +35,7 @@ namespace DbDataComparer.UI
                 case SqlDbType.BigInt:
                     control = new DataGridViewTextBoxCell();
                     ((DataGridViewTextBoxCell)control).Tag = 0;
+                    ((DataGridViewTextBoxCell)control).ValueType = DatabaseTypeConverter.ToNetType(sqlDbType);
                     ((DataGridViewTextBoxCell)control).Style = new DataGridViewCellStyle() { Format = "D" };
                     break;
 
@@ -42,6 +44,7 @@ namespace DbDataComparer.UI
                 case SqlDbType.Decimal:
                     control = new DataGridViewTextBoxCell();
                     ((DataGridViewTextBoxCell)control).Tag = 0.0;
+                    ((DataGridViewTextBoxCell)control).ValueType = DatabaseTypeConverter.ToNetType(sqlDbType);
                     ((DataGridViewTextBoxCell)control).Style = new DataGridViewCellStyle() { Format = "G" };
                     break;
 
@@ -49,6 +52,7 @@ namespace DbDataComparer.UI
                 case SqlDbType.SmallMoney:
                     control = new DataGridViewTextBoxCell();
                     ((DataGridViewTextBoxCell)control).Tag = 0.00;
+                    ((DataGridViewTextBoxCell)control).ValueType = DatabaseTypeConverter.ToNetType(sqlDbType);
                     ((DataGridViewTextBoxCell)control).Style = new DataGridViewCellStyle() { Format = "C" };
                     break;
 
@@ -60,12 +64,14 @@ namespace DbDataComparer.UI
                 case SqlDbType.SmallDateTime:
                     control = new DataGridViewTextBoxCell();
                     ((DataGridViewTextBoxCell)control).Tag = DateTime.Now;
+                    ((DataGridViewTextBoxCell)control).ValueType = DatabaseTypeConverter.ToNetType(sqlDbType);
                     ((DataGridViewTextBoxCell)control).Style = new DataGridViewCellStyle() { Format = "MM/dd/yyyy HH:mm:ss" };
                     break;
 
                 case SqlDbType.Time:
                     control = new DataGridViewTextBoxCell();
                     ((DataGridViewTextBoxCell)control).Tag = DateTime.Now.TimeOfDay;
+                    ((DataGridViewTextBoxCell)control).ValueType = DatabaseTypeConverter.ToNetType(sqlDbType);
                     ((DataGridViewTextBoxCell)control).Style = new DataGridViewCellStyle() { Format = "HH:mm:ss" };
                     break;
 
@@ -75,11 +81,13 @@ namespace DbDataComparer.UI
                 case SqlDbType.NVarChar:
                     control = new DataGridViewTextBoxCell();
                     ((DataGridViewTextBoxCell)control).Tag = "<Enter value>";
+                    ((DataGridViewTextBoxCell)control).ValueType = DatabaseTypeConverter.ToNetType(sqlDbType);
                     break;
 
                 case SqlDbType.UniqueIdentifier:
                     control = new DataGridViewTextBoxCell();
                     ((DataGridViewTextBoxCell)control).Tag = Guid.Empty;
+                    ((DataGridViewTextBoxCell)control).ValueType = DatabaseTypeConverter.ToNetType(sqlDbType);
                     ((DataGridViewTextBoxCell)control).Style = new DataGridViewCellStyle() { Format = "B" };
                     break;
 
