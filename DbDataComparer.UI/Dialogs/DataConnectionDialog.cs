@@ -211,15 +211,21 @@ namespace DbDataComparer.UI
                 var options = this.CreateConnectionBuilderOptions();
                 var databases = ConnectionPropertiesBuilder.EnumerateDatabases(options);
 
+                this.databaseComboBox.ResetText();
+                this.databaseComboBox.Items.Clear();
+
                 if (databases.Any())
                 {
-                    this.databaseComboBox.ResetText();
-                    this.databaseComboBox.Items.Clear();
+                    this.databaseComboBox.AutoCompleteMode = AutoCompleteMode.None;
+                    this.databaseComboBox.AutoCompleteSource = AutoCompleteSource.None;
 
                     foreach (string db in databases)
                         this.databaseComboBox.Items.Add(db);
 
                     this.databaseComboBox.SelectedIndex = 0;
+
+                    this.databaseComboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                    this.databaseComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
                 }
 
                 Cursor.Current = currentCursor;

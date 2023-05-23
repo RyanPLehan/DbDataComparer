@@ -59,12 +59,21 @@ namespace DbDataComparer.UI
 
         private void PopulateComboBox(ComboBox comboBox, IEnumerable<string> items)
         {
-            comboBox.Text = null;
+            comboBox.AutoCompleteMode = AutoCompleteMode.None;
+            comboBox.AutoCompleteSource = AutoCompleteSource.None;
+
+            comboBox.ResetText();
             comboBox.SelectedIndex = -1;
             comboBox.Items.Clear();
 
-            foreach (string item in items)
-                comboBox.Items.Add(item);
+            if (items.Any())
+            {
+                foreach (string item in items)
+                    comboBox.Items.Add(item);
+
+                comboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                comboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+            }
         }
 
 
