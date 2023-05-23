@@ -222,7 +222,7 @@ namespace DbDataComparer.MSSql
         private async Task<IEnumerable<UdtColumn>> CreateUDTColumns(SqlConnection connection, UserDefinedType udt)
         {
             IList<UdtColumn> columns = new List<UdtColumn>();
-            var sql = GenerateUserDefinedTableSql(udt.Name);
+            var sql = GenerateUserDefinedTableSql(udt.Schema, udt.Name);
             var cmd = CreateCommand(connection, sql);
             var reader = await cmd.ExecuteReaderAsync();
 
@@ -234,15 +234,17 @@ namespace DbDataComparer.MSSql
             return columns;
         }
 
-        private string GenerateUserDefinedTableSql(string userDefinedTypeName)
+        private string GenerateUserDefinedTableSql(string schema, string userDefinedTypeName)
         {
             var select = "SELECT tt.[Name] AS [UDT_Name], c.[Name] AS [Column_Name], c.[Column_Id], c.[System_Type_Id], t.[Name] AS [DataType_Name], t.[max_length]";
             var from = "FROM sys.table_types tt";
-            var join1 = $"INNER JOIN sys.columns c ON tt.[name] = '{userDefinedTypeName}' AND c.[object_id] = tt.[type_table_object_id]";
-            var join2 = "INNER JOIN sys.types t ON c.[system_type_id] = t.[system_type_id]";
+            var join1 = "INNER JOIN sys.schemas s ON tt.[schema_id] = s.[schema_id]";
+            var join2 = "INNER JOIN sys.columns c ON c.[object_id] = tt.[type_table_object_id]";
+            var join3 = "INNER JOIN sys.types t ON c.[system_type_id] = t.[system_type_id]";
+            var where = $"WHERE tt.[name] = '{userDefinedTypeName}' AND s.[name] = '{schema}'";
             var orderBy = "ORDER BY c.[column_id]";
 
-            return $"{select} {from} {join1} {join2} {orderBy}";
+            return $"{select} {from} {join1} {join2} {join3} {where} {orderBy}";
         }
 
         private UdtColumn CreateUdtColumn(IDataRecord record)
