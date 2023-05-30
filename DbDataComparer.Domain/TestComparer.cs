@@ -20,6 +20,42 @@ namespace DbDataComparer.Domain
     public class TestComparer : ITestComparer
     {
         /// <summary>
+        /// This will compare the overall execution, mainly for any exceptions
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public TestComparisonResult CompareExecution(ExecutionResult source, ExecutionResult target)
+        {
+            TestComparisonResult tcr = new TestComparisonResult();
+            IList<string> failureDescriptions = new List<string>();
+            StringBuilder sb = new StringBuilder();
+
+            // Default to Passed
+            tcr.Result = ComparisonResultTypeEnum.Passed;
+
+            if (source.Exception != null)
+            {
+                tcr.Result = ComparisonResultTypeEnum.Failed;
+                sb.AppendFormat("Source encountered an execution exception: {0}", source.Exception.Message);
+                sb.AppendLine();
+            }
+
+            if (target.Exception != null)
+            {
+                tcr.Result = ComparisonResultTypeEnum.Failed;
+                sb.AppendFormat("Target encountered an execution exception: {0}", target.Exception.Message);
+                sb.AppendLine();
+            }
+
+
+            if (tcr.Result != ComparisonResultTypeEnum.Passed)
+                tcr.ResultDescription = sb.ToString();
+
+            return tcr;
+        }
+
+        /// <summary>
         /// This will compare the Output Parameters.  This will compare Source => Target only, not vice-versa
         /// </summary>
         /// <param name="source"></param>

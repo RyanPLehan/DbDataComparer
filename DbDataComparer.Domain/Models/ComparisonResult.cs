@@ -13,6 +13,7 @@ namespace DbDataComparer.Domain.Models
         public TestExecutionResult TestResult { get; init; }        
         public TimeSpan ComparisonTime { get; set; }
 
+        public TestComparisonResult ExecutionResult { get; set; }
         public TestComparisonResult ParameterReturnResult { get; set; }
         public TestComparisonResult ParameterOutputResult { get; set; }
 
@@ -30,6 +31,8 @@ namespace DbDataComparer.Domain.Models
 
         private void Initialize()
         {
+            this.ExecutionResult = new TestComparisonResult();
+
             this.ParameterReturnResult = new TestComparisonResult();
             this.ParameterOutputResult = new TestComparisonResult();
 

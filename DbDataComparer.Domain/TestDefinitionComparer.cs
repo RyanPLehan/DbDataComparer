@@ -24,17 +24,29 @@ namespace DbDataComparer.Domain
                 sw.Restart();
 
                 // Check each compare option and perform test
-                if (testDefinition.CompareOptions.ParameterReturn)
-                    comparisonResult.ParameterReturnResult = testComparer.CompareParameterReturn(testResult.Source, testResult.Target);
+                comparisonResult.ExecutionResult = testComparer.CompareExecution(testResult.Source, testResult.Target);
+                
+                if (comparisonResult.ExecutionResult.Result == ComparisonResultTypeEnum.Failed)
+                {
+                    comparisonResult.ParameterReturnResult = new TestComparisonResult();
+                    comparisonResult.ParameterOutputResult = new TestComparisonResult();
+                    comparisonResult.ResultsetMetaDataResults = CreateFailedList();
+                    comparisonResult.ResultsetDataResults = CreateFailedList();
+                }
+                else
+                {
+                    if (testDefinition.CompareOptions.ParameterReturn)
+                        comparisonResult.ParameterReturnResult = testComparer.CompareParameterReturn(testResult.Source, testResult.Target);
 
-                if (testDefinition.CompareOptions.ParameterOutput)
-                    comparisonResult.ParameterOutputResult = testComparer.CompareParameterOutput(testResult.Source, testResult.Target);
+                    if (testDefinition.CompareOptions.ParameterOutput)
+                        comparisonResult.ParameterOutputResult = testComparer.CompareParameterOutput(testResult.Source, testResult.Target);
 
-                if (testDefinition.CompareOptions.ResultSetMetaData)
-                    comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target);
+                    if (testDefinition.CompareOptions.ResultSetMetaData)
+                        comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target);
 
-                if (testDefinition.CompareOptions.ResultSetData)
-                    comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target);
+                    if (testDefinition.CompareOptions.ResultSetData)
+                        comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target);
+                }
 
                 sw.Stop();
                 comparisonResult.ComparisonTime = sw.Elapsed;
@@ -76,6 +88,9 @@ namespace DbDataComparer.Domain
                 await sw.WriteAsync(Text.IndentChars);
                 await sw.WriteLineAsync("Comparison Results:");
                 await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                await sw.WriteLineAsync(String.Format("Execution: {0}", cr.ExecutionResult.Result.ToString()));
+
+                await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
                 await sw.WriteLineAsync(String.Format("Parameter Return: {0}", cr.ParameterReturnResult.Result.ToString()));
                 await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
                 await sw.WriteLineAsync(String.Format("Parameter Output: {0}", cr.ParameterOutputResult.Result.ToString()));
@@ -108,6 +123,14 @@ namespace DbDataComparer.Domain
 
                 await sw.WriteAsync(Text.IndentChars);
                 await sw.WriteLineAsync(String.Format("Test: {0} ", cr.TestResult.TestName));
+
+                if (cr.ExecutionResult.Result == ComparisonResultTypeEnum.Failed)
+                {
+                    await sw.WriteAsync(Text.IndentChars + Text.IndentChars);
+                    await sw.WriteLineAsync("Execution Result");
+                    await sw.WriteLineAsync(Text.Indent(cr.ExecutionResult.ResultDescription, Text.IndentChars + Text.IndentChars));
+                    await sw.WriteLineAsync();
+                }
 
                 if (cr.ParameterReturnResult.Result == ComparisonResultTypeEnum.Failed)
                 {
@@ -170,6 +193,8 @@ namespace DbDataComparer.Domain
         {
             bool ret = false;
 
+            ret = ret || (comparisonResult.ExecutionResult.Result == result);
+
             ret = ret || (comparisonResult.ParameterReturnResult.Result == result);
             ret = ret || (comparisonResult.ParameterOutputResult.Result == result);
 
@@ -195,5 +220,13 @@ namespace DbDataComparer.Domain
                                                                  ts.Milliseconds);
         }
 
+
+        private static IDictionary<int, TestComparisonResult> CreateFailedList()
+        {
+            var ret = new Dictionary<int, TestComparisonResult>();
+            ret.Add(0, new TestComparisonResult());
+
+            return ret;
+        }
     }
 }
