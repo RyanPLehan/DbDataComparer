@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -205,6 +206,36 @@ namespace DbDataComparer.Domain
             {
                 // Default to Passed
                 tcr.Result = ComparisonResultTypeEnum.Passed;
+
+#if DEBUG
+                StringBuilder sbTableGen = new StringBuilder();
+
+                // Iterate through source meta data and generate SQL TABLE
+                sbTableGen.AppendLine("SQL Table Generation");
+                foreach (ResultSetMetaData srcMD in source.MetaData)
+                {
+                    // Column Name
+                    sbTableGen.AppendFormat("{0}  ", srcMD.Name);
+
+                    // Data Type
+                    sbTableGen.AppendFormat("{0}", srcMD.DataTypeName);
+                    if (srcMD.Length > 0)
+                        sbTableGen.AppendFormat("({0})", srcMD.Length);
+                    sbTableGen.Append("  ");
+
+                    // Nullable
+                    if (srcMD.IsNullable)
+                        sbTableGen.Append("NULL");
+                    else
+                        sbTableGen.Append("NOT NULL");
+
+                    sbTableGen.AppendLine(",");
+                }
+
+                Debug.WriteLine(sbTableGen.ToString());
+                Debug.Flush();
+                Debug.Close();
+#endif
 
                 // Iterate through source meta data.  Output all differences
                 foreach (ResultSetMetaData srcMD in source.MetaData)
