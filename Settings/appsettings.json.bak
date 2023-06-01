@@ -5,7 +5,7 @@
     "ComparisonErrorsPath": ".\\ComparisonResults\\Errors"
   },
   "Database": {
-    "SourceConnection": "Data Source = DEVACCTING; Initial Catalog = AcctWF; Integrated Security = SSPI;Application Name=DbDataComparer;TrustServerCertificate=true;",
-    "TargetConnection": "Data Source = DEVACCTING; Initial Catalog = AcctWF; Integrated Security = SSPI;Application Name=DbDataComparer;TrustServerCertificate=true;"
+    "SourceConnection": "Data Source = localhost; Initial Catalog = Test; Integrated Security = SSPI;Application Name=DbDataComparer;TrustServerCertificate=true;",
+    "TargetConnection": "Data Source = localhost; Initial Catalog = Test; Integrated Security = SSPI;Application Name=DbDataComparer;TrustServerCertificate=true;"
   }
 }
