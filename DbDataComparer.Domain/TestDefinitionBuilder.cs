@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Configuration;
+using DbDataComparer.Domain.Enums;
 using DbDataComparer.Domain.Models;
 
 namespace DbDataComparer.Domain
@@ -40,12 +41,12 @@ namespace DbDataComparer.Domain
             def.Target.ConnectionString = options.Target.ConnectionString;
 
             // Create Sample tests
-            if (def.Source.Type == CommandType.StoredProcedure &&
-                def.Target.Type == CommandType.StoredProcedure)
+            if (def.Source.Type == DatabaseObjectTypeEnum.StoredProcedure &&
+                def.Target.Type == DatabaseObjectTypeEnum.StoredProcedure)
                 def.StoredProcedureTests = CreateSampleStoredProcedureTests(def.Source, def.Target);
 
-            if (def.Source.Type == CommandType.Text &&
-                def.Target.Type == CommandType.Text)
+            if ((def.Source.Type == DatabaseObjectTypeEnum.View || def.Source.Type == DatabaseObjectTypeEnum.Table) &&
+                (def.Target.Type == DatabaseObjectTypeEnum.View || def.Target.Type == DatabaseObjectTypeEnum.Table))
                 def.TableViewTests = CreateSampleTableViewTests(def.Source, def.Target);
 
             return def;
@@ -93,10 +94,10 @@ namespace DbDataComparer.Domain
             {
                 StoredProcedureTest test = new StoredProcedureTest { Name = $"Sample Stored Procedure Test {i}" };
 
-                if (source != null && source.Type == System.Data.CommandType.StoredProcedure)
+                if (source != null && source.Type == DatabaseObjectTypeEnum.StoredProcedure)
                     test.SourceTestValues = CreateSampleTestValues(source);
 
-                if (target != null && target.Type == System.Data.CommandType.StoredProcedure)
+                if (target != null && target.Type == DatabaseObjectTypeEnum.StoredProcedure)
                     test.TargetTestValues = CreateSampleTestValues(target);
 
                 tests.Add(test);
@@ -212,10 +213,12 @@ namespace DbDataComparer.Domain
             {
                 TableViewTest test = new TableViewTest { Name = $"Sample Table/View Test {i}" };
 
-                if (source != null && source.Type != System.Data.CommandType.StoredProcedure)
+                if (source != null && 
+                    (source.Type == DatabaseObjectTypeEnum.View || source.Type == DatabaseObjectTypeEnum.Table))
                     test.SourceSql = $"SELECT * FROM {source.Text} WHERE [Enter Where Clause]";
 
-                if (target != null && target.Type != System.Data.CommandType.StoredProcedure)
+                if (target != null &&
+                    (target.Type == DatabaseObjectTypeEnum.View || target.Type == DatabaseObjectTypeEnum.Table))
                     test.TargetSql = $"SELECT * FROM {target.Text} WHERE [Enter Where Clause]";
 
                 tests.Add(test);

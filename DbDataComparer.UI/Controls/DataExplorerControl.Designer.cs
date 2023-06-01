@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            dataSourceLabel = new Label();
+            connectionStringLabel = new Label();
             dataSourceTableLayoutPanel = new TableLayoutPanel();
-            dataSourceBuild = new Button();
-            dataSourceTextBox = new TextBox();
+            connectionStringBuild = new Button();
+            connectionStringTextBox = new TextBox();
             dbObjectGroupBox = new GroupBox();
             dbObjectComboBox = new ComboBox();
             dbTypeTableLayoutPanel = new TableLayoutPanel();
@@ -43,22 +43,22 @@
             dbTypeTableLayoutPanel.SuspendLayout();
             SuspendLayout();
             // 
-            // dataSourceLabel
+            // connectionStringLabel
             // 
-            dataSourceLabel.AutoSize = true;
-            dataSourceLabel.Location = new Point(11, 11);
-            dataSourceLabel.Name = "dataSourceLabel";
-            dataSourceLabel.Size = new Size(70, 15);
-            dataSourceLabel.TabIndex = 0;
-            dataSourceLabel.Text = "Data Source";
+            connectionStringLabel.AutoSize = true;
+            connectionStringLabel.Location = new Point(11, 11);
+            connectionStringLabel.Name = "connectionStringLabel";
+            connectionStringLabel.Size = new Size(103, 15);
+            connectionStringLabel.TabIndex = 0;
+            connectionStringLabel.Text = "Connection String";
             // 
             // dataSourceTableLayoutPanel
             // 
             dataSourceTableLayoutPanel.ColumnCount = 2;
             dataSourceTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 80.71066F));
             dataSourceTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 19.289341F));
-            dataSourceTableLayoutPanel.Controls.Add(dataSourceBuild, 0, 0);
-            dataSourceTableLayoutPanel.Controls.Add(dataSourceTextBox, 0, 0);
+            dataSourceTableLayoutPanel.Controls.Add(connectionStringBuild, 0, 0);
+            dataSourceTableLayoutPanel.Controls.Add(connectionStringTextBox, 0, 0);
             dataSourceTableLayoutPanel.Location = new Point(11, 29);
             dataSourceTableLayoutPanel.Name = "dataSourceTableLayoutPanel";
             dataSourceTableLayoutPanel.RowCount = 1;
@@ -66,24 +66,24 @@
             dataSourceTableLayoutPanel.Size = new Size(394, 28);
             dataSourceTableLayoutPanel.TabIndex = 1;
             // 
-            // dataSourceBuild
+            // connectionStringBuild
             // 
-            dataSourceBuild.Location = new Point(321, 3);
-            dataSourceBuild.Name = "dataSourceBuild";
-            dataSourceBuild.Size = new Size(67, 22);
-            dataSourceBuild.TabIndex = 1;
-            dataSourceBuild.Text = "Build";
-            dataSourceBuild.UseVisualStyleBackColor = true;
-            dataSourceBuild.Click += dataSourceBuild_Click;
+            connectionStringBuild.Location = new Point(321, 3);
+            connectionStringBuild.Name = "connectionStringBuild";
+            connectionStringBuild.Size = new Size(67, 22);
+            connectionStringBuild.TabIndex = 1;
+            connectionStringBuild.Text = "Build";
+            connectionStringBuild.UseVisualStyleBackColor = true;
+            connectionStringBuild.Click += dataSourceBuild_Click;
             // 
-            // dataSourceTextBox
+            // connectionStringTextBox
             // 
-            dataSourceTextBox.Location = new Point(3, 3);
-            dataSourceTextBox.Name = "dataSourceTextBox";
-            dataSourceTextBox.Size = new Size(312, 23);
-            dataSourceTextBox.TabIndex = 0;
-            dataSourceTextBox.WordWrap = false;
-            dataSourceTextBox.TextChanged += dataSourceTextBox_TextChanged;
+            connectionStringTextBox.Location = new Point(3, 3);
+            connectionStringTextBox.Name = "connectionStringTextBox";
+            connectionStringTextBox.Size = new Size(312, 23);
+            connectionStringTextBox.TabIndex = 0;
+            connectionStringTextBox.WordWrap = false;
+            connectionStringTextBox.TextChanged += dataSourceTextBox_TextChanged;
             // 
             // dbObjectGroupBox
             // 
@@ -165,7 +165,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(dbObjectGroupBox);
             Controls.Add(dataSourceTableLayoutPanel);
-            Controls.Add(dataSourceLabel);
+            Controls.Add(connectionStringLabel);
             Name = "DataExplorerControl";
             Size = new Size(419, 183);
             dataSourceTableLayoutPanel.ResumeLayout(false);
@@ -179,10 +179,10 @@
 
         #endregion
 
-        private Label dataSourceLabel;
+        private Label connectionStringLabel;
         private TableLayoutPanel dataSourceTableLayoutPanel;
-        private Button dataSourceBuild;
-        private TextBox dataSourceTextBox;
+        private Button connectionStringBuild;
+        private TextBox connectionStringTextBox;
         private GroupBox dbObjectGroupBox;
         private ComboBox dbObjectComboBox;
         private TableLayoutPanel dbTypeTableLayoutPanel;

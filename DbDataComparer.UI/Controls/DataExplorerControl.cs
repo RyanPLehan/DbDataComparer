@@ -40,7 +40,7 @@ namespace DbDataComparer.UI
         {
             return new DataExplorerResult()
             {
-                ConnectionString = this.dataSourceTextBox.Text,
+                ConnectionString = this.connectionStringTextBox.Text,
                 DatabaseObjectName = this.dbObjectComboBox.Text,
             };
         }
@@ -80,9 +80,9 @@ namespace DbDataComparer.UI
         private void dataSourceTextBox_TextChanged(object sender, EventArgs e)
         {
             Reset();
-            this.dbObjectGroupBox.Enabled = !String.IsNullOrWhiteSpace(this.dataSourceTextBox.Text);
+            this.dbObjectGroupBox.Enabled = !String.IsNullOrWhiteSpace(this.connectionStringTextBox.Text);
 
-            var eventArgs = new DataExplorerDataSourceChangedEventArgs() { DataSource = this.dataSourceTextBox.Text };
+            var eventArgs = new DataExplorerDataSourceChangedEventArgs() { DataSource = this.connectionStringTextBox.Text };
             OnDataExplorerDataSourceChanged(eventArgs);
         }
 
@@ -97,7 +97,7 @@ namespace DbDataComparer.UI
 
             try
             {
-                string connStr = this.dataSourceTextBox.Text;
+                string connStr = this.connectionStringTextBox.Text;
                 IDatabase database = new SqlDatabase();
                 IEnumerable<string> items = await database.GetStoredProcedureNames(connStr);
                 PopulateComboBox(this.dbObjectComboBox, items);
@@ -121,7 +121,7 @@ namespace DbDataComparer.UI
 
             try
             {
-                string connStr = this.dataSourceTextBox.Text;
+                string connStr = this.connectionStringTextBox.Text;
                 IDatabase database = new SqlDatabase();
                 IEnumerable<string> items = await database.GetTableNames(connStr);
                 PopulateComboBox(this.dbObjectComboBox, items);
@@ -145,7 +145,7 @@ namespace DbDataComparer.UI
 
             try
             {
-                string connStr = this.dataSourceTextBox.Text;
+                string connStr = this.connectionStringTextBox.Text;
                 IDatabase database = new SqlDatabase();
                 IEnumerable<string> items = await database.GetViewNames(connStr);
                 PopulateComboBox(this.dbObjectComboBox, items);
@@ -163,12 +163,12 @@ namespace DbDataComparer.UI
         {
             var dialog = new DataConnectionDialog();
 
-            if (!String.IsNullOrWhiteSpace(this.dataSourceTextBox.Text))
-                dialog.ConnectionString = this.dataSourceTextBox.Text;
+            if (!String.IsNullOrWhiteSpace(this.connectionStringTextBox.Text))
+                dialog.ConnectionString = this.connectionStringTextBox.Text;
 
             var result = DataConnectionDialog.Show(dialog, this);
             if (result == DialogResult.OK)
-                this.dataSourceTextBox.Text = dialog.ConnectionString;
+                this.connectionStringTextBox.Text = dialog.ConnectionString;
         }
     }
 }

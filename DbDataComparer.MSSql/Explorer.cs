@@ -9,6 +9,8 @@ using DbDataComparer.Domain;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.Domain.Utils;
 using System.Data.SqlTypes;
+using DbDataComparer.Domain.Enums;
+using System.Reflection.PortableExecutable;
 
 namespace DbDataComparer.MSSql
 {
@@ -17,44 +19,69 @@ namespace DbDataComparer.MSSql
         public async Task<ExecutionDefinition> Explore(SqlConnection connection, 
                                                        string databaseObjectName)
         {
-            // Assume database object is a table/view.  Create default select
+            // Assume database object is a unknown.  Create default select
             ExecutionDefinition exeDefinition = new ExecutionDefinition() 
             { 
                 Text = $"Database Object ({databaseObjectName}) not found", 
-                Type = CommandType.Text,
+                Type = DatabaseObjectTypeEnum.Unknown,
             };
 
             var schema = FQNParser.GetSchema(databaseObjectName);
             var dbObject = FQNParser.GetDbObject(databaseObjectName);
+            var dbObjectType = await GetDatabaseObjectType(connection, schema, dbObject);
 
-            if (await IsStoredProcedure(connection, schema, dbObject))
+            if (dbObjectType != DatabaseObjectTypeEnum.Unknown)
             {
                 exeDefinition.Text = databaseObjectName;
-                exeDefinition.Type = CommandType.StoredProcedure;
-                exeDefinition.Parameters = await GetParameters(connection, schema, dbObject);
-            }
-            else if (await IsTableOrView(connection, schema, dbObject))
-            {
-                exeDefinition.Text = databaseObjectName;
-                exeDefinition.Type = CommandType.Text;
+                exeDefinition.Type = dbObjectType;
+
+                if (dbObjectType == DatabaseObjectTypeEnum.StoredProcedure ||
+                    dbObjectType == DatabaseObjectTypeEnum.ScalarFunction ||
+                    dbObjectType == DatabaseObjectTypeEnum.TableFunction)
+                {
+                    exeDefinition.Parameters = await GetParameters(connection, schema, dbObject);
+                }
             }
 
             return exeDefinition;
         }
 
-
-        #region Stored Procedure Check/Generation
-        private async Task<bool> IsStoredProcedure(SqlConnection connection, string schema, string databaseObject)
+        private async Task<DatabaseObjectTypeEnum> GetDatabaseObjectType(SqlConnection connection, string schema, string databaseObject)
         {
-            bool ret = false;
+            DatabaseObjectTypeEnum ret = DatabaseObjectTypeEnum.Unknown;
+
+            ret = (ret == DatabaseObjectTypeEnum.Unknown)
+                ? await GetRoutineType(connection, schema, databaseObject)
+                : DatabaseObjectTypeEnum.Unknown;
+
+            ret = (ret == DatabaseObjectTypeEnum.Unknown)
+                ? await GetTableViewType(connection, schema, databaseObject)
+                : DatabaseObjectTypeEnum.Unknown;
+
+            return ret;
+        }
+
+        #region Stored Procedure/Function Check/Generation
+        private async Task<DatabaseObjectTypeEnum> GetRoutineType(SqlConnection connection, string schema, string databaseObject)
+        {
+            DatabaseObjectTypeEnum ret = DatabaseObjectTypeEnum.Unknown;
             var sql = GenerateRoutinesSql(schema, databaseObject);
             var cmd = CreateCommand(connection, sql);
             var reader = await cmd.ExecuteReaderAsync();
 
             if (await reader.ReadAsync())
             {
-                int index = reader.GetOrdinal("ROUTINE_TYPE");
-                ret = (!reader.IsDBNull(index) && reader.GetString(index).Equals("PROCEDURE", StringComparison.OrdinalIgnoreCase));
+                ret = (ret == DatabaseObjectTypeEnum.Unknown && IsStoredProcedure(reader)) 
+                    ? DatabaseObjectTypeEnum.StoredProcedure 
+                    : DatabaseObjectTypeEnum.Unknown;
+
+                ret = (ret == DatabaseObjectTypeEnum.Unknown && IsFunction(reader) && IsScalarFunction(reader))
+                    ? DatabaseObjectTypeEnum.ScalarFunction
+                    : DatabaseObjectTypeEnum.Unknown;
+
+                ret = (ret == DatabaseObjectTypeEnum.Unknown && IsFunction(reader) && IsTableFunction(reader))
+                    ? DatabaseObjectTypeEnum.TableFunction
+                    : DatabaseObjectTypeEnum.Unknown;
             }
 
             await reader.CloseAsync();
@@ -62,9 +89,34 @@ namespace DbDataComparer.MSSql
             return ret;
         }
 
+        private bool IsStoredProcedure(SqlDataReader reader)
+        {
+            int index = reader.GetOrdinal("ROUTINE_TYPE");
+            return (!reader.IsDBNull(index) && reader.GetString(index).Equals("PROCEDURE", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private bool IsFunction(SqlDataReader reader)
+        {
+            int index = reader.GetOrdinal("ROUTINE_TYPE");
+            return (!reader.IsDBNull(index) && reader.GetString(index).Equals("FUNCTION", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private bool IsScalarFunction(SqlDataReader reader)
+        {
+            int index = reader.GetOrdinal("DATA_TYPE");
+            return (!reader.IsDBNull(index) && !reader.GetString(index).Equals("TABLE", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private bool IsTableFunction(SqlDataReader reader)
+        {
+            int index = reader.GetOrdinal("DATA_TYPE");
+            return (!reader.IsDBNull(index) && reader.GetString(index).Equals("TABLE", StringComparison.OrdinalIgnoreCase));
+        }
+
+
         private string GenerateRoutinesSql(string schema, string routineName)
         {
-            var select = "SELECT ROUTINE_CATALOG, ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_TYPE";
+            var select = "SELECT ROUTINE_CATALOG, ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_TYPE, DATA_TYPE";
             var from = "FROM INFORMATION_SCHEMA.ROUTINES";
             var where = $"WHERE ROUTINE_SCHEMA = '{schema}' AND ROUTINE_NAME = '{routineName}'";
 
@@ -73,17 +125,22 @@ namespace DbDataComparer.MSSql
         #endregion
 
         #region Table/View Check/Generation
-        private async Task<bool> IsTableOrView(SqlConnection connection, string schema, string databaseObject)
+        private async Task<DatabaseObjectTypeEnum> GetTableViewType(SqlConnection connection, string schema, string databaseObject)
         {
-            bool ret = false;
+            DatabaseObjectTypeEnum ret = DatabaseObjectTypeEnum.Unknown;
             var sql = GenerateTableViewSql(schema, databaseObject);
             var cmd = CreateCommand(connection, sql);
             var reader = await cmd.ExecuteReaderAsync();
 
             if (await reader.ReadAsync())
             {
-                int index = reader.GetOrdinal("Name");
-                ret = !reader.IsDBNull(index);
+                ret = (ret == DatabaseObjectTypeEnum.Unknown && IsTable(reader))
+                    ? DatabaseObjectTypeEnum.Table
+                    : DatabaseObjectTypeEnum.Unknown;
+
+                ret = (ret == DatabaseObjectTypeEnum.Unknown && IsView(reader))
+                    ? DatabaseObjectTypeEnum.View
+                    : DatabaseObjectTypeEnum.Unknown;
             }
 
             await reader.CloseAsync();
@@ -91,9 +148,21 @@ namespace DbDataComparer.MSSql
             return ret;
         }
 
+        private bool IsTable(SqlDataReader reader)
+        {
+            int index = reader.GetOrdinal("TABLE_TYPE");
+            return (!reader.IsDBNull(index) && !reader.GetString(index).Equals("VIEW", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private bool IsView(SqlDataReader reader)
+        {
+            int index = reader.GetOrdinal("TABLE_TYPE");
+            return (!reader.IsDBNull(index) && reader.GetString(index).Equals("VIEW", StringComparison.OrdinalIgnoreCase));
+        }
+
         private string GenerateTableViewSql(string schema, string routineName)
         {
-            var select = "SELECT TABLE_SCHEMA AS [Schema], TABLE_NAME AS [Name], TABLE_TYPE AS [Type]";
+            var select = "SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE";
             var from = "FROM INFORMATION_SCHEMA.TABLES";
             var where = $"WHERE TABLE_SCHEMA = '{schema}' AND TABLE_NAME = '{routineName}'";
 
@@ -102,10 +171,10 @@ namespace DbDataComparer.MSSql
         #endregion
 
         #region Parameter Generation
-        private async Task<IEnumerable<Parameter>> GetParameters(SqlConnection connection, string schema, string sprocName)
+        private async Task<IEnumerable<Parameter>> GetParameters(SqlConnection connection, string schema, string routineName)
         {
             IList<Parameter> parameters = new List<Parameter>();
-            var sql = GenerateParametersSql(schema, sprocName);
+            var sql = GenerateParametersSql(schema, routineName);
             var cmd = CreateCommand(connection, sql);
             var reader = await cmd.ExecuteReaderAsync();
 
@@ -125,7 +194,9 @@ namespace DbDataComparer.MSSql
         {
             var select = "SELECT ORDINAL_POSITION, PARAMETER_MODE, PARAMETER_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, USER_DEFINED_TYPE_SCHEMA, USER_DEFINED_TYPE_NAME";
             var from = "FROM INFORMATION_SCHEMA.PARAMETERS";
-            var where = $"WHERE SPECIFIC_SCHEMA = '{schema}' AND SPECIFIC_NAME = '{routineName}'";
+
+            // Ordinal Position 0 is a special output parameter type for Scalar functions only, therefore do not get as part of parameter list
+            var where = $"WHERE SPECIFIC_SCHEMA = '{schema}' AND SPECIFIC_NAME = '{routineName}' AND ORDINAL_POSITION > 0";
             var orderBy = "ORDER BY ORDINAL_POSITION";
 
             return $"{select} {from} {where} {orderBy}";

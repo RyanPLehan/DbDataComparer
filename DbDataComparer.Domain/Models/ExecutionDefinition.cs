@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbDataComparer.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -19,8 +20,7 @@ namespace DbDataComparer.Domain.Models
         /// <summary>
         /// Command Type
         /// </summary>
-        /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.data.commandtype?view=net-7.0"/>
-        public CommandType Type { get; set; }
+        public DatabaseObjectTypeEnum Type { get; set; }
         public string TypeDescription { get => Type.ToString(); }
 
         /// <summary>

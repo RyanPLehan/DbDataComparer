@@ -69,8 +69,8 @@ namespace DbDataComparer.Domain
             IList<string> failureDescriptions = new List<string>();
             StringBuilder sb = new StringBuilder();
 
-            if (source.ExecutionDefinition.Type == CommandType.StoredProcedure &&
-                target.ExecutionDefinition.Type == CommandType.StoredProcedure)
+            if (source.ExecutionDefinition.Type == DatabaseObjectTypeEnum.StoredProcedure &&
+                target.ExecutionDefinition.Type == DatabaseObjectTypeEnum.StoredProcedure)
             {
                 // Default to Passed
                 tcr.Result = ComparisonResultTypeEnum.Passed;
@@ -129,8 +129,8 @@ namespace DbDataComparer.Domain
             TestComparisonResult tcr = new TestComparisonResult();
             StringBuilder sb = new StringBuilder();
 
-            if (source.ExecutionDefinition.Type == CommandType.StoredProcedure &&
-                target.ExecutionDefinition.Type == CommandType.StoredProcedure)
+            if (source.ExecutionDefinition.Type == DatabaseObjectTypeEnum.StoredProcedure &&
+                target.ExecutionDefinition.Type == DatabaseObjectTypeEnum.StoredProcedure)
             {
                 // Default to Passed
                 tcr.Result = ComparisonResultTypeEnum.Passed;
