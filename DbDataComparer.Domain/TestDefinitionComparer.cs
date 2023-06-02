@@ -42,10 +42,10 @@ namespace DbDataComparer.Domain
                         comparisonResult.ParameterOutputResult = testComparer.CompareParameterOutput(testResult.Source, testResult.Target);
 
                     if (testDefinition.CompareOptions.ResultSetMetaData)
-                        comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target);
+                        comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target, testDefinition.CompareOptions);
 
                     if (testDefinition.CompareOptions.ResultSetData)
-                        comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target);
+                        comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target, testDefinition.CompareOptions.TrailingWhiteSpace);
                 }
 
                 sw.Stop();

@@ -167,7 +167,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public IDictionary<int, TestComparisonResult> CompareResultSetMetaData(ExecutionResult source, ExecutionResult target)
+        public IDictionary<int, TestComparisonResult> CompareResultSetMetaData(ExecutionResult source, ExecutionResult target, CompareOptions options)
         {
             IDictionary<int, TestComparisonResult> tcrDict = new Dictionary<int, TestComparisonResult>();
 
@@ -176,7 +176,7 @@ namespace DbDataComparer.Domain
                 if (target.ResultSets.ContainsKey(srcKvp.Key))
                 {
                     ResultSet tgtValue = target.ResultSets[srcKvp.Key];
-                    tcrDict.Add(srcKvp.Key, CompareResultSetMetaData(srcKvp.Value, tgtValue));
+                    tcrDict.Add(srcKvp.Key, CompareResultSetMetaData(srcKvp.Value, tgtValue, options));
                 }
                 else
                 {
@@ -197,7 +197,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public TestComparisonResult CompareResultSetMetaData(ResultSet source, ResultSet target)
+        public TestComparisonResult CompareResultSetMetaData(ResultSet source, ResultSet target, CompareOptions options)
         {
             TestComparisonResult tcr = new TestComparisonResult();
             StringBuilder sb = new StringBuilder();
@@ -246,10 +246,10 @@ namespace DbDataComparer.Domain
 
                     // Check Data type, Length of datatype and ordinal position
                     if (tgtMD == null ||
-                        srcMD.DataTypeName != tgtMD.DataTypeName ||
-                        srcMD.Length > tgtMD.Length ||
-                        srcMD.OrdinalPosition != tgtMD.OrdinalPosition ||
-                        srcMD.IsNullable != tgtMD.IsNullable)
+                        (srcMD.DataTypeName != tgtMD.DataTypeName && options.DataTypeName) ||
+                        (srcMD.Length > tgtMD.Length && options.DataTypeLength) ||
+                        (srcMD.OrdinalPosition != tgtMD.OrdinalPosition && options.OrdinalPosition) ||
+                        (srcMD.IsNullable != tgtMD.IsNullable && options.Nullablity))
                     {
                         // Marked as failed
                         tcr.Result = ComparisonResultTypeEnum.Failed;
@@ -303,7 +303,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public IDictionary<int, TestComparisonResult> CompareResultSetData(ExecutionResult source, ExecutionResult target)
+        public IDictionary<int, TestComparisonResult> CompareResultSetData(ExecutionResult source, ExecutionResult target, bool checkTrailingWhiteSpace)
         {
             IDictionary<int, TestComparisonResult> tcrDict = new Dictionary<int, TestComparisonResult>();
 
@@ -312,7 +312,7 @@ namespace DbDataComparer.Domain
                 if (target.ResultSets.ContainsKey(srcKvp.Key))
                 {
                     ResultSet tgtValue = target.ResultSets[srcKvp.Key];
-                    tcrDict.Add(srcKvp.Key, CompareResultSetData(srcKvp.Value, tgtValue));
+                    tcrDict.Add(srcKvp.Key, CompareResultSetData(srcKvp.Value, tgtValue, checkTrailingWhiteSpace));
                 }
                 else
                 {
@@ -333,7 +333,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public TestComparisonResult CompareResultSetData(ResultSet source, ResultSet target)
+        public TestComparisonResult CompareResultSetData(ResultSet source, ResultSet target, bool checkTrailingWhiteSpace)
         {
             TestComparisonResult tcr = new TestComparisonResult();
             bool failOperation = false;
@@ -392,7 +392,7 @@ namespace DbDataComparer.Domain
                     // Iterate through each column of data
                     for (int c = 0; c < srcColCnt && !failOperation; c++)
                     {
-                        if (!IsSameValue(source.Values[r][c], target.Values[r][c]))
+                        if (!IsSameValue(source.Values[r][c], target.Values[r][c], checkTrailingWhiteSpace))
                         {
                             ResultSetMetaData srcMD = source.MetaData
                                                             .FirstOrDefault(x => x.OrdinalPosition == c);
@@ -447,13 +447,19 @@ namespace DbDataComparer.Domain
         }
 
 
-        private bool IsSameValue(object source, object target)
+        private bool IsSameValue(object source, object target, bool checkTrailingWhiteSpace = true)
         {
             // Rely on C# Short Circuiting
             bool result = false;
 
             // Start by check for both have null values
             result = result || (source == null && target == null);
+
+            if (!checkTrailingWhiteSpace && source.GetType() == typeof(string) && target.GetType() == typeof(string))
+            {
+                source = ((string)source).TrimEnd();
+                target = ((string)target).TrimEnd();
+            }
 
             // Check actual value, but only if both are not null
             result = result || ((source != null && target != null) && (source.Equals(target)));

@@ -135,6 +135,31 @@ namespace DbDataComparer.UI
                           .TabPages["compareOptionsTabPage"]
                           .Controls["resultSetDataCheckBox"];
             SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.ResultSetData);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["dataTypeCheckBox"];
+            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.DataTypeName);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["dataTypeLengthCheckBox"];
+            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.DataTypeLength);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["ordinalPositionCheckBox"];
+            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.OrdinalPosition);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["nullabilityCheckBox"];
+            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.Nullablity);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["trailingWhiteSpaceCheckBox"];
+            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.TrailingWhiteSpace);
         }
 
         private void LoadTestDefintionNotificationOptions()
@@ -269,6 +294,32 @@ namespace DbDataComparer.UI
                           .TabPages["compareOptionsTabPage"]
                           .Controls["resultSetDataCheckBox"];
             this.WorkingTestDefinition.CompareOptions.ResultSetData = GetCheckBox(control);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["dataTypeCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.DataTypeName = GetCheckBox(control);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["dataTypeLengthCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.DataTypeLength = GetCheckBox(control);
+            this.WorkingTestDefinition.CompareOptions.DataTypeLength = GetCheckBox(control);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["ordinalPositionCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.OrdinalPosition = GetCheckBox(control);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["nullabilityCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.Nullablity = GetCheckBox(control);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["trailingWhiteSpaceCheckBox"];
+            this.WorkingTestDefinition.CompareOptions.TrailingWhiteSpace = GetCheckBox(control);
         }
 
 
