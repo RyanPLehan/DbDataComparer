@@ -155,10 +155,19 @@ namespace DbDataComparer.UI
         {
             if (control is ListView ctrl)
             {
-                foreach (var option in options)
+                var allOptions = Enum.GetValues<TEnum>();
+                foreach (var option in allOptions)
                 {
-                    var optionText = option.Key.ToListViewText();
-                    ctrl.FindItemWithText(optionText).Checked = option.Value;
+                    var optionText = option.ToListViewText();
+                    var listItem = ctrl.FindItemWithText(optionText);
+
+                    if (listItem == null)
+                    {
+                        listItem = new ListViewItem(optionText);
+                        ctrl.Items.Add(listItem);
+                    }
+
+                    listItem.Checked = options.TryGetValue(option, out var enabled) ? enabled : true;
                 }
             }
         }

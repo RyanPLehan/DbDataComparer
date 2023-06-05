@@ -28,13 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            ListViewItem listViewItem6 = new ListViewItem("Data Type Name");
-            ListViewItem listViewItem7 = new ListViewItem("Data Type Length");
-            ListViewItem listViewItem8 = new ListViewItem("Ordinal Position");
-            ListViewItem listViewItem9 = new ListViewItem("Nullablity");
-            ListViewItem listViewItem10 = new ListViewItem("Trailing White Space");
             tdTabControl=new TabControl();
             compareOptionsTabPage=new TabPage();
+            dataOptionsListView=new ListView();
             metaDataOptionsListView=new ListView();
             columnHeader1=new ColumnHeader();
             resultSetDataCheckBox=new CheckBox();
@@ -70,7 +66,6 @@
             saveButton=new Button();
             buttonTableLayoutPanel=new TableLayoutPanel();
             cancelButton=new Button();
-            dataOptionsListView=new ListView();
             tdTabControl.SuspendLayout();
             compareOptionsTabPage.SuspendLayout();
             notificationsTabPage.SuspendLayout();
@@ -109,16 +104,21 @@
             compareOptionsTabPage.Text="Compare Options";
             compareOptionsTabPage.UseVisualStyleBackColor=true;
             // 
+            // dataOptionsListView
+            // 
+            dataOptionsListView.CheckBoxes=true;
+            dataOptionsListView.Location=new Point(40, 268);
+            dataOptionsListView.Name="dataOptionsListView";
+            dataOptionsListView.Size=new Size(164, 43);
+            dataOptionsListView.TabIndex=10;
+            dataOptionsListView.UseCompatibleStateImageBehavior=false;
+            dataOptionsListView.View=View.List;
+            // 
             // metaDataOptionsListView
             // 
             metaDataOptionsListView.CheckBoxes=true;
             metaDataOptionsListView.Columns.AddRange(new ColumnHeader[] { columnHeader1 });
             metaDataOptionsListView.FullRowSelect=true;
-            listViewItem6.StateImageIndex=0;
-            listViewItem7.StateImageIndex=0;
-            listViewItem8.StateImageIndex=0;
-            listViewItem9.StateImageIndex=0;
-            metaDataOptionsListView.Items.AddRange(new ListViewItem[] { listViewItem6, listViewItem7, listViewItem8, listViewItem9 });
             metaDataOptionsListView.Location=new Point(40, 135);
             metaDataOptionsListView.Name="metaDataOptionsListView";
             metaDataOptionsListView.Size=new Size(141, 85);
@@ -450,18 +450,6 @@
             cancelButton.Text="Cancel";
             cancelButton.UseVisualStyleBackColor=true;
             cancelButton.Click+=cancelButton_Click;
-            // 
-            // dataOptionsListView
-            // 
-            dataOptionsListView.CheckBoxes=true;
-            listViewItem10.StateImageIndex=0;
-            dataOptionsListView.Items.AddRange(new ListViewItem[] { listViewItem10 });
-            dataOptionsListView.Location=new Point(40, 268);
-            dataOptionsListView.Name="dataOptionsListView";
-            dataOptionsListView.Size=new Size(164, 43);
-            dataOptionsListView.TabIndex=10;
-            dataOptionsListView.UseCompatibleStateImageBehavior=false;
-            dataOptionsListView.View=View.List;
             // 
             // TestDefinitionModifyControl
             // 
