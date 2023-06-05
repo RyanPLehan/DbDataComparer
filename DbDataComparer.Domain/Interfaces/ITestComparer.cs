@@ -15,10 +15,10 @@ namespace DbDataComparer.Domain
         TestComparisonResult CompareParameterOutput(ExecutionResult source, ExecutionResult target);
         TestComparisonResult CompareParameterReturn(ExecutionResult source, ExecutionResult target);
 
-        TestComparisonResult CompareResultSetMetaData(ResultSet source, ResultSet target, CompareOptions options);
-        TestComparisonResult CompareResultSetData(ResultSet source, ResultSet target, bool checkTrailingWhiteSpace);
+        TestComparisonResult CompareResultSetMetaData(ResultSet source, ResultSet target);
+        TestComparisonResult CompareResultSetData(ResultSet source, ResultSet target);
 
-        IDictionary<int, TestComparisonResult> CompareResultSetMetaData(ExecutionResult source, ExecutionResult target, CompareOptions options);
-        IDictionary<int, TestComparisonResult> CompareResultSetData(ExecutionResult source, ExecutionResult target, bool checkTrailingWhiteSpace);
+        IDictionary<int, TestComparisonResult> CompareResultSetMetaData(ExecutionResult source, ExecutionResult target);
+        IDictionary<int, TestComparisonResult> CompareResultSetData(ExecutionResult source, ExecutionResult target);
     }
 }

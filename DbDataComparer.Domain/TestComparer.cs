@@ -20,6 +20,14 @@ namespace DbDataComparer.Domain
     /// </summary>
     public class TestComparer : ITestComparer
     {
+        private IDictionary<GranularMetaDataOptions, bool> _GranularMetaDataOptions { get; set; }
+        private IDictionary<GranularDataOptions, bool> _GranularDataOptions { get; set; }
+
+        public TestComparer(IDictionary<GranularMetaDataOptions, bool> granularMetaDataOptions, IDictionary<GranularDataOptions, bool> granularDataOptions)
+        { 
+            _GranularMetaDataOptions = granularMetaDataOptions;
+            _GranularDataOptions = granularDataOptions;
+        }
         /// <summary>
         /// This will compare the overall execution, mainly for any exceptions
         /// </summary>
@@ -167,7 +175,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public IDictionary<int, TestComparisonResult> CompareResultSetMetaData(ExecutionResult source, ExecutionResult target, CompareOptions options)
+        public IDictionary<int, TestComparisonResult> CompareResultSetMetaData(ExecutionResult source, ExecutionResult target)
         {
             IDictionary<int, TestComparisonResult> tcrDict = new Dictionary<int, TestComparisonResult>();
 
@@ -176,7 +184,7 @@ namespace DbDataComparer.Domain
                 if (target.ResultSets.ContainsKey(srcKvp.Key))
                 {
                     ResultSet tgtValue = target.ResultSets[srcKvp.Key];
-                    tcrDict.Add(srcKvp.Key, CompareResultSetMetaData(srcKvp.Value, tgtValue, options));
+                    tcrDict.Add(srcKvp.Key, CompareResultSetMetaData(srcKvp.Value, tgtValue));
                 }
                 else
                 {
@@ -197,7 +205,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public TestComparisonResult CompareResultSetMetaData(ResultSet source, ResultSet target, CompareOptions options)
+        public TestComparisonResult CompareResultSetMetaData(ResultSet source, ResultSet target)
         {
             TestComparisonResult tcr = new TestComparisonResult();
             StringBuilder sb = new StringBuilder();
@@ -246,10 +254,10 @@ namespace DbDataComparer.Domain
 
                     // Check Data type, Length of datatype and ordinal position
                     if (tgtMD == null ||
-                        (srcMD.DataTypeName != tgtMD.DataTypeName && options.DataTypeName) ||
-                        (srcMD.Length > tgtMD.Length && options.DataTypeLength) ||
-                        (srcMD.OrdinalPosition != tgtMD.OrdinalPosition && options.OrdinalPosition) ||
-                        (srcMD.IsNullable != tgtMD.IsNullable && options.Nullablity))
+                        (srcMD.DataTypeName != tgtMD.DataTypeName && _GranularMetaDataOptions[GranularMetaDataOptions.DataTypeName]) ||
+                        (srcMD.Length > tgtMD.Length && _GranularMetaDataOptions[GranularMetaDataOptions.DataTypeLength]) ||
+                        (srcMD.OrdinalPosition != tgtMD.OrdinalPosition && _GranularMetaDataOptions[GranularMetaDataOptions.OrdinalPosition]) ||
+                        (srcMD.IsNullable != tgtMD.IsNullable && _GranularMetaDataOptions[GranularMetaDataOptions.Nullablity]))
                     {
                         // Marked as failed
                         tcr.Result = ComparisonResultTypeEnum.Failed;
@@ -303,7 +311,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public IDictionary<int, TestComparisonResult> CompareResultSetData(ExecutionResult source, ExecutionResult target, bool checkTrailingWhiteSpace)
+        public IDictionary<int, TestComparisonResult> CompareResultSetData(ExecutionResult source, ExecutionResult target)
         {
             IDictionary<int, TestComparisonResult> tcrDict = new Dictionary<int, TestComparisonResult>();
 
@@ -312,7 +320,7 @@ namespace DbDataComparer.Domain
                 if (target.ResultSets.ContainsKey(srcKvp.Key))
                 {
                     ResultSet tgtValue = target.ResultSets[srcKvp.Key];
-                    tcrDict.Add(srcKvp.Key, CompareResultSetData(srcKvp.Value, tgtValue, checkTrailingWhiteSpace));
+                    tcrDict.Add(srcKvp.Key, CompareResultSetData(srcKvp.Value, tgtValue));
                 }
                 else
                 {
@@ -333,7 +341,7 @@ namespace DbDataComparer.Domain
         /// <param name="source"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public TestComparisonResult CompareResultSetData(ResultSet source, ResultSet target, bool checkTrailingWhiteSpace)
+        public TestComparisonResult CompareResultSetData(ResultSet source, ResultSet target)
         {
             TestComparisonResult tcr = new TestComparisonResult();
             bool failOperation = false;
@@ -392,7 +400,7 @@ namespace DbDataComparer.Domain
                     // Iterate through each column of data
                     for (int c = 0; c < srcColCnt && !failOperation; c++)
                     {
-                        if (!IsSameValue(source.Values[r][c], target.Values[r][c], checkTrailingWhiteSpace))
+                        if (!IsSameValue(source.Values[r][c], target.Values[r][c]))
                         {
                             ResultSetMetaData srcMD = source.MetaData
                                                             .FirstOrDefault(x => x.OrdinalPosition == c);
@@ -447,7 +455,7 @@ namespace DbDataComparer.Domain
         }
 
 
-        private bool IsSameValue(object source, object target, bool checkTrailingWhiteSpace = true)
+        private bool IsSameValue(object source, object target)
         {
             // Rely on C# Short Circuiting
             bool result = false;
@@ -455,10 +463,10 @@ namespace DbDataComparer.Domain
             // Start by check for both have null values
             result = result || (source == null && target == null);
 
-            if (!checkTrailingWhiteSpace && source.GetType() == typeof(string) && target.GetType() == typeof(string))
+            if (!_GranularDataOptions[GranularDataOptions.TrailingWhiteSpace] && source is string src && target is string trg)
             {
-                source = ((string)source).TrimEnd();
-                target = ((string)target).TrimEnd();
+                source = src.TrimEnd();
+                target = trg.TrimEnd();
             }
 
             // Check actual value, but only if both are not null

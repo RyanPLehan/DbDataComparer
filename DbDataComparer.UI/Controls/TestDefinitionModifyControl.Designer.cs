@@ -28,13 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            ListViewItem listViewItem6 = new ListViewItem("Data Type Name");
+            ListViewItem listViewItem7 = new ListViewItem("Data Type Length");
+            ListViewItem listViewItem8 = new ListViewItem("Ordinal Position");
+            ListViewItem listViewItem9 = new ListViewItem("Nullablity");
+            ListViewItem listViewItem10 = new ListViewItem("Trailing White Space");
             tdTabControl=new TabControl();
             compareOptionsTabPage=new TabPage();
-            trailingWhiteSpaceCheckBox=new CheckBox();
-            nullabilityCheckBox=new CheckBox();
-            ordinalPositionCheckBox=new CheckBox();
-            dataTypeLengthCheckBox=new CheckBox();
-            dataTypeCheckBox=new CheckBox();
+            metaDataOptionsListView=new ListView();
+            columnHeader1=new ColumnHeader();
             resultSetDataCheckBox=new CheckBox();
             resultSetMetaDataCheckBox=new CheckBox();
             parameterReturnCheckBox=new CheckBox();
@@ -68,6 +70,7 @@
             saveButton=new Button();
             buttonTableLayoutPanel=new TableLayoutPanel();
             cancelButton=new Button();
+            dataOptionsListView=new ListView();
             tdTabControl.SuspendLayout();
             compareOptionsTabPage.SuspendLayout();
             notificationsTabPage.SuspendLayout();
@@ -92,11 +95,8 @@
             // 
             // compareOptionsTabPage
             // 
-            compareOptionsTabPage.Controls.Add(trailingWhiteSpaceCheckBox);
-            compareOptionsTabPage.Controls.Add(nullabilityCheckBox);
-            compareOptionsTabPage.Controls.Add(ordinalPositionCheckBox);
-            compareOptionsTabPage.Controls.Add(dataTypeLengthCheckBox);
-            compareOptionsTabPage.Controls.Add(dataTypeCheckBox);
+            compareOptionsTabPage.Controls.Add(dataOptionsListView);
+            compareOptionsTabPage.Controls.Add(metaDataOptionsListView);
             compareOptionsTabPage.Controls.Add(resultSetDataCheckBox);
             compareOptionsTabPage.Controls.Add(resultSetMetaDataCheckBox);
             compareOptionsTabPage.Controls.Add(parameterReturnCheckBox);
@@ -109,55 +109,26 @@
             compareOptionsTabPage.Text="Compare Options";
             compareOptionsTabPage.UseVisualStyleBackColor=true;
             // 
-            // trailingWhiteSpaceCheckBox
+            // metaDataOptionsListView
             // 
-            trailingWhiteSpaceCheckBox.AutoSize=true;
-            trailingWhiteSpaceCheckBox.Location=new Point(40, 268);
-            trailingWhiteSpaceCheckBox.Name="trailingWhiteSpaceCheckBox";
-            trailingWhiteSpaceCheckBox.Size=new Size(168, 19);
-            trailingWhiteSpaceCheckBox.TabIndex=8;
-            trailingWhiteSpaceCheckBox.Text="Check Trailing White Space";
-            trailingWhiteSpaceCheckBox.UseVisualStyleBackColor=true;
+            metaDataOptionsListView.CheckBoxes=true;
+            metaDataOptionsListView.Columns.AddRange(new ColumnHeader[] { columnHeader1 });
+            metaDataOptionsListView.FullRowSelect=true;
+            listViewItem6.StateImageIndex=0;
+            listViewItem7.StateImageIndex=0;
+            listViewItem8.StateImageIndex=0;
+            listViewItem9.StateImageIndex=0;
+            metaDataOptionsListView.Items.AddRange(new ListViewItem[] { listViewItem6, listViewItem7, listViewItem8, listViewItem9 });
+            metaDataOptionsListView.Location=new Point(40, 135);
+            metaDataOptionsListView.Name="metaDataOptionsListView";
+            metaDataOptionsListView.Size=new Size(141, 85);
+            metaDataOptionsListView.TabIndex=9;
+            metaDataOptionsListView.UseCompatibleStateImageBehavior=false;
+            metaDataOptionsListView.View=View.List;
             // 
-            // nullabilityCheckBox
+            // columnHeader1
             // 
-            nullabilityCheckBox.AutoSize=true;
-            nullabilityCheckBox.Location=new Point(40, 210);
-            nullabilityCheckBox.Name="nullabilityCheckBox";
-            nullabilityCheckBox.Size=new Size(70, 19);
-            nullabilityCheckBox.TabIndex=7;
-            nullabilityCheckBox.Text="Nullable";
-            nullabilityCheckBox.UseVisualStyleBackColor=true;
-            // 
-            // ordinalPositionCheckBox
-            // 
-            ordinalPositionCheckBox.AutoSize=true;
-            ordinalPositionCheckBox.Location=new Point(40, 185);
-            ordinalPositionCheckBox.Name="ordinalPositionCheckBox";
-            ordinalPositionCheckBox.Size=new Size(111, 19);
-            ordinalPositionCheckBox.TabIndex=6;
-            ordinalPositionCheckBox.Text="Ordinal Position";
-            ordinalPositionCheckBox.UseVisualStyleBackColor=true;
-            // 
-            // dataTypeLengthCheckBox
-            // 
-            dataTypeLengthCheckBox.AutoSize=true;
-            dataTypeLengthCheckBox.Location=new Point(40, 160);
-            dataTypeLengthCheckBox.Name="dataTypeLengthCheckBox";
-            dataTypeLengthCheckBox.Size=new Size(117, 19);
-            dataTypeLengthCheckBox.TabIndex=5;
-            dataTypeLengthCheckBox.Text="Data Type Length";
-            dataTypeLengthCheckBox.UseVisualStyleBackColor=true;
-            // 
-            // dataTypeCheckBox
-            // 
-            dataTypeCheckBox.AutoSize=true;
-            dataTypeCheckBox.Location=new Point(40, 135);
-            dataTypeCheckBox.Name="dataTypeCheckBox";
-            dataTypeCheckBox.Size=new Size(77, 19);
-            dataTypeCheckBox.TabIndex=4;
-            dataTypeCheckBox.Text="Data Type";
-            dataTypeCheckBox.UseVisualStyleBackColor=true;
+            columnHeader1.Width=120;
             // 
             // resultSetDataCheckBox
             // 
@@ -480,6 +451,18 @@
             cancelButton.UseVisualStyleBackColor=true;
             cancelButton.Click+=cancelButton_Click;
             // 
+            // dataOptionsListView
+            // 
+            dataOptionsListView.CheckBoxes=true;
+            listViewItem10.StateImageIndex=0;
+            dataOptionsListView.Items.AddRange(new ListViewItem[] { listViewItem10 });
+            dataOptionsListView.Location=new Point(40, 268);
+            dataOptionsListView.Name="dataOptionsListView";
+            dataOptionsListView.Size=new Size(164, 43);
+            dataOptionsListView.TabIndex=10;
+            dataOptionsListView.UseCompatibleStateImageBehavior=false;
+            dataOptionsListView.View=View.List;
+            // 
             // TestDefinitionModifyControl
             // 
             AutoScaleDimensions=new SizeF(7F, 15F);
@@ -543,10 +526,8 @@
         private Label srcDatabaseObjectLabel;
         private TextBox tgtDatabaseObjectTextBox;
         private Label tgtDatabaseObjectLabel;
-        private CheckBox dataTypeCheckBox;
-        private CheckBox dataTypeLengthCheckBox;
-        private CheckBox nullabilityCheckBox;
-        private CheckBox ordinalPositionCheckBox;
-        private CheckBox trailingWhiteSpaceCheckBox;
+        private ListView metaDataOptionsListView;
+        private ColumnHeader columnHeader1;
+        private ListView dataOptionsListView;
     }
 }

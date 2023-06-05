@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Enums;
+using DbDataComparer.Domain.Extensions;
 using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
@@ -137,29 +139,28 @@ namespace DbDataComparer.UI
             SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.ResultSetData);
 
             control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["dataTypeCheckBox"];
-            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.DataTypeName);
+                      .TabPages["compareOptionsTabPage"]
+                      .Controls["metaDataOptionsListView"];
+
+            SetCheckBoxes(control, this.WorkingTestDefinition.CompareOptions.GranularMetaData);
 
             control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["dataTypeLengthCheckBox"];
-            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.DataTypeLength);
+                  .TabPages["compareOptionsTabPage"]
+                  .Controls["dataOptionsListView"];
 
-            control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["ordinalPositionCheckBox"];
-            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.OrdinalPosition);
+            SetCheckBoxes(control, this.WorkingTestDefinition.CompareOptions.GranularData);
+        }
 
-            control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["nullabilityCheckBox"];
-            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.Nullablity);
-
-            control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["trailingWhiteSpaceCheckBox"];
-            SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.TrailingWhiteSpace);
+        private void SetCheckBoxes<TEnum>(Control control, IDictionary<TEnum, bool> options) where TEnum : struct, Enum
+        {
+            if (control is ListView ctrl)
+            {
+                foreach (var option in options)
+                {
+                    var optionText = option.Key.ToListViewText();
+                    ctrl.FindItemWithText(optionText).Checked = option.Value;
+                }
+            }
         }
 
         private void LoadTestDefintionNotificationOptions()
@@ -295,31 +296,37 @@ namespace DbDataComparer.UI
                           .Controls["resultSetDataCheckBox"];
             this.WorkingTestDefinition.CompareOptions.ResultSetData = GetCheckBox(control);
 
-            control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["dataTypeCheckBox"];
-            this.WorkingTestDefinition.CompareOptions.DataTypeName = GetCheckBox(control);
 
             control = this.tdTabControl
                           .TabPages["compareOptionsTabPage"]
-                          .Controls["dataTypeLengthCheckBox"];
-            this.WorkingTestDefinition.CompareOptions.DataTypeLength = GetCheckBox(control);
-            this.WorkingTestDefinition.CompareOptions.DataTypeLength = GetCheckBox(control);
+                          .Controls["metaDataOptionsListView"];
+
+            this.WorkingTestDefinition.CompareOptions.GranularMetaData = GetCheckBoxes<GranularMetaDataOptions>(control);
 
             control = this.tdTabControl
                           .TabPages["compareOptionsTabPage"]
-                          .Controls["ordinalPositionCheckBox"];
-            this.WorkingTestDefinition.CompareOptions.OrdinalPosition = GetCheckBox(control);
+                          .Controls["dataOptionsListView"];
 
-            control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["nullabilityCheckBox"];
-            this.WorkingTestDefinition.CompareOptions.Nullablity = GetCheckBox(control);
+            this.WorkingTestDefinition.CompareOptions.GranularData = GetCheckBoxes<GranularDataOptions>(control);
 
-            control = this.tdTabControl
-                          .TabPages["compareOptionsTabPage"]
-                          .Controls["trailingWhiteSpaceCheckBox"];
-            this.WorkingTestDefinition.CompareOptions.TrailingWhiteSpace = GetCheckBox(control);
+        }
+
+        private IDictionary<TEnum, bool> GetCheckBoxes<TEnum>(Control control) where TEnum : struct, Enum
+        {
+            if (control is ListView ctrl)
+            {
+                var optionNames = Enum.GetValues<TEnum>();
+                var results = optionNames
+                    .Join(
+                        ctrl.Items.OfType<ListViewItem>(),
+                        o => o.ToListViewText(),
+                        i => i.Text,
+                        (o, i) => new KeyValuePair<TEnum, bool>(o, i.Checked)
+                    ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                return results;
+            }
+
+            return null;
         }
 
 

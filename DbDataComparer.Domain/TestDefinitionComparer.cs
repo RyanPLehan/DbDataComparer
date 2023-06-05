@@ -15,7 +15,7 @@ namespace DbDataComparer.Domain
         public static IEnumerable<ComparisonResult> Compare(TestDefinition testDefinition, IEnumerable<TestExecutionResult> testResults)
         {
             Stopwatch sw = new Stopwatch();
-            ITestComparer testComparer = new TestComparer();
+            ITestComparer testComparer = new TestComparer(testDefinition.CompareOptions.GranularMetaData, testDefinition.CompareOptions.GranularData);
             IList<ComparisonResult> comparisonResults = new List<ComparisonResult>();
 
             foreach (TestExecutionResult testResult in testResults)
@@ -42,10 +42,10 @@ namespace DbDataComparer.Domain
                         comparisonResult.ParameterOutputResult = testComparer.CompareParameterOutput(testResult.Source, testResult.Target);
 
                     if (testDefinition.CompareOptions.ResultSetMetaData)
-                        comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target, testDefinition.CompareOptions);
+                        comparisonResult.ResultsetMetaDataResults = testComparer.CompareResultSetMetaData(testResult.Source, testResult.Target);
 
                     if (testDefinition.CompareOptions.ResultSetData)
-                        comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target, testDefinition.CompareOptions.TrailingWhiteSpace);
+                        comparisonResult.ResultsetDataResults = testComparer.CompareResultSetData(testResult.Source, testResult.Target);
                 }
 
                 sw.Stop();
