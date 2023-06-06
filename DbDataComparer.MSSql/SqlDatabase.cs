@@ -10,6 +10,22 @@ namespace DbDataComparer.MSSql
 {
     public class SqlDatabase : IDatabase
     {
+        public async Task<object[][]> Execute(string connectionString,                                               
+                                              string sql)
+        {
+            object[][] result = null;
+            Executioner commandExecutioner = new Executioner();
+
+            using (SqlConnection sqlConn = CreateConnection(connectionString))
+            {
+                await sqlConn.OpenAsync();
+                result = await commandExecutioner.Execute(sqlConn, sql);
+            }
+
+            return result;
+        }
+
+
         public async Task<ExecutionResult> Execute(string connectionString,
                                                    ExecutionDefinition command,
                                                    string sql)
@@ -63,6 +79,34 @@ namespace DbDataComparer.MSSql
             result.ExecutionTime = sw.Elapsed;
 
             return result;
+        }
+
+        public async Task<T> ExecuteScalar<T>(string connectionString,
+                                              string sql)
+        {
+            T result = default(T);
+            Executioner commandExecutioner = new Executioner();
+
+            using (SqlConnection sqlConn = CreateConnection(connectionString))
+            {
+                await sqlConn.OpenAsync();
+                result = await commandExecutioner.ExecuteScalar<T>(sqlConn, sql);
+            }
+
+            return result;
+        }
+
+
+        public async Task ExecuteNonQuery(string connectionString,
+                                          string sql)
+        {
+            Executioner commandExecutioner = new Executioner();
+
+            using (SqlConnection sqlConn = CreateConnection(connectionString))
+            {
+                await sqlConn.OpenAsync();
+                await commandExecutioner.ExecuteNonQuery(sqlConn, sql);
+            }
         }
 
 

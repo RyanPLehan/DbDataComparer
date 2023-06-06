@@ -23,6 +23,8 @@ namespace DbDataComparer.Domain.Configuration
                             new LocationSettings(),
                 Notification = configuration.GetSection("Notification").Get<NotificationSettings>() ??
                             new NotificationSettings(),
+                Log = configuration.GetSection("Log").Get<LogSettings>() ??
+                            new LogSettings(),
             };
 
             return settings;
