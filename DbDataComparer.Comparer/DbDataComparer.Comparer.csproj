@@ -26,6 +26,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\DbDataComparer.Domain\DbDataComparer.Domain.csproj" />
+		<ProjectReference Include="..\DbDataComparer.Logger\DbDataComparer.Logger.csproj" />
 		<ProjectReference Include="..\DbDataComparer.MSSql\DbDataComparer.MSSql.csproj" />
 	</ItemGroup>
 

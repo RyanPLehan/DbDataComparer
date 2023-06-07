@@ -24,6 +24,7 @@ namespace DbDataComparer.Comparer
         private static string ErrorsPath { get; set; }
 
         private static IEmailNotifier EmailNotifier;
+        private static ICustomLogger CustomLogger;
 
         public static void Main(string[] args)
         {
@@ -32,7 +33,9 @@ namespace DbDataComparer.Comparer
                 InitializeSettings();
 
                 if (args == null || args.Length == 0)
-                    Execute().GetAwaiter().GetResult();
+                    Execute(null).GetAwaiter().GetResult();
+                else if (args.Length == 1 && args[0].Equals("-log", StringComparison.OrdinalIgnoreCase))
+                    Execute(new Logger.Logger(Settings.Log)).GetAwaiter().GetResult();
                 else
                     DisplayArgs();
             }
@@ -55,6 +58,11 @@ namespace DbDataComparer.Comparer
             sb.AppendLine("It will iterate through each test and execute the database objects with their respective test values.");
             sb.AppendLine("The results from each test will then be compared and saved to a file in the location specified in the settings file.");
             sb.AppendLine();
+            sb.AppendLine("Usage: Comparer [-log]");
+            sb.AppendLine("\t-log \t\tEnable optional Logging.  This will log the comparison results to a specialize database");
+            sb.AppendLine();
+            sb.AppendLine("Example: Comparer -log");
+            sb.AppendLine();
 
             Console.WriteLine(sb.ToString());
         }
@@ -66,8 +74,11 @@ namespace DbDataComparer.Comparer
             Initialize.BuildDirectoryStructure(Settings.Location);                      // Make sure Directories exist
         }
 
-        private static async Task Execute(string fileName = null)
+        private static async Task Execute(ICustomLogger customLogger)
         {
+            CustomLogger = customLogger ?? new DummyLogger();
+            await CustomLogger.Open();
+
             ProcessDateTime = DateTime.Now.ToString("yyy-MM-dd HH-mm-ss");
             string resultsFileName = String.Format("Results [{0}].txt", ProcessDateTime);
 
@@ -78,6 +89,8 @@ namespace DbDataComparer.Comparer
             EmailNotifier = new TestDefinitionNotifier(Settings.Notification);
             await ProcessDirectory(ApplicationIO.GetTestDefinitionPath(Settings.Location));
             await EmailNotifier.SendNotification("Data Comparer - Comparison Result(s)");
+
+            await CustomLogger.Close();
         }
 
 
@@ -130,6 +143,7 @@ namespace DbDataComparer.Comparer
                     if (EmailNotifier.IsNotificationEnabled(testDefinition, comparisonResults))
                         EmailNotifier.AddNotification(testDefinition, comparisonResults);
 
+                    await CustomLogger.Log(testDefinition, comparisonResults);
                 }
                 catch (Exception ex)
                 {

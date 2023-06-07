@@ -1,10 +1,10 @@
-﻿using DbDataComparer.Domain;
+﻿using System.Text;
+using DbDataComparer.Domain;
 using DbDataComparer.Domain.Enums;
 using DbDataComparer.Domain.Models;
-using System.Text;
 using DbDataComparer.Logger.Models;
 using DbDataComparer.MSSql;
-using DbDataComparer.Domain.Utils;
+
 
 namespace DbDataComparer.Logger
 {
@@ -33,7 +33,24 @@ namespace DbDataComparer.Logger
 
         public async Task Finalize(IEnumerable<TestDefinitionEntity> testDefinitionEntities)
         {
+            foreach (TestDefinitionEntity entity in testDefinitionEntities)
+                await Finalize(entity);
         }
+
+
+        public async Task Finalize(TestDefinitionEntity testDefinitionEntity)
+        {
+            try
+            {
+                var sprocSql = GenerateFinalizeSprocSql(testDefinitionEntity.Id);
+                await this.Database.Execute(this.ConnectionString, sprocSql);
+            }
+
+            catch
+            { }
+
+        }
+
 
         public TestDefinitionEntity GetTestDefinitionEntity(TestDefinition testDefinition)
         {
@@ -65,9 +82,10 @@ namespace DbDataComparer.Logger
 
             try
             {
-                // Insert into database and update list
-                var insertSql = $"{GenerateTestDefinitionInsertSql(testDefinition)} OUTPUT INSERTED.ID";
+                // Insert into database, query db entity and update list
+                var insertSql = GenerateTestDefinitionInsertSql(testDefinition);
                 var id = await this.Database.ExecuteScalar<int>(this.ConnectionString, insertSql);
+
                 var selectSql = GenerateTestDefinitionSelectSql(id);
                 var data = await this.Database.Execute(this.ConnectionString, selectSql);
 
@@ -171,11 +189,12 @@ namespace DbDataComparer.Logger
             var tableName = "[dbo].[GPDependencyTestDefinitions]";
             var srcColumns = "[SourceServer], [SourceDatabase], [SourceSchema], [SourceObject]";
             var tgtColumns = "[TargetServer], [TargetDatabase], [TargetSchema], [TargetObject]";
+            var outputId = "OUTPUT INSERTED.GPDependencyTestDefinitionId";
             var values = "VALUES";
             var srcValues = GenerateInsertValuesSql(testDefinition.Source);
             var tgtValues = GenerateInsertValuesSql(testDefinition.Target);
 
-            return $"{insert} {tableName} ({srcColumns}, {tgtColumns}) {values} ({srcValues}, {tgtValues})";
+            return $"{insert} {tableName} ({srcColumns}, {tgtColumns}) {outputId} {values} ({srcValues}, {tgtValues})";
         }
 
 
@@ -193,10 +212,10 @@ namespace DbDataComparer.Logger
             StringBuilder sb = new StringBuilder();
             IConnectionProperties connectionProperties = ConnectionPropertiesBuilder.Parse(def.ConnectionString);
 
-            sb.AppendFormat("{0}, ", connectionProperties.ConnectionBuilderOptions.Server);
-            sb.AppendFormat("{0}, ", connectionProperties.ConnectionBuilderOptions.Database);
-            sb.AppendFormat("{0}, ", FQNParser.GetSchema(def.Text));
-            sb.AppendFormat("{0}", FQNParser.GetDbObject(def.Text));
+            sb.AppendFormat("'{0}', ", connectionProperties.ConnectionBuilderOptions.Server);
+            sb.AppendFormat("'{0}', ", connectionProperties.ConnectionBuilderOptions.Database);
+            sb.AppendFormat("'{0}', ", FQNParser.GetSchema(def.Text));
+            sb.AppendFormat("'{0}'", FQNParser.GetDbObject(def.Text));
 
             return sb.ToString();
         }
@@ -205,7 +224,7 @@ namespace DbDataComparer.Logger
         private string GenerateTestResultInsertSql(int testDefinitionId, DateTime comparisonDateTime, ComparisonResult comparisonResult)
         {
             var insert = "INSERT INTO ";
-            var tableName = "[dbo].[GPDependencyTestResult]";
+            var tableName = "[dbo].[GPDependencyTestResults]";
             var fkColumns = "[GPDependencyTestDefinitionId]";
             var executionTimeColumns = "[SourceExecutionTime], [TargetExecutionTime]";
             var resultColumns = "[ParameterReturnResult], [ParameterOutputResult], [MetadataResult], [DataResult], [ExecutionResult]";
@@ -233,7 +252,7 @@ namespace DbDataComparer.Logger
             StringBuilder sb = new StringBuilder();
 
             sb.AppendFormat("'{0}', ", FormatTimeSpan(source));
-            sb.AppendFormat("'{0}' ", FormatTimeSpan(target));
+            sb.AppendFormat("'{0}'", FormatTimeSpan(target));
 
             return sb.ToString();
         }
@@ -253,15 +272,32 @@ namespace DbDataComparer.Logger
         {
             StringBuilder sb = new StringBuilder();
 
-            var metaDataResult = result.ResultsetMetaDataResults.FirstOrDefault();
-            var dataResult = result.ResultsetDataResults.FirstOrDefault();
+            var metaDataResult = GetOverallComparisonResult(result.ResultsetMetaDataResults.Values);
+            var dataResult = GetOverallComparisonResult(result.ResultsetDataResults.Values);
 
-            sb.AppendFormat("'{0}', ", result.ParameterReturnResult);
-            sb.AppendFormat("'{0}', ", result.ParameterOutputResult);
-            sb.AppendFormat("'{0}', ", metaDataResult);
-            sb.AppendFormat("'{0}'", dataResult);
+            sb.AppendFormat("'{0}', ", result.ParameterReturnResult.Result.ToString());
+            sb.AppendFormat("'{0}', ", result.ParameterOutputResult.Result.ToString());
+            sb.AppendFormat("'{0}', ", metaDataResult.ToString());
+            sb.AppendFormat("'{0}', ", dataResult.ToString());
+            sb.AppendFormat("'{0}'", result.ExecutionResult.Result.ToString());
 
             return sb.ToString();
+        }
+
+        private ComparisonResultTypeEnum GetOverallComparisonResult(IEnumerable<TestComparisonResult> comparisonResults)
+        {
+            // Assume all comparison results passed
+            ComparisonResultTypeEnum result = ComparisonResultTypeEnum.Passed;
+
+            result = (result == ComparisonResultTypeEnum.Passed && comparisonResults.Any(x => x.Result == ComparisonResultTypeEnum.Failed))
+                      ? ComparisonResultTypeEnum.Failed
+                      : ComparisonResultTypeEnum.Passed;
+
+            result = (result == ComparisonResultTypeEnum.Passed && comparisonResults.Any(x => x.Result == ComparisonResultTypeEnum.NotCompared))
+                      ? ComparisonResultTypeEnum.NotCompared
+                      : ComparisonResultTypeEnum.Passed;
+
+            return result;
         }
 
 
@@ -281,11 +317,16 @@ namespace DbDataComparer.Logger
             TimeSpan execTimeDiff = target - source;
 
             sb.AppendFormat("{0}, ", execTimeDiff.TotalMilliseconds);
-            sb.AppendFormat("'{0:yyyy-MM-dd HH:mm:ss}' ", dateTime);
+            sb.AppendFormat("'{0:yyyy-MM-dd HH:mm:ss}'", dateTime);
 
             return sb.ToString();
         }
 
+
+        private string GenerateFinalizeSprocSql(int testDefinitionEntityId)
+        {
+            return $"EXEC [dbo].[pGPDependencies_U] {testDefinitionEntityId}";
+        }
 
         private string FormatTimeSpan(TimeSpan ts)
         {
