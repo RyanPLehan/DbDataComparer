@@ -19,6 +19,24 @@ namespace DbDataComparer.MSSql
         private IEnumerable<SqlDbType> TextTypes = new SqlDbType[] { SqlDbType.Char, SqlDbType.NChar, SqlDbType.NVarChar, SqlDbType.VarChar };
 
         /// <summary>
+        /// Execute raw sql
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public async Task<object[][]> Execute(SqlConnection connection, 
+                                              string sql)
+        {
+            var sqlCmd = CreateCommand(connection, sql);
+            SqlDataReader dataReader = await sqlCmd.ExecuteReaderAsync();
+            var result = await CreateResultSetValues(dataReader);
+            await dataReader.CloseAsync();
+
+            return result;
+        }
+
+
+        /// <summary>
         /// Execute Specific Sql statement
         /// </summary>
         /// <param name="connection"></param>
@@ -49,6 +67,33 @@ namespace DbDataComparer.MSSql
             return await Execute(sqlCmd, executionDefinition);
         }
 
+
+        /// <summary>
+        /// Execute raw sql
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public async Task<T> ExecuteScalar<T>(SqlConnection connection,
+                                              string sql)
+        {
+            T result = default(T);
+            var sqlCmd = CreateCommand(connection, sql);
+            var dbResult = await sqlCmd.ExecuteScalarAsync();
+
+            if (dbResult != null)
+                result = (T)dbResult;
+
+            return result;
+        }
+
+        public async Task ExecuteNonQuery(SqlConnection connection,
+                                          string sql)
+        {
+            var sqlCmd = CreateCommand(connection, sql);
+            await sqlCmd.ExecuteNonQueryAsync();
+        }
+
         private async Task<ExecutionResult> Execute(SqlCommand sqlCmd, ExecutionDefinition executionDefinition)
         {
             ExecutionResult result = new ExecutionResult(executionDefinition);
@@ -64,6 +109,20 @@ namespace DbDataComparer.MSSql
         }
 
         #region Command Creation
+        private SqlCommand CreateCommand(SqlConnection connection,
+                                         string sql)
+        {
+            SqlCommand sqlCommand = new SqlCommand()
+            {
+                Connection = connection,
+                CommandText = sql,
+                CommandType = CommandType.Text,
+                CommandTimeout = 60,
+            };
+
+            return sqlCommand;
+        }
+
         private SqlCommand CreateCommand(SqlConnection connection,
                                          ExecutionDefinition executionDefinition,
                                          string sql)

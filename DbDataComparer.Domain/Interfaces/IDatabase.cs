@@ -9,6 +9,9 @@ namespace DbDataComparer.Domain
 {
     public interface IDatabase
     {
+        Task<object[][]> Execute(string connectionString,
+                                 string sql);
+
         Task<ExecutionResult> Execute(string connectionString,
                                       ExecutionDefinition executionDefinition,
                                       string sql);
@@ -19,6 +22,10 @@ namespace DbDataComparer.Domain
 
         Task<ExecutionDefinition> Explore(string connectionString, 
                                           string databaseObject);
+        Task<T> ExecuteScalar<T>(string connection,
+                                 string sql);
+        Task ExecuteNonQuery(string connectionString,
+                             string sql);
 
         Task<IEnumerable<string>> GetStoredProcedureNames(string connectionString);
 
