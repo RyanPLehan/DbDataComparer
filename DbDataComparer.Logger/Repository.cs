@@ -48,7 +48,6 @@ namespace DbDataComparer.Logger
 
             catch
             { }
-
         }
 
 
@@ -325,7 +324,8 @@ namespace DbDataComparer.Logger
 
         private string GenerateFinalizeSprocSql(int testDefinitionEntityId)
         {
-            return $"EXEC [dbo].[pGPDependencies_U] {testDefinitionEntityId}";
+            // Since the 2nd parameter is a Table Type, pass in DEFAULT to prevent error
+            return $"EXEC [dbo].[pGPDependencies_U] {testDefinitionEntityId}, DEFAULT";
         }
 
         private string FormatTimeSpan(TimeSpan ts)
