@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DbDataComparer.Domain;
 using DbDataComparer.Domain.Enums;
+using DbDataComparer.Domain.Extensions;
 using DbDataComparer.Domain.Formatters;
 using DbDataComparer.Domain.Models;
 using DbDataComparer.MSSql;
@@ -135,6 +137,39 @@ namespace DbDataComparer.UI
                           .TabPages["compareOptionsTabPage"]
                           .Controls["resultSetDataCheckBox"];
             SetCheckBox(control, this.WorkingTestDefinition.CompareOptions.ResultSetData);
+
+            control = this.tdTabControl
+                      .TabPages["compareOptionsTabPage"]
+                      .Controls["metaDataOptionsListView"];
+
+            SetCheckBoxes(control, this.WorkingTestDefinition.CompareOptions.GranularMetaData);
+
+            control = this.tdTabControl
+                  .TabPages["compareOptionsTabPage"]
+                  .Controls["dataOptionsListView"];
+
+            SetCheckBoxes(control, this.WorkingTestDefinition.CompareOptions.GranularData);
+        }
+
+        private void SetCheckBoxes<TEnum>(Control control, IDictionary<TEnum, bool> options) where TEnum : struct, Enum
+        {
+            if (control is ListView ctrl)
+            {
+                var allOptions = Enum.GetValues<TEnum>();
+                foreach (var option in allOptions)
+                {
+                    var optionText = option.ToListViewText();
+                    var listItem = ctrl.FindItemWithText(optionText);
+
+                    if (listItem == null)
+                    {
+                        listItem = new ListViewItem(optionText);
+                        ctrl.Items.Add(listItem);
+                    }
+
+                    listItem.Checked = options.TryGetValue(option, out var enabled) ? enabled : true;
+                }
+            }
         }
 
         private void LoadTestDefintionNotificationOptions()
@@ -269,6 +304,38 @@ namespace DbDataComparer.UI
                           .TabPages["compareOptionsTabPage"]
                           .Controls["resultSetDataCheckBox"];
             this.WorkingTestDefinition.CompareOptions.ResultSetData = GetCheckBox(control);
+
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["metaDataOptionsListView"];
+
+            this.WorkingTestDefinition.CompareOptions.GranularMetaData = GetCheckBoxes<GranularMetaDataOptions>(control);
+
+            control = this.tdTabControl
+                          .TabPages["compareOptionsTabPage"]
+                          .Controls["dataOptionsListView"];
+
+            this.WorkingTestDefinition.CompareOptions.GranularData = GetCheckBoxes<GranularDataOptions>(control);
+
+        }
+
+        private IDictionary<TEnum, bool> GetCheckBoxes<TEnum>(Control control) where TEnum : struct, Enum
+        {
+            if (control is ListView ctrl)
+            {
+                var optionNames = Enum.GetValues<TEnum>();
+                var results = optionNames
+                    .Join(
+                        ctrl.Items.OfType<ListViewItem>(),
+                        o => o.ToListViewText(),
+                        i => i.Text,
+                        (o, i) => new KeyValuePair<TEnum, bool>(o, i.Checked)
+                    ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                return results;
+            }
+
+            return null;
         }
 
 

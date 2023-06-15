@@ -15,7 +15,7 @@ namespace DbDataComparer.Domain
         public static IEnumerable<ComparisonResult> Compare(TestDefinition testDefinition, IEnumerable<TestExecutionResult> testResults)
         {
             Stopwatch sw = new Stopwatch();
-            ITestComparer testComparer = new TestComparer();
+            ITestComparer testComparer = new TestComparer(testDefinition.CompareOptions.GranularMetaData, testDefinition.CompareOptions.GranularData);
             IList<ComparisonResult> comparisonResults = new List<ComparisonResult>();
 
             foreach (TestExecutionResult testResult in testResults)

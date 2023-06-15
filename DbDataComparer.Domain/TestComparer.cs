@@ -20,6 +20,14 @@ namespace DbDataComparer.Domain
     /// </summary>
     public class TestComparer : ITestComparer
     {
+        private IDictionary<GranularMetaDataOptions, bool> _GranularMetaDataOptions { get; set; }
+        private IDictionary<GranularDataOptions, bool> _GranularDataOptions { get; set; }
+
+        public TestComparer(IDictionary<GranularMetaDataOptions, bool> granularMetaDataOptions, IDictionary<GranularDataOptions, bool> granularDataOptions)
+        { 
+            _GranularMetaDataOptions = granularMetaDataOptions;
+            _GranularDataOptions = granularDataOptions;
+        }
         /// <summary>
         /// This will compare the overall execution, mainly for any exceptions
         /// </summary>
@@ -246,10 +254,10 @@ namespace DbDataComparer.Domain
 
                     // Check Data type, Length of datatype and ordinal position
                     if (tgtMD == null ||
-                        srcMD.DataTypeName != tgtMD.DataTypeName ||
-                        srcMD.Length > tgtMD.Length ||
-                        srcMD.OrdinalPosition != tgtMD.OrdinalPosition ||
-                        srcMD.IsNullable != tgtMD.IsNullable)
+                        (srcMD.DataTypeName != tgtMD.DataTypeName && _GranularMetaDataOptions[GranularMetaDataOptions.DataTypeName]) ||
+                        (srcMD.Length > tgtMD.Length && _GranularMetaDataOptions[GranularMetaDataOptions.DataTypeLength]) ||
+                        (srcMD.OrdinalPosition != tgtMD.OrdinalPosition && _GranularMetaDataOptions[GranularMetaDataOptions.OrdinalPosition]) ||
+                        (srcMD.IsNullable != tgtMD.IsNullable && _GranularMetaDataOptions[GranularMetaDataOptions.Nullablity]))
                     {
                         // Marked as failed
                         tcr.Result = ComparisonResultTypeEnum.Failed;
@@ -454,6 +462,12 @@ namespace DbDataComparer.Domain
 
             // Start by check for both have null values
             result = result || (source == null && target == null);
+
+            if (!_GranularDataOptions[GranularDataOptions.TrailingWhiteSpace] && source is string src && target is string trg)
+            {
+                source = src.TrimEnd();
+                target = trg.TrimEnd();
+            }
 
             // Check actual value, but only if both are not null
             result = result || ((source != null && target != null) && (source.Equals(target)));
