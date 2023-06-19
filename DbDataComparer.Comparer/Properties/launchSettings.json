@@ -1,7 +1,8 @@
 {
   "profiles": {
     "DbDataComparer.Comparer": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-log"
     }
   }
 }

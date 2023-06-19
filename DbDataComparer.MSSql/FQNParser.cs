@@ -5,7 +5,7 @@ namespace DbDataComparer.MSSql
     /// <summary>
     /// Fully Qualified Name parser routines
     /// </summary>
-    internal static class FQNParser
+    public static class FQNParser
     {
         private const char TOKEN_SEPARATOR = '.';
         public const string DEFAULT_SCHEMA = "dbo";
@@ -13,50 +13,50 @@ namespace DbDataComparer.MSSql
         /// <summary>
         /// Get Linked Server: Format: [linked server].[database].[schema].[db object]
         /// </summary>
-        /// <param name="commandName"></param>
+        /// <param name="databaseObject"></param>
         /// <returns>Linked Server or null</returns>
-        public static string GetLinkedServer(string commandName)
+        public static string GetLinkedServer(string databaseObject)
         {
-            return GetToken(commandName, 0);
+            return GetToken(databaseObject, 0);
         }
 
 
         /// <summary>
         /// Get Database name: Format: [linked server].[database].[schema].[db object]
         /// </summary>
-        /// <param name="commandName"></param>
+        /// <param name="databaseObject"></param>
         /// <returns>Database name or null</returns>
-        public static string GetDatabase(string commandName)
+        public static string GetDatabase(string databaseObject)
         {
-            return GetToken(commandName, 1);
+            return GetToken(databaseObject, 1);
         }
 
 
         /// <summary>
         /// Get Database name: Format: [linked server].[database].[schema].[db object]
         /// </summary>
-        /// <param name="commandName"></param>
+        /// <param name="databaseObject"></param>
         /// <returns>Schema, if not available, then default schema of "dbo"</returns>
-        public static string GetSchema(string commandName)
+        public static string GetSchema(string databaseObject)
         {
-            return GetToken(commandName, 2) ?? DEFAULT_SCHEMA;
+            return GetToken(databaseObject, 2) ?? DEFAULT_SCHEMA;
         }
 
 
         /// <summary>
         /// Get Database name: Format: [linked server].[database].[schema].[db object]
         /// </summary>
-        /// <param name="commandName"></param>
+        /// <param name="databaseObject"></param>
         /// <returns></returns>
-        public static string GetDbObject(string commandName)
+        public static string GetDbObject(string databaseObject)
         {
-            return GetToken(commandName, 3);
+            return GetToken(databaseObject, 3);
         }
 
         /// <summary>
         /// Get token based upon the following format: [linked server].[database].[schema].[db object]
         /// </summary>
-        /// <param name="commandName"></param>
+        /// <param name="databaseObject"></param>
         /// <param name="position">zero based position of token that is to be returned</param>
         /// <returns></returns>
         /// <remarks>
@@ -67,19 +67,19 @@ namespace DbDataComparer.MSSql
         ///     
         /// Overall Format: [optional].[optional].[optional].[mandatory]
         /// </remarks>
-        private static string GetToken(string commandName, int position)
+        private static string GetToken(string databaseObject, int position)
         {
             const int MAX_TOKEN_COUNT = 4;
 
             // Guard Clauses
-            if (String.IsNullOrWhiteSpace(commandName))
-                throw new ArgumentNullException(nameof(commandName));
+            if (String.IsNullOrWhiteSpace(databaseObject))
+                throw new ArgumentNullException(nameof(databaseObject));
 
             if (position < 0 || position >= MAX_TOKEN_COUNT)
                 throw new ArgumentOutOfRangeException($"{nameof(position)} must be between 0 and {MAX_TOKEN_COUNT - 1}");
 
             string[] defaultTokens = new string[MAX_TOKEN_COUNT];
-            string[] tokens = commandName.Split(TOKEN_SEPARATOR, StringSplitOptions.None)
+            string[] tokens = databaseObject.Split(TOKEN_SEPARATOR, StringSplitOptions.None)
                                          .Reverse<string>()
                                          .ToArray();
 
