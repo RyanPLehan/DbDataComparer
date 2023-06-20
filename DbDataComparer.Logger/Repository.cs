@@ -137,10 +137,11 @@ namespace DbDataComparer.Logger
             var idColumn = "[GPDependencyTestDefinitionId] AS TestDefinitionId";
             var srcColumns = "[SourceServer], [SourceDatabase], [SourceSchema], [SourceObject]";
             var tgtColumns = "[TargetServer], [TargetDatabase], [TargetSchema], [TargetObject]";
+            var miscColumns = "[IsTable]";
             var from = "FROM";
             var tableName = "[dbo].[GPDependencyTestDefinitions]";
 
-            return $"{select} {idColumn}, {srcColumns}, {tgtColumns} {from} {tableName}";
+            return $"{select} {idColumn}, {srcColumns}, {tgtColumns}, {miscColumns} {from} {tableName}";
         }
 
         private string GenerateTestDefinitionSelectSql(int id)
@@ -177,6 +178,7 @@ namespace DbDataComparer.Logger
                 TargetDatabase = Convert.ToString(data[6]),
                 TargetSchema = Convert.ToString(data[7]),
                 TargetObject = Convert.ToString(data[8]),
+                IsTable = (data[9] == null ? false : Convert.ToBoolean(data[9])),
             };
         }
         #endregion
@@ -189,12 +191,14 @@ namespace DbDataComparer.Logger
             var tableName = "[dbo].[GPDependencyTestDefinitions]";
             var srcColumns = "[SourceServer], [SourceDatabase], [SourceSchema], [SourceObject]";
             var tgtColumns = "[TargetServer], [TargetDatabase], [TargetSchema], [TargetObject]";
+            var miscColumns = "[IsTable]";
             var outputId = "OUTPUT INSERTED.GPDependencyTestDefinitionId";
             var values = "VALUES";
-            var srcValues = GenerateInsertValuesSql(testDefinition.Source);
-            var tgtValues = GenerateInsertValuesSql(testDefinition.Target);
+            var srcValues = GenerateTestDefinitionInsertValuesSql(testDefinition.Source);
+            var tgtValues = GenerateTestDefinitionInsertValuesSql(testDefinition.Target);
+            var miscValues = GenerateTestDefinitionInsertValuesSql(testDefinition);
 
-            return $"{insert} {tableName} ({srcColumns}, {tgtColumns}) {outputId} {values} ({srcValues}, {tgtValues})";
+            return $"{insert} {tableName} ({srcColumns}, {tgtColumns}, {miscColumns}) {outputId} {values} ({srcValues}, {tgtValues}, {miscValues})";
         }
 
 
@@ -207,7 +211,7 @@ namespace DbDataComparer.Logger
         /// Return Values in the following format
         /// Server, Database, Schema, Object
         /// </remarks>
-        private string GenerateInsertValuesSql(ExecutionDefinition def)
+        private string GenerateTestDefinitionInsertValuesSql(ExecutionDefinition def)
         {
             StringBuilder sb = new StringBuilder();
             IConnectionProperties connectionProperties = ConnectionPropertiesBuilder.Parse(def.ConnectionString);
@@ -216,6 +220,24 @@ namespace DbDataComparer.Logger
             sb.AppendFormat("'{0}', ", connectionProperties.ConnectionBuilderOptions.Database);
             sb.AppendFormat("'{0}', ", FQNParser.GetSchema(def.Text));
             sb.AppendFormat("'{0}'", FQNParser.GetDbObject(def.Text));
+
+            return sb.ToString();
+        }
+
+
+        /// <summary>
+        /// Generate SQL for VALUES portion of the INSERT
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// Return Values in the following format
+        /// IsTable
+        /// </remarks>
+        private string GenerateTestDefinitionInsertValuesSql(TestDefinition testDefinition)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendFormat("'{0}'", 0);            // TODO: Update to pull in value from testDefinition Source Type
 
             return sb.ToString();
         }
@@ -230,9 +252,9 @@ namespace DbDataComparer.Logger
             var resultColumns = "[ParameterReturnResult], [ParameterOutputResult], [MetadataResult], [DataResult], [ExecutionResult]";
             var executionPropertyColumns = "[ExecutionTimeDifference], [StartDate]";
             var values = "VALUES";
-            var executionTimeValues = GenerateInsertValuesSql(comparisonResult.TestResult.Source.ExecutionTime, comparisonResult.TestResult.Target.ExecutionTime);
-            var resultValues = GenerateInsertValuesSql(comparisonResult);
-            var executionPropertyValues = GenerateInsertValuesSql(comparisonResult.TestResult.Source.ExecutionTime, comparisonResult.TestResult.Target.ExecutionTime, comparisonDateTime);
+            var executionTimeValues = GenerateTestResultInsertValuesSql(comparisonResult.TestResult.Source.ExecutionTime, comparisonResult.TestResult.Target.ExecutionTime);
+            var resultValues = GenerateTestResultInsertValuesSql(comparisonResult);
+            var executionPropertyValues = GenerateTestResultInsertValuesSql(comparisonResult.TestResult.Source.ExecutionTime, comparisonResult.TestResult.Target.ExecutionTime, comparisonDateTime);
 
             return $"{insert} {tableName} ({fkColumns}, {executionTimeColumns}, {resultColumns}, {executionPropertyColumns}) {values} ({testDefinitionId}, {executionTimeValues}, {resultValues}, {executionPropertyValues})";
         }
@@ -247,7 +269,7 @@ namespace DbDataComparer.Logger
         /// Return Values in the following format
         /// SourceExecutionTime, TargetExecutionTime
         /// </remarks>
-        private string GenerateInsertValuesSql(TimeSpan source, TimeSpan target)
+        private string GenerateTestResultInsertValuesSql(TimeSpan source, TimeSpan target)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -268,7 +290,7 @@ namespace DbDataComparer.Logger
         /// Return Values in the following format
         /// ParameterReturnResult, ParameterOutputResult, MetadataResult, DataResult, ExecutionResult
         /// </remarks>
-        private string GenerateInsertValuesSql(ComparisonResult result)
+        private string GenerateTestResultInsertValuesSql(ComparisonResult result)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -310,7 +332,7 @@ namespace DbDataComparer.Logger
         /// Return Values in the following format
         /// SourceExecutionTime, TargetExecutionTime
         /// </remarks>
-        private string GenerateInsertValuesSql(TimeSpan source, TimeSpan target, DateTime dateTime)
+        private string GenerateTestResultInsertValuesSql(TimeSpan source, TimeSpan target, DateTime dateTime)
         {
             StringBuilder sb = new StringBuilder();
 
