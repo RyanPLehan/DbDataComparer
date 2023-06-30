@@ -13,5 +13,6 @@ namespace DbDataComparer.Logger.Models
         public string TargetDatabase { get; set; }
         public string TargetSchema { get; set; }
         public string TargetObject { get; set; }
+        public bool IsTable { get; set; } = false;
     }
 }
