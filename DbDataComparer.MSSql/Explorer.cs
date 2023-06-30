@@ -240,7 +240,7 @@ namespace DbDataComparer.MSSql
             var from = "FROM sys.table_types tt";
             var join1 = "INNER JOIN sys.schemas s ON tt.[schema_id] = s.[schema_id]";
             var join2 = "INNER JOIN sys.columns c ON c.[object_id] = tt.[type_table_object_id]";
-            var join3 = "INNER JOIN sys.types t ON c.[system_type_id] = t.[system_type_id]";
+            var join3 = "INNER JOIN sys.types t ON c.[system_type_id] = t.[system_type_id] AND c.[user_type_id] = t.[user_type_id]";
             var where = $"WHERE tt.[name] = '{userDefinedTypeName}' AND s.[name] = '{schema}'";
             var orderBy = "ORDER BY c.[column_id]";
 
