@@ -237,6 +237,9 @@ namespace DbDataComparer.MSSql
 
         private DataTable PopulateDataTable(DataTable table, IEnumerable<IDictionary<string, object>> values)
         {
+            if (values == null)
+                return table;
+
             foreach (IDictionary<string, object> row in values)
             {
                 DataRow dataRow = table.NewRow();
